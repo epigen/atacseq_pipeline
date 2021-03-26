@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# ignore hidden files
+.*
+!.gitignore
+
+# ignore results folder
+results/
+
 # C extensions
 *.so
 

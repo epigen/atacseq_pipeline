@@ -1,0 +1,410 @@
+# commands
+
+# cmd for rulegraph
+# snakemake --rulegraph --forceall | dot -Tsvg > workflow/dags/atacseq_pipeline_rulegraph.svg
+
+# cmd for DAG with all jobs
+# snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
+
+# cmd for cluster execution -> submits everything
+# snakemake -p --profile config/slurm.cemm --use-conda
+
+# cmd for submitting the operator job -> not even needed, as far as I understand
+# sbatch -J atacseq_pipeline --mem=16000 --partition=longq --qos=longq --time=7-00:00:00 --wrap="snakemake -p --profile config/slurm.cemm --use-conda"
+
+# cmd for creating a report of the workflo after execution
+# snakemake --report results/atacseq_report.html
+
+# libraries
+import yaml
+import pandas as pd
+import os
+from snakemake.utils import validate, min_version
+
+import argparse
+import yaml, json
+import csv
+import os
+import sys
+from collections.abc import Mapping
+from string import Template
+
+##### utility functions #####
+
+def update(d, u):
+    """
+    Recursively updates the entries in a given dictionary
+    :param d: The dictionary to be updated
+    :param u: The values which will be added to the input dictionary
+    :return: Updated dictionary
+    """
+    for k, v in u.items():
+        if isinstance(v, Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
+
+def configurator(pipeline_config, project_config):
+
+    # Read in config files
+    # default will contain pipeline configurations
+    default = {}
+    # specific will contain the project configurations
+    specific = {}
+    with open(pipeline_config, 'r') as stream:
+        try:
+            default = yaml.safe_load(stream)
+        except yaml.YAMLError as exception:
+            sys.stderr.write(str(exception))
+    with open(project_config, 'r') as stream:
+        try:
+            specific = yaml.safe_load(stream)
+        except yaml.YAMLError as exception:
+            sys.stderr.write(str(exception))
+    update(default, specific)
+    # rename the updated dictionary
+    config = default
+
+    # Create the
+    project_path = config['project_path']
+    json_path = os.path.join(project_path, 'config_files')
+    if not os.path.exists(project_path):
+        os.mkdir(project_path)
+    if not os.path.exists(json_path):
+        os.mkdir(json_path)
+
+    project_genome = config['genome']
+    project_genome_size = config['genome_sizes'][project_genome]
+    inputs_dict = {'atacseq.project_name': config['project_name'],
+                   'atacseq.project_path': config['project_path'],
+                   'atacseq.genome': project_genome,
+                   'atacseq.adapter_fasta': config['adapter_fasta'],
+                   'atacseq.bowtie2_index': config['bowtie2_index'][project_genome],
+                   'atacseq.chromosome_sizes': config['chromosome_sizes'][project_genome],
+                   'atacseq.blacklisted_regions': config['blacklisted_regions'][project_genome],
+                   'atacseq.whitelisted_regions': config['whitelisted_regions'][project_genome],
+                   'atacseq.unique_tss': config['unique_tss'][project_genome],
+                   'atacseq.mitochondria_name': config['mitochondria_names'][project_genome],
+                   'atacseq.regulatory_regions': config['regulatory_regions'][project_genome]
+                   }
+    if 'adapter_sequence' in config:
+        inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
+    sas_file = config['sample_annotation']
+    sas_dict = {}
+    with open(sas_file, 'r') as sas:
+        reader = csv.DictReader(sas, dialect='excel')
+        for row in reader:
+            if 'sample_name' in row:
+                if row['sample_name'] in sas_dict:
+                    sas_dict[row['sample_name']].append(row)
+                else:
+                    sas_dict[row['sample_name']] = [row]
+
+    inputs_dict['atacseq.sample_list'] = list(sas_dict.keys())
+
+    project_json = os.path.join(json_path, '{}.inputs.json'.format(config['project_name']))
+    with open(project_json, 'w') as output:
+        json.dump(inputs_dict, output, indent=2)
+
+    sample_dicts = {}
+    for sample in sas_dict:
+        sample_dict = {'sample_name': sample,
+                       'read_type': sas_dict[sample][0]['read_type'],
+                       'organism': sas_dict[sample][0]['organism'],
+                       'skip_preprocess': sas_dict[sample][0]['skip_preprocess'],
+                       'genome': project_genome,
+                       'genome_size': project_genome_size,
+                       'raw_bams': ''}
+
+        # skip this sample if indicated (note: it is still in the sample list of the project json file)
+        if sample_dict['skip_preprocess'] == "yes":
+            continue
+        
+        row_list = sas_dict[sample]
+        number_of_rows = len(row_list)
+        bam_sources = []
+        raw_size_mb = 0
+        for i in range(number_of_rows):
+            if 'data_source' in row_list[i] and row_list[i]['data_source'] != '':
+                source_template = config['data_sources'][row_list[i]['data_source']]
+                source = source_template.format(**row_list[i])
+                if os.path.exists(source):
+                    bam_sources.append(source)
+                    if(os.path.exists(source)):
+                        source_stats = os.stat(source)
+                        raw_size_mb += int(source_stats.st_size / (1024 * 1024))
+                    #sample_dict['raw_bams'].append(source)
+                else:
+                    print('WARNING: Could not locate {}'.format(source))
+        if len(bam_sources) == 0:
+            print('WARNING: Could not locate any raw data files for sample {}, skipping.'.format(sample))
+        else:
+            sample_dict['raw_bams'] = ' '.join(bam_sources)
+            sample_dict['raw_size_mb'] = raw_size_mb
+            # sample_json = os.path.join(json_path, '{}.json'.format(sample))
+            # with open(sample_json, 'w') as output:
+            #     json.dump(sample_dict, output, indent=2)
+            sample_tsv = os.path.join(json_path, '{}.tsv'.format(sample))
+            with open(sample_tsv, 'w') as output:
+                for key in sample_dict:
+                    output.write('{}\t{}\n'.format(key, sample_dict[key]))
+            
+#             sample_dicts.append(sample_dict)
+            sample_dicts[sample]=sample_dict
+    
+    return inputs_dict, sample_dicts
+
+##### set minimum snakemake version #####
+min_version("6.0.3")
+
+##### setup report #####
+report: "report/workflow.rst"
+
+##### set & load config and sample annotation sheets ##### -> TODO: modularize
+pipeline_config_dir = os.path.join("config","pipeline_config.yaml")
+project_config_dir = os.path.join("test","BSA_0000_test_atac_atacseq_config.yaml")
+
+# run configurator to get pipeline configs & sample annotations -> TODO: change to onstart: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
+config, samples = configurator(pipeline_config_dir, project_config_dir)
+# print(config)
+# print(samples)
+
+
+# TODO: does not work as it installs everything in the currently activated conda environment ie snakemake....
+# everything is already correctly installed apart from "atacseq-report=0.2" which is no real package
+# onstart:
+#     shell("python3 workflow/scripts/multiqc_atacseq/setup.py install")
+
+# TODO: implement on success report creation -> does not work
+# onsuccess:
+#     shell("snakemake --report results/atacseq_report.html")
+
+##### set global variables
+output_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
+
+# cluster parameters
+partition="tinyq"
+mem="16G" #TODO: 32G
+threads=2
+
+# calculate parameters (for misc tasks)
+tss_slop = 2000
+noise_lower = 100
+noise_upper = ( tss_slop * 2 ) - noise_lower
+double_slop = ( tss_slop * 2 )
+
+##### target rules #####
+
+rule all:
+    input:
+#         expand(os.path.join(output_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
+#         expand(os.path.join(output_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
+#         expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
+        multiqc_report=os.path.join(config["atacseq.project_path"],"atacseq_report","multiqc_report.html"),
+#         os.path.join(config["atacseq.project_path"],"atacseq_report"),
+    params:
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    shell:
+        "snakemake --report results/atacseq_report.html"
+
+
+# alignment with botwtie2 & samtools
+rule bowtie2_align:
+    input:
+        os.path.join(config["atacseq.project_path"],"config_files","{sample}.tsv"),
+    output:
+        output_bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.bam"),
+        output_bai =  os.path.join(output_dir,"{sample}","mapped", "{sample}.bam.bai"),
+        filtered_bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        filtered_bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
+    params:
+        # paths
+        output_dir = output_dir,
+        sample_dir = os.path.join(output_dir,"{sample}"),
+        bam_dir = os.path.join(output_dir,"{sample}","mapped"),
+        # sample information
+        sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
+        read_type= lambda w: samples["{}".format(w.sample)]["read_type"],
+        raw_bams= lambda w: samples["{}".format(w.sample)]["raw_bams"],
+        genome= lambda w: samples["{}".format(w.sample)]["genome"],
+        genome_size= lambda w: samples["{}".format(w.sample)]["genome_size"],
+        #alignment parameters
+        interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
+        interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
+        filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["atacseq.whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["atacseq.whitelisted_regions"]),
+        add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
+        # pipeline information
+        adapter_sequence="-a " + config["atacseq.adapter_sequence"] if config["atacseq.adapter_sequence"] !="" else " ", # TODO: check if it works
+        adapter_fasta="--adapter_fasta " + config["atacseq.adapter_fasta"] if config["atacseq.adapter_fasta"] !="" else " ", # TODO: check if it works
+        bowtie2_index=config["atacseq.bowtie2_index"],
+        chrM=config["atacseq.mitochondria_name"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "envs/atacseq_pipeline.yaml",
+    shell:
+        """
+        mkdir -p {params.output_dir};
+        mkdir -p {params.sample_dir};
+        mkdir -p {params.bam_dir};
+        
+        RG="--rg-id {params.sample_name} --rg SM:{params.sample_name} --rg PL:illumina --rg CN:CeMM_BSF"
+
+        for i in {params.raw_bams}; do samtools fastq $i 2>> "{params.bam_dir}/{params.sample_name}.samtools.log" ; done | \
+            fastp {params.adapter_sequence} {params.adapter_fasta} --stdin {params.interleaved_in} --stdout --html "{params.bam_dir}/{params.sample_name}.fastp.html" --json "{params.bam_dir}/{params.sample_name}.fastp.json" 2> "{params.bam_dir}/{params.sample_name}.fastp.log" | \
+            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {params.bowtie2_index} --met-file "{params.bam_dir}/{params.sample_name}.bowtie2.met" {params.interleaved} - 2> "{params.bam_dir}/{params.sample_name}.txt" | \
+            samblaster {params.add_mate_tags} 2> "{params.bam_dir}/{params.sample_name}.samblaster.log" | \
+            samtools sort -o "{params.bam_dir}/{params.sample_name}.bam" - 2>> "{params.bam_dir}/{params.sample_name}.samtools.log";
+        
+        samtools index "{params.bam_dir}/{params.sample_name}.bam" 2>> "{params.bam_dir}/{params.sample_name}.samtools.log";
+        samtools idxstats "{params.bam_dir}/{params.sample_name}.bam" | awk '{{ sum += $3 + $4; if($1 == "{params.chrM}") {{ mito_count = $3; }}}}END{{ print "mitochondrial_fraction\t"mito_count/sum }}' > "{params.sample_dir}/{params.sample_name}.stats.tsv";
+        samtools flagstat "{params.bam_dir}/{params.sample_name}.bam" > "{params.bam_dir}/{params.sample_name}.samtools_flagstat.log";
+
+        samtools view {params.filtering} -o "{params.bam_dir}/{params.sample_name}.filtered.bam" "{params.bam_dir}/{params.sample_name}.bam";
+        samtools index "{params.bam_dir}/{params.sample_name}.filtered.bam";
+        """
+
+        
+# peak calling with macs2 & samtools
+rule peak_calling:
+    input:
+        bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+    output:
+        peak_calls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.narrowPeak"),
+        macs2_xls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.xls"),
+        summits_bed = os.path.join(output_dir,"{sample}","peaks","{sample}_summits.bed"),
+    params:
+        # paths
+        output_dir = output_dir,
+        sample_dir = os.path.join(output_dir,"{sample}"),
+        peaks_dir = os.path.join(output_dir,"{sample}","peaks"),
+        homer_dir = os.path.join(output_dir,"{sample}","homer"),
+        # sample information
+        sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
+        genome= lambda w: samples["{}".format(w.sample)]["genome"],
+        genome_size= lambda w: samples["{}".format(w.sample)]["genome_size"],
+        # peak calling parameters
+        formating = lambda w: '--format BAMPE' if samples["{}".format(w.sample)]["read_type"] == "paired" else '--format BAM',
+        # pipeline information
+        regulatory_regions = config["atacseq.regulatory_regions"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "envs/atacseq_pipeline.yaml",
+    shell:
+        """
+        mkdir -p {params.output_dir};
+        mkdir -p {params.sample_dir};
+        mkdir -p {params.peaks_dir};
+        mkdir -p {params.homer_dir};
+
+        macs2 callpeak -t {input.bam} {params.formating} \
+            --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
+            -n {params.sample_name} \
+            --outdir {params.peaks_dir} > "{params.peaks_dir}/{params.sample_name}.macs2.log" 2>&1;
+
+        annotatePeaks.pl {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak {params.genome} \
+            > {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak.annotated.tsv \
+            2> {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak.annotated.tsv.log;
+
+        findMotifsGenome.pl "{params.peaks_dir}/{params.sample_name}_summits.bed" {params.genome} {params.homer_dir} -size 200 -mask \
+            > "{params.homer_dir}/{params.sample_name}.homer.log" 2>&1
+
+        cat {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak | wc -l | \
+            awk '{{print "peaks\t" $1}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv"
+
+        TOTAL_READS=`samtools idxstats {input.bam} | awk '{{sum += $3}}END{{print sum}}'`;
+        samtools view -c -L "{params.peaks_dir}/{params.sample_name}_peaks.narrowPeak" {input.bam} | \
+            awk -v total=$TOTAL_READS '{{print "frip\t" $1/total}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv";
+
+        samtools view -c -L {params.regulatory_regions} {input.bam} | \
+            awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv";
+        """
+        
+
+rule misc_tasks:
+    input:
+        bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+    output:
+        bigWig = os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample}.bigWig"),
+        tss_hist = os.path.join(output_dir,"{sample}","{sample}.tss_histogram.csv"),
+    params:
+        # paths
+        hub_dir = os.path.join(config["atacseq.project_path"], "atacseq_hub"),
+        sample_dir = os.path.join(output_dir,"{sample}"),
+        slopped_tss = os.path.join(output_dir,"{sample}","slopped_tss.bed"),
+        tss_hist = os.path.join(output_dir,"{sample}","{sample}.tss_histogram.csv"),
+        # sample information
+        sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
+        genome_size= lambda w: samples["{}".format(w.sample)]["genome_size"],
+        # misc task parameters
+        tss_slop = tss_slop,
+        noise_lower = noise_lower,
+        noise_upper = noise_upper,
+        double_slop = double_slop,
+        # pipeline information
+        unique_tss = config["atacseq.unique_tss"],
+        chromosome_sizes = config["atacseq.chromosome_sizes"],
+        whitelist = config["atacseq.whitelisted_regions"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "envs/atacseq_pipeline.yaml",
+    shell:
+        """
+        mkdir -p {params.hub_dir};
+
+        bamCoverage --bam {input.bam} \
+            -p max --binSize 10  --normalizeUsing RPGC \
+            --effectiveGenomeSize {params.genome_size} --extendReads 175 \
+            -o "{params.hub_dir}/{params.sample_name}.bigWig" > "{params.hub_dir}/{params.sample_name}.bigWig.log" 2>&1;
+
+        echo "base,count" > {params.tss_hist};
+        bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \
+            bedtools coverage -a - -b {input.bam} -d -sorted | \
+            awk '{{if($6 == "+"){{ counts[$7] += $8;}} else counts[{params.double_slop} - $7 + 1] += $8;}} END {{ for(pos in counts) {{ if(pos < {params.noise_lower} || pos > {params.noise_upper}) {{ noise += counts[pos] }} }}; average_noise = noise /(2 * {params.noise_lower}); for(pos in counts) {{print pos-2000-1","(counts[pos]/average_noise) }} }}' | \
+            sort -t "," -k1,1n >> {params.tss_hist} ;
+        """
+
+        
+        
+rule mutliqc:
+    input:
+        expand(os.path.join(output_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
+        expand(os.path.join(output_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
+        expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
+    output:
+        multiqc_report=os.path.join(config["atacseq.project_path"],"atacseq_report","multiqc_report.html"),
+#         report(directory(os.path.join(config["atacseq.project_path"],"atacseq_report")), caption="report/multiqc.rst", htmlindex="multiqc_report.html"),
+    params:
+        project_dir = os.path.join(config["atacseq.project_path"]),
+        project_config_dir = project_config_dir,
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "envs/atacseq_pipeline.yaml"
+    shell:
+        """
+        python3 workflow/scripts/multiqc_atacseq/setup.py install
+        multiqc -fc {params.project_config_dir} {params.project_dir}
+        """

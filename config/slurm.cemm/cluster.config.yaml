@@ -1,0 +1,5 @@
+__default__:
+  error: "results/logs/logs_slurm/{rule}_{wildcards}.err"
+  output: "results/logs/logs_slurm/{rule}_{wildcards}.out"
+  partition: "{params.partition}"
+  qos: "{params.partition}"

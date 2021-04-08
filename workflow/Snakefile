@@ -7,7 +7,7 @@
 # snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
 
 # cmd for cluster execution -> submits everything
-# snakemake -p --profile config/slurm.cemm --use-conda
+# snakemake -p --profile config/slurm.cemm --use-conda --reason
 
 # cmd for submitting the operator job -> not even needed, as far as I understand
 # sbatch -J atacseq_pipeline --mem=16000 --partition=longq --qos=longq --time=7-00:00:00 --wrap="snakemake -p --profile config/slurm.cemm --use-conda"
@@ -46,26 +46,27 @@ def update(d, u):
     return d
 
 
-def configurator(pipeline_config, project_config):
+def configurator(config, project_config):
 
     # Read in config files
     # default will contain pipeline configurations
-    default = {}
+#     default = {}
     # specific will contain the project configurations
     specific = {}
-    with open(pipeline_config, 'r') as stream:
-        try:
-            default = yaml.safe_load(stream)
-        except yaml.YAMLError as exception:
-            sys.stderr.write(str(exception))
+#     with open(pipeline_config, 'r') as stream:
+#         try:
+#             default = yaml.safe_load(stream)
+#         except yaml.YAMLError as exception:
+#             sys.stderr.write(str(exception))
     with open(project_config, 'r') as stream:
         try:
             specific = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
             sys.stderr.write(str(exception))
-    update(default, specific)
+#     update(default, specific)
+    update(config, specific)
     # rename the updated dictionary
-    config = default
+#     config = default
 
     # Create the
     project_path = config['project_path']
@@ -162,13 +163,24 @@ min_version("6.0.3")
 ##### setup report #####
 report: "report/workflow.rst"
 
+configfile: os.path.join("config","pipeline_config.yaml")
+
 ##### set & load config and sample annotation sheets ##### -> TODO: modularize
-pipeline_config_dir = os.path.join("config","pipeline_config.yaml")
-project_config_dir = os.path.join("test","BSA_0000_test_atac_atacseq_config.yaml")
-sample_annot_dir = os.path.join("test","BSA_0000_test_atac_atacseq_sample_annotations.csv")
+pipeline_config_dir = os.path.join("config","pipeline_config.yaml") # adapt, so that not needed anymore?
+
+# mouse (mm10) test parameters
+# project_config_dir = os.path.join("test","BSA_0000_test_mm10_atac_atacseq_config.yaml")
+# sample_annot_dir = os.path.join("test","BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv")
+
+# human (hg38) test parameters
+project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_hg38_atac_atacseq_config.yaml") # adapt, so that not needed anymore?
+sample_annot_dir = os.path.join("test","BSA_0000_test_hg38_atac_atacseq_sample_annotations.csv")# adapt, so that not needed anymore?
+
+# future of config files?
+# snakemake --configfile <path/to/config>
 
 # run configurator to get pipeline configs & sample annotations -> TODO: change to onstart: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
-config, samples = configurator(pipeline_config_dir, project_config_dir)
+config, samples = configurator(config, project_config_dir)
 # print(config)
 # print(samples)
 
@@ -186,8 +198,8 @@ config, samples = configurator(pipeline_config_dir, project_config_dir)
 output_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
 
 # cluster parameters
-partition="tinyq"
-mem="16G" #TODO: 32G
+partition="shortq" #"tinyq"
+mem="32G"
 threads=2
 
 # calculate parameters (for misc tasks)
@@ -205,6 +217,8 @@ rule all:
         expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
 #         multiqc_report=os.path.join(config["atacseq.project_path"],"atacseq_report","multiqc_report.html"),
 #         os.path.join(config["atacseq.project_path"],"atacseq_report"), # for inclusion into snakemake report -> maybe needs snakemake update!
+    output:
+        atacseq_report_dir=os.path.join(config["atacseq.project_path"],"atacseq_report.html")
     params:
         # cluster parameters
         partition=partition,
@@ -212,12 +226,12 @@ rule all:
     resources:
         mem=mem,
     shell:
-        "snakemake --report results/atacseq_report.html"
+        "snakemake --report {output.atacseq_report_dir}"
 
 
 # alignment with botwtie2 & samtools
 rule bowtie2_align:
-    input: # TODO: not optimal, should actually be the sample raw data and not the config files -> currently every change in a config file triggers reproduction
+    input: # TODO: not optimal, should actually be the sample raw data (ie units data on flowcells) and not the config files -> currently every change in a config file triggers reproduction
 #         os.path.join(config["atacseq.project_path"],"config_files","{sample}.tsv"),
         pipeline_config_dir,
         project_config_dir,

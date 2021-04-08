@@ -1,0 +1,6 @@
+sample_name,flowcell,lane,BSF_name,data_source,read_type,organism,skip_preprocess
+S71730,BSF_0855_HK7MWBBXY,1,S_2F_S71730,bsf_test,paired,human,no
+S71730_05,BSF_0855_HK7MWBBXY,1,S71730_05,bsf_test,paired,human,no
+S71730_02,BSF_0855_HK7MWBBXY,1,S71730_02,bsf_test,paired,human,no
+S71730_05_r1,BSF_0855_HK7MWBBXY,1,S71730_05_r1,bsf_test,single,human,no
+S71730_02_r1,BSF_0855_HK7MWBBXY,1,S71730_02_r1,bsf_test,single,human,no

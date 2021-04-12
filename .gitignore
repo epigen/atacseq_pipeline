@@ -7,8 +7,9 @@ __pycache__/
 .*
 !.gitignore
 
-# ignore results folder
+# ignore results & resources folder
 results/
+resources/
 
 # C extensions
 *.so

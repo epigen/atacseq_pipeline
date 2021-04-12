@@ -1,19 +1,13 @@
-# commands
+# snakemake commands
 
 # cmd for rulegraph
 # snakemake --rulegraph --forceall | dot -Tsvg > workflow/dags/atacseq_pipeline_rulegraph.svg
 
-# cmd for DAG with all jobs
+# cmd for DAG with all jobs with current config
 # snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
 
-# cmd for cluster execution -> submits everything
+# cmd for cluster execution -> submits everything as separate job with dependencies
 # snakemake -p --profile config/slurm.cemm --use-conda --reason
-
-# cmd for submitting the operator job -> not even needed, as far as I understand
-# sbatch -J atacseq_pipeline --mem=16000 --partition=longq --qos=longq --time=7-00:00:00 --wrap="snakemake -p --profile config/slurm.cemm --use-conda"
-
-# cmd for creating a report of the workflo after execution
-# snakemake --report results/atacseq_report.html
 
 # libraries
 import yaml
@@ -165,34 +159,21 @@ report: "report/workflow.rst"
 
 configfile: os.path.join("config","pipeline_config.yaml")
 
-##### set & load config and sample annotation sheets ##### -> TODO: modularize
-pipeline_config_dir = os.path.join("config","pipeline_config.yaml") # adapt, so that not needed anymore?
+##### set & load config and sample annotation sheets #####
 
 # mouse (mm10) test parameters
-# project_config_dir = os.path.join("test","BSA_0000_test_mm10_atac_atacseq_config.yaml")
+# project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_mm10_atac_atacseq_config.yaml")
 # sample_annot_dir = os.path.join("test","BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv")
 
 # human (hg38) test parameters
 project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_hg38_atac_atacseq_config.yaml") # adapt, so that not needed anymore?
 sample_annot_dir = os.path.join("test","BSA_0000_test_hg38_atac_atacseq_sample_annotations.csv")# adapt, so that not needed anymore?
 
-# future of config files?
-# snakemake --configfile <path/to/config>
-
-# run configurator to get pipeline configs & sample annotations -> TODO: change to onstart: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
-config, samples = configurator(config, project_config_dir)
+# run configurator to get pipeline configs & sample annotations -> TODO: change to onstart?: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
+config, samples = configurator(config, config["project_config"])
 # print(config)
 # print(samples)
 
-
-# TODO: does not work as it installs everything in the currently activated conda environment ie snakemake....
-# everything is already correctly installed apart from "atacseq-report=0.2" which is no real package
-# onstart:
-#     shell("python3 workflow/scripts/multiqc_atacseq/setup.py install")
-
-# TODO: implement on success report creation -> does not work
-# onsuccess:
-#     shell("snakemake --report results/atacseq_report.html")
 
 ##### set global variables
 output_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
@@ -210,15 +191,12 @@ double_slop = ( tss_slop * 2 )
 
 ##### target rules #####
 
+# generates a HTML report from all the results as self-contained .zip archive for sharing
 rule all:
     input:
-        expand(os.path.join(output_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
-        expand(os.path.join(output_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
-        expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
-#         multiqc_report=os.path.join(config["atacseq.project_path"],"atacseq_report","multiqc_report.html"),
-#         os.path.join(config["atacseq.project_path"],"atacseq_report"), # for inclusion into snakemake report -> maybe needs snakemake update!
+        os.path.join(config["atacseq.project_path"],"atacseq_report"), # for the inclusion into snakemake report
     output:
-        atacseq_report_dir=os.path.join(config["atacseq.project_path"],"atacseq_report.html")
+        atacseq_report_dir=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"]))
     params:
         # cluster parameters
         partition=partition,
@@ -226,15 +204,30 @@ rule all:
     resources:
         mem=mem,
     shell:
-        "snakemake --report {output.atacseq_report_dir}"
+        """
+        snakemake --unlock
+        snakemake --report {output.atacseq_report_dir}
+        """
 
+# install homer        
+rule install_homer:
+    output:
+        homer_script=os.path.join("resources","homer","configureHomer.pl"),
+    shell:
+        """
+        mkdir -p resources/homer
+        cd resources/homer
+        wget http://homer.ucsd.edu/homer/configureHomer.pl
+        perl configureHomer.pl -install
+        perl configureHomer.pl -install hg38 mm10
+        """
 
 # alignment with botwtie2 & samtools
 rule bowtie2_align:
     input: # TODO: not optimal, should actually be the sample raw data (ie units data on flowcells) and not the config files -> currently every change in a config file triggers reproduction
 #         os.path.join(config["atacseq.project_path"],"config_files","{sample}.tsv"),
-        pipeline_config_dir,
-        project_config_dir,
+#         pipeline_config_dir,
+#         project_config_dir,
         sample_annot_dir,
     output:
         output_bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.bam"),
@@ -297,10 +290,13 @@ rule peak_calling:
     input:
         bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
         bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+        homer_script=os.path.join("resources","homer","configureHomer.pl"),
     output:
         peak_calls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.narrowPeak"),
         macs2_xls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.xls"),
         summits_bed = os.path.join(output_dir,"{sample}","peaks","{sample}_summits.bed"),
+        homer_log = os.path.join(output_dir,"{sample}","homer","{sample}.homer.log"),
+        #homer_motif = os.path.join(output_dir,"{sample}","homer","motifFindingParameters.txt"),
     params:
         # paths
         output_dir = output_dir,
@@ -328,30 +324,31 @@ rule peak_calling:
         mkdir -p {params.sample_dir};
         mkdir -p {params.peaks_dir};
         mkdir -p {params.homer_dir};
-
+        
+        export PATH="/research/home/sreichl/projects/atacseq_pipeline/resources/homer/bin/:$PATH";
+        
         macs2 callpeak -t {input.bam} {params.formating} \
             --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
             -n {params.sample_name} \
             --outdir {params.peaks_dir} > "{params.peaks_dir}/{params.sample_name}.macs2.log" 2>&1;
-
-        annotatePeaks.pl {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak {params.genome} \
+        
+        resources/homer/bin/annotatePeaks.pl {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak {params.genome} \
             > {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak.annotated.tsv \
             2> {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak.annotated.tsv.log;
-
-        findMotifsGenome.pl "{params.peaks_dir}/{params.sample_name}_summits.bed" {params.genome} {params.homer_dir} -size 200 -mask \
+        
+        resources/homer/bin/findMotifsGenome.pl "{params.peaks_dir}/{params.sample_name}_summits.bed" {params.genome} {params.homer_dir} -size 200 -mask \
             > "{params.homer_dir}/{params.sample_name}.homer.log" 2>&1
 
         cat {params.peaks_dir}/{params.sample_name}_peaks.narrowPeak | wc -l | \
             awk '{{print "peaks\t" $1}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv"
-
+        
         TOTAL_READS=`samtools idxstats {input.bam} | awk '{{sum += $3}}END{{print sum}}'`;
         samtools view -c -L "{params.peaks_dir}/{params.sample_name}_peaks.narrowPeak" {input.bam} | \
             awk -v total=$TOTAL_READS '{{print "frip\t" $1/total}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv";
 
         samtools view -c -L {params.regulatory_regions} {input.bam} | \
             awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{params.sample_dir}/{params.sample_name}.stats.tsv";
-        """
-        
+        """ 
 
 rule misc_tasks:
     input:
@@ -409,8 +406,7 @@ rule mutliqc:
         expand(os.path.join(output_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
         expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
     output:
-        multiqc_report=os.path.join(config["atacseq.project_path"],"atacseq_report","multiqc_report.html"),
-#         report(directory(os.path.join(config["atacseq.project_path"],"atacseq_report")), caption="report/multiqc.rst", htmlindex="multiqc_report.html"),  # for inclusion into snakemake report -> maybe needs snakemake update!
+        multiqc_report=report(directory(os.path.join(config["atacseq.project_path"],"atacseq_report")), caption="report/multiqc.rst", htmlindex="multiqc_report.html", category="QC reports"),  # for inclusion into snakemake report
     params:
         project_dir = os.path.join(config["atacseq.project_path"]),
         project_config_dir = project_config_dir,
@@ -420,9 +416,8 @@ rule mutliqc:
     resources:
         mem=mem,
     conda:
-        "envs/atacseq_pipeline.yaml"
+        "envs/multiqc.yaml"
     shell:
         """
-        python3 workflow/scripts/multiqc_atacseq/setup.py install
         multiqc -fc {params.project_config_dir} {params.project_dir}
         """

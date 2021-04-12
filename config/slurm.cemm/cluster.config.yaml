@@ -3,4 +3,4 @@ __default__:
   output: "results/logs/logs_slurm/{rule}_{wildcards}.out"
   partition: "{params.partition}"
   qos: "{params.partition}"
-  #kill-on-invalid-dep: "yes"
+  kill-on-invalid-dep: "yes"

@@ -3,8 +3,8 @@ project_name: BSA_0000_test_mm10_atac
 project_uuid: BSA_0000_test_mm10_atac_5446b6bc9fcc46eb9f940c48b5b5912a
 public_html_folder: /nobackup/lab_bock/public_html/sreichl/
 base_url: https://www.biomedical-sequencing.at/projects/
-sample_annotation: test/BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv
-project_path: results/BSA_0000_test_mm10_atac/
+sample_annotation: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv
+project_path: /research/home/sreichl/projects/atacseq_pipeline/results/BSA_0000_test_mm10_atac/
 genome: mm10
 adapter_sequence: GTCTCGTGGGCTCGG
 
@@ -14,7 +14,7 @@ intro_text: Quality Control Metrics of the ATAC-seq pipeline
 comment: null
 report_comment: null
 report_header_info: null
-custom_logo: '/home/berguener/src/atacseq_pipeline/multiqc_atacseq/BSF_logo.png'
+custom_logo: 'workflow/scripts/multiqc_atacseq/BSF_logo.png'
 custom_logo_url: 'https://www.biomedical-sequencing.org/'
 custom_logo_title: 'Biomedical Sequencing Facility'
 # atacseq_global_hdf: '/data/groups/lab_bsf/resources/global_stats/atacseq/global_atacseq_stats.hdf'

@@ -1,0 +1,11 @@
+name: atacseq_pipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - multiqc=1.9
+  - setuptools
+  - pandas
+  - pip:
+    - /research/home/sreichl/projects/atacseq_pipeline/workflow/scripts/multiqc_atacseq

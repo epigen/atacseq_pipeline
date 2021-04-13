@@ -6,7 +6,6 @@ rule mutliqc:
     output:
         multiqc_report=report(directory(os.path.join(config["atacseq.project_path"],"atacseq_report")), caption="../report/multiqc.rst", htmlindex="multiqc_report.html", category="QC reports"),  # for inclusion into snakemake report
     params:
-        project_config_dir = project_config_dir,
         # cluster parameters
         partition=partition,
     threads: threads
@@ -18,5 +17,5 @@ rule mutliqc:
         "results/logs/rules/multiqc.log"
     shell:
         """
-        multiqc -fc {params.project_config_dir} {config[atacseq.project_path]}
+        multiqc -fc {config[atacseq.project_config]} {config[atacseq.project_path]}
         """

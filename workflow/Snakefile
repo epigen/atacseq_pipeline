@@ -9,6 +9,9 @@
 # cmd for cluster execution -> submits everything as separate job with dependencies
 # snakemake -p --profile config/slurm.cemm --use-conda --reason
 
+# flag for configfile 
+# --configfile path/to/project_configfile.yaml
+
 # libraries
 import yaml
 import pandas as pd
@@ -41,28 +44,27 @@ def update(d, u):
             d[k] = v
     return d
 
-
-def configurator(config, project_config):
+def configurator(pipeline_config_path, project_config):
 
     # Read in config files
     # default will contain pipeline configurations
-#     default = {}
+    default = {}
     # specific will contain the project configurations
-    specific = {}
-#     with open(pipeline_config, 'r') as stream:
-#         try:
-#             default = yaml.safe_load(stream)
-#         except yaml.YAMLError as exception:
-#             sys.stderr.write(str(exception))
-    with open(project_config, 'r') as stream:
+#     specific = {}
+    with open(pipeline_config_path, 'r') as stream:
         try:
-            specific = yaml.safe_load(stream)
+            default = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
             sys.stderr.write(str(exception))
-#     update(default, specific)
-    update(config, specific)
+#     with open(project_config, 'r') as stream:
+#         try:
+#             specific = yaml.safe_load(stream)
+#         except yaml.YAMLError as exception:
+#             sys.stderr.write(str(exception))
+    update(default, project_config)
+#     update(config, specific)
     # rename the updated dictionary
-#     config = default
+    config = default
 #     print(config)
 
     # Create the
@@ -77,6 +79,8 @@ def configurator(config, project_config):
     project_genome_size = config['genome_sizes'][project_genome]
     inputs_dict = {'atacseq.project_name': config['project_name'],
                    'atacseq.project_path': config['project_path'],
+                   'atacseq.project_config': config['project_config'],
+                   'atacseq.email': config['email'],
                    'atacseq.genome': project_genome,
                    'atacseq.adapter_fasta': config['adapter_fasta'],
                    'atacseq.bowtie2_index': config['bowtie2_index'][project_genome],
@@ -149,7 +153,6 @@ def configurator(config, project_config):
                 for key in sample_dict:
                     output.write('{}\t{}\n'.format(key, sample_dict[key]))
             
-#             sample_dicts.append(sample_dict)
             sample_dicts[sample]=sample_dict
     
     return inputs_dict, sample_dicts
@@ -160,22 +163,14 @@ min_version("6.0.3")
 ##### setup report #####
 report: "report/workflow.rst"
 
-configfile: os.path.join("config","pipeline_config.yaml")
-
 ##### set & load config and sample annotation sheets #####
-
-# mouse (mm10) test parameters
-# project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_mm10_atac_atacseq_config.yaml")
-# sample_annot_dir = os.path.join("test","BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv")
-
-# human (hg38) test parameters
-project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_hg38_atac_atacseq_config.yaml") # adapt, so that not needed anymore?
+# configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml"
+configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml"
 
 # run configurator to get pipeline configs & sample annotations
-config, samples = configurator(config, config["project_config"])
+config, samples = configurator(os.path.join("config","pipeline_config.yaml"), config)
 # print(config)
 # print(samples)
-
 
 ##### set global variables
 results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
@@ -212,9 +207,8 @@ rule all:
         """
         snakemake --unlock
         snakemake --report {output.atacseq_report}
+        mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
         """
-# mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[email]}
-
 
 ##### load rules #####
 

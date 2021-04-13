@@ -1,5 +1,3 @@
-# project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml
-project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml
 # The following section contains resource files required by the pipeline
 adapter_fasta: /research/lab_bsf/resources/atacseq/nextera_adapters.fa
 bowtie2_index:

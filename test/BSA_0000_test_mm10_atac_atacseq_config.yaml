@@ -5,6 +5,7 @@ public_html_folder: /nobackup/lab_bock/public_html/sreichl/
 base_url: https://www.biomedical-sequencing.at/projects/
 sample_annotation: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_sample_annotations.csv
 project_path: /research/home/sreichl/projects/atacseq_pipeline/results/BSA_0000_test_mm10_atac/
+project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml
 genome: mm10
 adapter_sequence: GTCTCGTGGGCTCGG
 

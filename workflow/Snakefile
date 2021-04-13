@@ -63,7 +63,7 @@ def configurator(config, project_config):
     update(config, specific)
     # rename the updated dictionary
 #     config = default
-    print(config)
+#     print(config)
 
     # Create the
     project_path = config['project_path']
@@ -173,8 +173,8 @@ project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_tes
 
 # run configurator to get pipeline configs & sample annotations
 config, samples = configurator(config, config["project_config"])
-print(config)
-print(samples)
+# print(config)
+# print(samples)
 
 
 ##### set global variables

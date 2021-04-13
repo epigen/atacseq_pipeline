@@ -1,0 +1,12 @@
+name: homer
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - perl
+  - bioconductor-deseq2
+  - wget
+  - bioconductor-edger
+  - r-essentials
+  - samtools

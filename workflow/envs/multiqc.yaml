@@ -1,4 +1,4 @@
-name: atacseq_pipeline
+name: multiqc
 channels:
   - conda-forge
   - bioconda

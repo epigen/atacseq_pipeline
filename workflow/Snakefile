@@ -171,12 +171,12 @@ sample_annot_dir = os.path.join("test","BSA_0000_test_hg38_atac_atacseq_sample_a
 
 # run configurator to get pipeline configs & sample annotations -> TODO: change to onstart?: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
 config, samples = configurator(config, config["project_config"])
-# print(config)
-# print(samples)
+print(config)
+print(samples)
 
 
 ##### set global variables
-output_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
+results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
 
 # cluster parameters
 partition="shortq" #"tinyq"
@@ -203,16 +203,23 @@ rule all:
     threads: threads
     resources:
         mem=mem,
+    log:
+        "results/logs/rules/all.log"
     shell:
         """
         snakemake --unlock
         snakemake --report {output.atacseq_report_dir}
         """
+# mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[email]}
 
 # install homer        
 rule install_homer:
     output:
         homer_script=os.path.join("resources","homer","configureHomer.pl"),
+    conda:
+        "envs/homer.yaml",
+    log:
+        "results/logs/rules/install_homer.log"
     shell:
         """
         mkdir -p resources/homer
@@ -230,15 +237,15 @@ rule bowtie2_align:
 #         project_config_dir,
         sample_annot_dir,
     output:
-        output_bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.bam"),
-        output_bai =  os.path.join(output_dir,"{sample}","mapped", "{sample}.bam.bai"),
-        filtered_bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
-        filtered_bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
+        output_bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.bam"),
+        output_bai =  os.path.join(results_dir,"{sample}","mapped", "{sample}.bam.bai"),
+        filtered_bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        filtered_bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
     params:
         # paths
-        output_dir = output_dir,
-        sample_dir = os.path.join(output_dir,"{sample}"),
-        bam_dir = os.path.join(output_dir,"{sample}","mapped"),
+        results_dir = results_dir,
+        sample_dir = os.path.join(results_dir,"{sample}"),
+        bam_dir = os.path.join(results_dir,"{sample}","mapped"),
         # sample information
         sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
         read_type= lambda w: samples["{}".format(w.sample)]["read_type"],
@@ -262,9 +269,11 @@ rule bowtie2_align:
         mem=mem,
     conda:
         "envs/atacseq_pipeline.yaml",
+    log:
+        "results/logs/rules/bowtie2_align_{sample}.log"
     shell:
         """
-        mkdir -p {params.output_dir};
+        mkdir -p {params.results_dir};
         mkdir -p {params.sample_dir};
         mkdir -p {params.bam_dir};
         
@@ -288,21 +297,21 @@ rule bowtie2_align:
 # peak calling with macs2 & samtools
 rule peak_calling:
     input:
-        bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
-        bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
-        homer_script=os.path.join("resources","homer","configureHomer.pl"),
+        bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+        homer_script=os.path.join("resources","homer","configureHomer.pl"), # needed so that homer installation rule is executed beforehand
     output:
-        peak_calls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.narrowPeak"),
-        macs2_xls = os.path.join(output_dir,"{sample}","peaks","{sample}_peaks.xls"),
-        summits_bed = os.path.join(output_dir,"{sample}","peaks","{sample}_summits.bed"),
-        homer_log = os.path.join(output_dir,"{sample}","homer","{sample}.homer.log"),
-        #homer_motif = os.path.join(output_dir,"{sample}","homer","motifFindingParameters.txt"),
+        peak_calls = os.path.join(results_dir,"{sample}","peaks","{sample}_peaks.narrowPeak"),
+        macs2_xls = os.path.join(results_dir,"{sample}","peaks","{sample}_peaks.xls"),
+        summits_bed = os.path.join(results_dir,"{sample}","peaks","{sample}_summits.bed"),
+        homer_log = os.path.join(results_dir,"{sample}","homer","{sample}.homer.log"),
     params:
         # paths
-        output_dir = output_dir,
-        sample_dir = os.path.join(output_dir,"{sample}"),
-        peaks_dir = os.path.join(output_dir,"{sample}","peaks"),
-        homer_dir = os.path.join(output_dir,"{sample}","homer"),
+        results_dir = results_dir,
+        sample_dir = os.path.join(results_dir,"{sample}"),
+        peaks_dir = os.path.join(results_dir,"{sample}","peaks"),
+        homer_dir = os.path.join(results_dir,"{sample}","homer"),
+        homer_bin = os.path.join(os.getcwd(),"resources","homer","bin"),
         # sample information
         sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
         genome= lambda w: samples["{}".format(w.sample)]["genome"],
@@ -318,14 +327,16 @@ rule peak_calling:
         mem=mem,
     conda:
         "envs/atacseq_pipeline.yaml",
+    log:
+        "results/logs/rules/peak_calling_{sample}.log"
     shell:
         """
-        mkdir -p {params.output_dir};
+        mkdir -p {params.results_dir};
         mkdir -p {params.sample_dir};
         mkdir -p {params.peaks_dir};
         mkdir -p {params.homer_dir};
         
-        export PATH="/research/home/sreichl/projects/atacseq_pipeline/resources/homer/bin/:$PATH";
+        export PATH="{params.homer_bin}:$PATH";
         
         macs2 callpeak -t {input.bam} {params.formating} \
             --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
@@ -352,17 +363,16 @@ rule peak_calling:
 
 rule misc_tasks:
     input:
-        bam = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam"),
-        bai = os.path.join(output_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+        bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
+        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
     output:
         bigWig = os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample}.bigWig"),
-        tss_hist = os.path.join(output_dir,"{sample}","{sample}.tss_histogram.csv"),
+        tss_hist = os.path.join(results_dir,"{sample}","{sample}.tss_histogram.csv"),
     params:
         # paths
         hub_dir = os.path.join(config["atacseq.project_path"], "atacseq_hub"),
-        sample_dir = os.path.join(output_dir,"{sample}"),
-        slopped_tss = os.path.join(output_dir,"{sample}","slopped_tss.bed"),
-        tss_hist = os.path.join(output_dir,"{sample}","{sample}.tss_histogram.csv"),
+        sample_dir = os.path.join(results_dir,"{sample}"),
+        #slopped_tss = os.path.join(results_dir,"{sample}","slopped_tss.bed"), # TODO: not needed? ask BE
         # sample information
         sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
         genome_size= lambda w: samples["{}".format(w.sample)]["genome_size"],
@@ -382,6 +392,8 @@ rule misc_tasks:
         mem=mem,
     conda:
         "envs/atacseq_pipeline.yaml",
+    log:
+        "results/logs/rules/misc_tasks_{sample}.log"
     shell:
         """
         mkdir -p {params.hub_dir};
@@ -391,24 +403,23 @@ rule misc_tasks:
             --effectiveGenomeSize {params.genome_size} --extendReads 175 \
             -o "{params.hub_dir}/{params.sample_name}.bigWig" > "{params.hub_dir}/{params.sample_name}.bigWig.log" 2>&1;
 
-        echo "base,count" > {params.tss_hist};
+        echo "base,count" > {output.tss_hist};
         bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \
             bedtools coverage -a - -b {input.bam} -d -sorted | \
             awk '{{if($6 == "+"){{ counts[$7] += $8;}} else counts[{params.double_slop} - $7 + 1] += $8;}} END {{ for(pos in counts) {{ if(pos < {params.noise_lower} || pos > {params.noise_upper}) {{ noise += counts[pos] }} }}; average_noise = noise /(2 * {params.noise_lower}); for(pos in counts) {{print pos-2000-1","(counts[pos]/average_noise) }} }}' | \
-            sort -t "," -k1,1n >> {params.tss_hist} ;
+            sort -t "," -k1,1n >> {output.tss_hist} ;
         """
 
         
         
 rule mutliqc:
     input:
-        expand(os.path.join(output_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
-        expand(os.path.join(output_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
+        expand(os.path.join(results_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
+        expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
         expand(os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
     output:
         multiqc_report=report(directory(os.path.join(config["atacseq.project_path"],"atacseq_report")), caption="report/multiqc.rst", htmlindex="multiqc_report.html", category="QC reports"),  # for inclusion into snakemake report
     params:
-        project_dir = os.path.join(config["atacseq.project_path"]),
         project_config_dir = project_config_dir,
         # cluster parameters
         partition=partition,
@@ -416,8 +427,10 @@ rule mutliqc:
     resources:
         mem=mem,
     conda:
-        "envs/multiqc.yaml"
+        "envs/multiqc.yaml",
+    log:
+        "results/logs/rules/multiqc.log"
     shell:
         """
-        multiqc -fc {params.project_config_dir} {params.project_dir}
+        multiqc -fc {params.project_config_dir} {config[atacseq.project_path]}
         """

@@ -1,7 +1,7 @@
 rule misc_tasks:
     input:
         bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
-        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
     output:
         bigWig = os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample}.bigWig"),
         tss_hist = os.path.join(results_dir,"{sample}","{sample}.tss_histogram.csv"),

@@ -1,10 +1,7 @@
 # alignment with botwtie2 & samtools
 rule bowtie2_align:
-    input: # TODO: not optimal, should actually be the sample raw data (ie units data on flowcells) and not the config files -> currently every change in a config file triggers reproduction
-#         os.path.join(config["atacseq.project_path"],"config_files","{sample}.tsv"),
-#         pipeline_config_dir,
-#         project_config_dir,
-        sample_annot_dir,
+    input:
+        get_raw_bams,
     output:
         output_bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.bam"),
         output_bai =  os.path.join(results_dir,"{sample}","mapped", "{sample}.bam.bai"),
@@ -27,8 +24,8 @@ rule bowtie2_align:
         filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["atacseq.whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["atacseq.whitelisted_regions"]),
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         # pipeline information
-        adapter_sequence="-a " + config["atacseq.adapter_sequence"] if config["atacseq.adapter_sequence"] !="" else " ", # TODO: check if it works
-        adapter_fasta="--adapter_fasta " + config["atacseq.adapter_fasta"] if config["atacseq.adapter_fasta"] !="" else " ", # TODO: check if it works
+        adapter_sequence="-a " + config["atacseq.adapter_sequence"] if config["atacseq.adapter_sequence"] !="" else " ",
+        adapter_fasta="--adapter_fasta " + config["atacseq.adapter_fasta"] if config["atacseq.adapter_fasta"] !="" else " ",
         bowtie2_index=config["atacseq.bowtie2_index"],
         chrM=config["atacseq.mitochondria_name"],
         # cluster parameters

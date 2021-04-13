@@ -2,7 +2,7 @@
 rule peak_calling:
     input:
         bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
-        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"), # TODO: not used
+        bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
         homer_script=os.path.join("resources","homer","configureHomer.pl"), # needed so that homer installation rule is executed beforehand
     output:
         peak_calls = os.path.join(results_dir,"{sample}","peaks","{sample}_peaks.narrowPeak"),

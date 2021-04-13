@@ -24,6 +24,8 @@ from collections.abc import Mapping
 from string import Template
 
 ##### utility functions #####
+def get_raw_bams(wildcards):
+    return str.split(samples[wildcards.sample]["raw_bams"])
 
 def update(d, u):
     """
@@ -167,9 +169,8 @@ configfile: os.path.join("config","pipeline_config.yaml")
 
 # human (hg38) test parameters
 project_config_dir = config["project_config"] #os.path.join("test","BSA_0000_test_hg38_atac_atacseq_config.yaml") # adapt, so that not needed anymore?
-sample_annot_dir = os.path.join("test","BSA_0000_test_hg38_atac_atacseq_sample_annotations.csv")# adapt, so that not needed anymore?
 
-# run configurator to get pipeline configs & sample annotations -> TODO: change to onstart?: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#onstart-onsuccess-and-onerror-handlers
+# run configurator to get pipeline configs & sample annotations
 config, samples = configurator(config, config["project_config"])
 print(config)
 print(samples)
@@ -188,6 +189,9 @@ tss_slop = 2000
 noise_lower = 100
 noise_upper = ( tss_slop * 2 ) - noise_lower
 double_slop = ( tss_slop * 2 )
+
+
+
 
 ##### target rules #####
 
@@ -212,14 +216,11 @@ rule all:
         """
 # mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[email]}
 
+
+##### load rules #####
+
 include: "rules/install_homer.smk"
-
 include: "rules/bowtie2_align.smk"
-
 include: "rules/peak_calling.smk"
-
 include: "rules/misc_tasks.smk"
-
-include: "rules/multiqc.smk"
-
-    
+include: "rules/multiqc.smk"    

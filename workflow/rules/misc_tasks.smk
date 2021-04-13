@@ -9,7 +9,6 @@ rule misc_tasks:
         # paths
         hub_dir = os.path.join(config["atacseq.project_path"], "atacseq_hub"),
         sample_dir = os.path.join(results_dir,"{sample}"),
-        #slopped_tss = os.path.join(results_dir,"{sample}","slopped_tss.bed"), # TODO: not needed? ask BE
         # sample information
         sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
         genome_size= lambda w: samples["{}".format(w.sample)]["genome_size"],
@@ -28,7 +27,7 @@ rule misc_tasks:
     resources:
         mem=mem,
     conda:
-        "envs/atacseq_pipeline.yaml",
+        "../envs/atacseq_pipeline.yaml",
     log:
         "results/logs/rules/misc_tasks_{sample}.log"
     shell:

@@ -13,7 +13,7 @@ rule mutliqc:
     resources:
         mem=mem,
     conda:
-        "envs/multiqc.yaml",
+        "../envs/multiqc.yaml",
     log:
         "results/logs/rules/multiqc.log"
     shell:

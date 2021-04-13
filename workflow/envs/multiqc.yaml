@@ -1,11 +1,12 @@
 name: multiqc
 channels:
-  - conda-forge
   - bioconda
+  - conda-forge
   - defaults
 dependencies:
   - multiqc=1.9
   - setuptools
   - pandas
+  - pip
   - pip:
     - /research/home/sreichl/projects/atacseq_pipeline/workflow/scripts/multiqc_atacseq

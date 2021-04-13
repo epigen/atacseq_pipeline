@@ -34,7 +34,7 @@ rule bowtie2_align:
     resources:
         mem=mem,
     conda:
-        "envs/atacseq_pipeline.yaml",
+        "../envs/atacseq_pipeline.yaml",
     log:
         "results/logs/rules/bowtie2_align_{sample}.log"
     shell:

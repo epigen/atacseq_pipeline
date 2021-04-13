@@ -30,7 +30,7 @@ rule peak_calling:
     resources:
         mem=mem,
     conda:
-        "envs/atacseq_pipeline.yaml",
+        "../envs/atacseq_pipeline.yaml",
     log:
         "results/logs/rules/peak_calling_{sample}.log"
     shell:

@@ -63,6 +63,7 @@ def configurator(config, project_config):
     update(config, specific)
     # rename the updated dictionary
 #     config = default
+    print(config)
 
     # Create the
     project_path = config['project_path']
@@ -182,15 +183,13 @@ results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
 # cluster parameters
 partition="shortq" #"tinyq"
 mem="32G"
-threads=2
+threads=1
 
 # calculate parameters (for misc tasks)
 tss_slop = 2000
 noise_lower = 100
 noise_upper = ( tss_slop * 2 ) - noise_lower
 double_slop = ( tss_slop * 2 )
-
-
 
 
 ##### target rules #####

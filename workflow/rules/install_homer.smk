@@ -2,8 +2,13 @@
 rule install_homer:
     output:
         homer_script=os.path.join("resources","homer","configureHomer.pl"),
+    params:
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
     conda:
-        "envs/homer.yaml",
+        "../envs/homer.yaml",
     log:
         "results/logs/rules/install_homer.log"
     shell:

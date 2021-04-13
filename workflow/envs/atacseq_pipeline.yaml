@@ -1,9 +1,9 @@
 name: atacseq_pipeline
 channels:
-  - bioconda
   - conda-forge
-  - jmcmurray
+  - bioconda
   - anaconda
+  - jmcmurray
   - defaults
 dependencies:
   - samtools

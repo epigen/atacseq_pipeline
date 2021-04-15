@@ -10,7 +10,7 @@ rule install_homer:
     conda:
         "../envs/homer.yaml",
     log:
-        "results/logs/rules/install_homer.log"
+        "logs/rules/install_homer.log"
     shell:
         """
         mkdir -p resources/homer

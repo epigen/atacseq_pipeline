@@ -14,7 +14,7 @@ rule mutliqc:
     conda:
         "../envs/multiqc.yaml",
     log:
-        "results/logs/rules/multiqc.log"
+        "logs/rules/multiqc.log"
     shell:
         """
         multiqc -fc {config[atacseq.project_config]} {config[atacseq.project_path]}

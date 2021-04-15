@@ -10,6 +10,8 @@ __pycache__/
 # ignore results & resources folder
 results/
 resources/
+logs/
+slurm*
 
 # C extensions
 *.so

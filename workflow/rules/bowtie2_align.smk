@@ -36,7 +36,7 @@ rule bowtie2_align:
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:
-        "results/logs/rules/bowtie2_align_{sample}.log"
+        "logs/rules/bowtie2_align_{sample}.log"
     shell:
         """
         mkdir -p {params.results_dir};

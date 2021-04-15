@@ -32,7 +32,7 @@ rule peak_calling:
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:
-        "results/logs/rules/peak_calling_{sample}.log"
+        "logs/rules/peak_calling_{sample}.log"
     shell:
         """
         mkdir -p {params.results_dir};

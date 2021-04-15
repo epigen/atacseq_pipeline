@@ -29,7 +29,7 @@ rule misc_tasks:
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:
-        "results/logs/rules/misc_tasks_{sample}.log"
+        "logs/rules/misc_tasks_{sample}.log"
     shell:
         """
         mkdir -p {params.hub_dir};

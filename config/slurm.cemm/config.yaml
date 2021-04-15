@@ -1,4 +1,4 @@
-jobs: 25
+jobs: 50
 use-conda: true
 immediate-submit: true
 notemp: true

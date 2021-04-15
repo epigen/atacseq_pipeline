@@ -1,6 +1,8 @@
 # atacseq_pipeline
 Snakemake implementation of the BSF's [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline")
 
+execution currently always from within root level ie atacseq_pipeline/ folder
+snakemake conda environment needs to be activated
 
 # snakemake commands (always from within the snakemake conda environment!)
 

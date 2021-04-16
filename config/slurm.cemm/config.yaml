@@ -1,4 +1,4 @@
-jobs: 50
+jobs: 5000
 use-conda: true
 immediate-submit: true
 notemp: true
@@ -9,4 +9,4 @@ cluster-status: "slurm-status.py"
 max-jobs-per-second: 1
 max-status-checks-per-second: 10
 local-cores: 1
-latency-wait: 60
+latency-wait: 120

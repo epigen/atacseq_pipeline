@@ -181,9 +181,10 @@ double_slop = ( tss_slop * 2 )
 rule all:
     input:
         os.path.join(config["atacseq.project_path"],"atacseq_report"), # for the inclusion into snakemake report
+        config_file=report(config["atacseq.project_config"], caption="report/configfile.rst", category="configuration"),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
-        config_file=report(config["atacseq.project_config"], caption="report/configfile.rst", category="configuration"),
+#         config_file=report(config["atacseq.project_config"], caption="report/configfile.rst", category="configuration"),
     params:
         # cluster parameters
         partition=partition,

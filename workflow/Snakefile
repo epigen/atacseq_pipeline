@@ -30,31 +30,31 @@ def update(d, u):
             d[k] = v
     return d
 
-def configurator(pipeline_config_path, config):#, project_config):
+def configurator(default, project_config):#pipeline_config_path, project_config):
 
     # Read in config files
     # default will contain pipeline configurations
-    default = {}
+#     default = {}
     # specific will contain the project configurations
-#     specific = {}
-    with open(pipeline_config_path, 'r') as stream:
-        try:
-            default = yaml.safe_load(stream)
-        except yaml.YAMLError as exception:
-            sys.stderr.write(str(exception))
-#     with open(project_config, 'r') as stream:
+    specific = {}
+#     with open(pipeline_config_path, 'r') as stream:
 #         try:
-#             specific = yaml.safe_load(stream)
+#             default = yaml.safe_load(stream)
 #         except yaml.YAMLError as exception:
 #             sys.stderr.write(str(exception))
-#     update(default, project_config)
-#     update(default, specific)
-    update(default, config)
+    with open(project_config, 'r') as stream:
+        try:
+            specific = yaml.safe_load(stream)
+        except yaml.YAMLError as exception:
+            sys.stderr.write(str(exception))
+            
+    update(default, specific)
+
     # rename the updated dictionary
     config = default
     
-#     print(project_config)
-#     print(config)
+    print("config in function")
+    print(config)
 
     # Create the
     project_path = config['project_path']
@@ -151,17 +151,22 @@ min_version("6.0.3")
 
 ##### setup report #####
 report: "report/workflow.rst"
+    
+#### setup workdir (necessary for portability) ####
+# todo: put in pipeline config: pipeline_dir: "/path/to/pipeline"
+# workdir: config['pipeline_dir']
 
 ##### set & load config and sample annotation sheets #####
 
 # only for testing
-configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml"
+# configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml"
 # configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml"
+configfile: os.path.join("config","pipeline_config.yaml")
 
 print('config before')
 print(config)
 # run configurator to get pipeline configs & sample annotations
-config, samples = configurator(os.path.join("config","pipeline_config.yaml"), config)
+config, samples = configurator(config, config["project_config"])
 print('config after')
 print(config)
 # print(samples)
@@ -202,8 +207,9 @@ rule all:
         """
         snakemake --unlock
         snakemake --configfile {config[atacseq.project_config]} --report {output.atacseq_report}
-        mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
         """
+#         mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
+
 
 ##### load rules #####
 
@@ -211,4 +217,4 @@ include: "rules/install_homer.smk"
 include: "rules/bowtie2_align.smk"
 include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"
-include: "rules/multiqc.smk"    
+include: "rules/multiqc.smk"

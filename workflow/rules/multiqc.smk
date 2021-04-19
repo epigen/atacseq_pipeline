@@ -1,4 +1,4 @@
-rule mutliqc:
+rule multiqc:
     input:
         expand(os.path.join(results_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
         expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),

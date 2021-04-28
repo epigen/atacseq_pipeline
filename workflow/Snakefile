@@ -30,18 +30,11 @@ def update(d, u):
             d[k] = v
     return d
 
-def configurator(default, project_config):#pipeline_config_path, project_config):
+def configurator(default, project_config):
 
-    # Read in config files
-    # default will contain pipeline configurations
-#     default = {}
-    # specific will contain the project configurations
+    # Read in project specific config file
     specific = {}
-#     with open(pipeline_config_path, 'r') as stream:
-#         try:
-#             default = yaml.safe_load(stream)
-#         except yaml.YAMLError as exception:
-#             sys.stderr.write(str(exception))
+
     with open(project_config, 'r') as stream:
         try:
             specific = yaml.safe_load(stream)
@@ -56,13 +49,10 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
 #     print("config in function")
 #     print(config)
 
-    # Create the
+    # Create project directory
     project_path = config['project_path']
-    json_path = os.path.join(project_path, 'config_files')
     if not os.path.exists(project_path):
         os.mkdir(project_path)
-    if not os.path.exists(json_path):
-        os.mkdir(json_path)
 
     project_genome = config['genome']
     project_genome_size = config['genome_sizes'][project_genome]
@@ -98,10 +88,6 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
 
     inputs_dict['atacseq.sample_list'] = list(sas_dict.keys())
 
-    project_json = os.path.join(json_path, '{}.inputs.json'.format(config['project_name']))
-    with open(project_json, 'w') as output:
-        json.dump(inputs_dict, output, indent=2)
-
     sample_dicts = {}
     for sample in sas_dict:
         sample_dict = {'sample_name': sample,
@@ -112,7 +98,7 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
                        'genome_size': project_genome_size,
                        'raw_bams': ''}
 
-        # skip this sample if indicated (note: it is still in the sample list of the project json file)
+        # skip this sample if indicated (note: it is still in the sample list of the project dict)
         if sample_dict['skip_preprocess'] == "yes":
             continue
         
@@ -137,14 +123,6 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
         else:
             sample_dict['raw_bams'] = ' '.join(bam_sources)
             sample_dict['raw_size_mb'] = raw_size_mb
-            # sample_json = os.path.join(json_path, '{}.json'.format(sample))
-            # with open(sample_json, 'w') as output:
-            #     json.dump(sample_dict, output, indent=2)
-            sample_tsv = os.path.join(json_path, '{}.tsv'.format(sample))
-            with open(sample_tsv, 'w') as output:
-                for key in sample_dict:
-                    output.write('{}\t{}\n'.format(key, sample_dict[key]))
-            
             sample_dicts[sample]=sample_dict
     
     return inputs_dict, sample_dicts

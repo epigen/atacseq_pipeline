@@ -53,8 +53,8 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
     # rename the updated dictionary
     config = default
     
-    print("config in function")
-    print(config)
+#     print("config in function")
+#     print(config)
 
     # Create the
     project_path = config['project_path']
@@ -78,7 +78,10 @@ def configurator(default, project_config):#pipeline_config_path, project_config)
                    'atacseq.whitelisted_regions': config['whitelisted_regions'][project_genome],
                    'atacseq.unique_tss': config['unique_tss'][project_genome],
                    'atacseq.mitochondria_name': config['mitochondria_names'][project_genome],
-                   'atacseq.regulatory_regions': config['regulatory_regions'][project_genome]
+                   'atacseq.regulatory_regions': config['regulatory_regions'][project_genome],
+                   'atacseq.sample_annotation': config['sample_annotation'],
+                   'atacseq.annotation_metadata': config['annotation_metadata'],
+                   'atacseq.plot_by': config['plot_by'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
@@ -163,19 +166,21 @@ report: "report/workflow.rst"
 # configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml"
 configfile: os.path.join("config","pipeline_config.yaml")
 
-print('config before')
-print(config)
+# print('config before')
+# print(config)
+
 # run configurator to get pipeline configs & sample annotations
 config, samples = configurator(config, config["project_config"])
-print('config after')
-print(config)
+
+# print('config after')
+# print(config)
 # print(samples)
 
 ##### set global variables
 results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
 
 # cluster parameters
-partition="shortq" #"tinyq"
+partition="shortq"
 mem="32G"
 threads=2
 
@@ -192,7 +197,13 @@ double_slop = ( tss_slop * 2 )
 rule all:
     input:
         os.path.join(config["atacseq.project_path"],"atacseq_report"), # for the inclusion into snakemake report
-        config_file=report(config["atacseq.project_config"], caption="report/configfile.rst", category="configuration"), # not as output, otherwise it gets deleted if the workflow fails
+        project_config_file=report(config["atacseq.project_config"], caption="report/project_configfile.rst", category="Configuration"),
+        sample_annotation_file=report(config["atacseq.sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
+        annotation_metadata_file=report(config["atacseq.annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
+        quant_binary=os.path.join(config["atacseq.project_path"],"quantification_binary.csv"),
+        quant_counts=os.path.join(config["atacseq.project_path"],"quantification_counts.csv"),
+        umap_plots=expand(os.path.join(config["atacseq.project_path"],"UMAP_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),
+        pca_plots=expand(os.path.join(config["atacseq.project_path"],"PCA_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
     params:
@@ -208,8 +219,7 @@ rule all:
         snakemake --unlock
         snakemake --configfile {config[atacseq.project_config]} --report {output.atacseq_report}
         """
-#         mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
-
+# mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
 
 ##### load rules #####
 
@@ -218,3 +228,5 @@ include: "rules/bowtie2_align.smk"
 include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"
 include: "rules/multiqc.smk"
+include: "rules/quantification.smk"
+include: "rules/plot.smk"

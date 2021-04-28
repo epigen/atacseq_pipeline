@@ -1,0 +1,1 @@
+Annotation metadata file from {{snakemake.config["atacseq.annotation_metadata"]}}

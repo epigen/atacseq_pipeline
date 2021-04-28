@@ -9,6 +9,9 @@ project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_t
 genome: mm10
 adapter_sequence: GTCTCGTGGGCTCGG
 
+# atacseq quantification
+annotation_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_multiqc_report.csv
+
 # MultiQC report
 title: BSA_0000_test_mm10_atac
 intro_text: Quality Control Metrics of the ATAC-seq pipeline

@@ -9,6 +9,13 @@ project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_t
 genome: hg38
 adapter_sequence: GTCTCGTGGGCTCGG
 
+# processing and downstream analysis
+annotation_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_multiqc_report.csv
+plot_by:
+    - 'pass_qc'
+    - 'M Reads'
+    - 'FRiP'
+
 # MultiQC report
 title: BSA_0000_test_hg38_atac
 intro_text: Quality Control Metrics of the ATAC-seq pipeline

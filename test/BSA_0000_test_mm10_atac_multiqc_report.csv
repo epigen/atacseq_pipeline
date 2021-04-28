@@ -1,0 +1,3 @@
+﻿Sample Name,M Reads,M Reads Mapped,flowcell,Peaks,FRiP,Regulatory,TSS,Mitochondrial DNA,Fragment Length,Treatment Redundancy,% Dups,% Aligned,% Duplication,% > Q30,Mb Q30 bases,GC content,% PF,% Adapter,pass_qc
+paired_test_sample,1.9,1.9,BSF_0789_HGVVGBBXY,12864,0.23,0.54,7.1,0.02,199,0.05,6.10%,97.70%,4.90%,93.80%,139.1,50.20%,96.40%,32.80%,1
+single_test_sample,1,1,BSF_0736_HGJLWBBXY,3941,0.05,0.34,4.1,0.04,147,0.05,8.70%,98.40%,6.80%,97.10%,57.7,48.30%,99.90%,28.00%,1

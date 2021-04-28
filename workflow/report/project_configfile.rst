@@ -1,0 +1,1 @@
+Project configuration file from {{snakemake.config["atacseq.project_config"]}}

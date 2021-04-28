@@ -17,10 +17,10 @@ snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
 
 cmd for execution with one core
 ```
-snakemake -p -j1 --use-conda --reason --config project_config=path/to/project_configfile.yaml
+snakemake -p -j1 --use-conda --config project_config=path/to/project_configfile.yaml
 ```
 
 cmd for cluster execution -> submits everything as separate job with dependencies
 ```
-snakemake -p --profile config/slurm.cemm --use-conda --reason --config project_config=path/to/project_configfile.yaml
+snakemake -p --profile config/slurm.cemm --use-conda --config project_config=path/to/project_configfile.yaml
 ```

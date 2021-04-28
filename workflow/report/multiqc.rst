@@ -1,1 +1,1 @@
-Quality Control Metrics of the ATAC-seq pipeline
+MultiQC Quality Control Metrics of the ATAC-seq pipeline

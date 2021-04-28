@@ -200,7 +200,7 @@ rule all:
         project_config_file=report(config["atacseq.project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["atacseq.sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         annotation_metadata_file=report(config["atacseq.annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
-        quant_binary=os.path.join(config["atacseq.project_path"],"quantification_binary.csv"),
+        quant_support=os.path.join(config["atacseq.project_path"],"quantification_support.csv"),
         quant_counts=os.path.join(config["atacseq.project_path"],"quantification_counts.csv"),
         umap_plots=expand(os.path.join(config["atacseq.project_path"],"UMAP_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),
         pca_plots=expand(os.path.join(config["atacseq.project_path"],"PCA_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),

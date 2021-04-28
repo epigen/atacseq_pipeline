@@ -15,7 +15,7 @@ results=[]
 
 for sample in annotations.index:
     print(sample)
-    result=pd.read_csv(os.path.join(results_dir,"{}".format(sample),"peaks", "{}_quantification_binary.csv".format(sample)))
+    result=pd.read_csv(os.path.join(results_dir,"{}".format(sample),"peaks", "{}_quantification_support.csv".format(sample)))
     results.append(result)
 
 results = [item for item in results if item is not None]

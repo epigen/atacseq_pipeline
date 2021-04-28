@@ -1,8 +1,7 @@
 # atacseq_pipeline
 Snakemake implementation of the BSF's [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline")
 
-execution currently always from within root level ie atacseq_pipeline/ folder
-snakemake conda environment needs to be activated
+execution currently always from within root level ie atacseq_pipeline folder (to be adapted)
 
 # snakemake commands (always from within the snakemake conda environment!)
 
@@ -16,12 +15,12 @@ cmd for DAG with all jobs with current config
 snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
 ```
 
-cmd for cluster execution -> submits everything as separate job with dependencies
+cmd for execution with one core
 ```
-snakemake -p --profile config/slurm.cemm --use-conda --reason --configfile path/to/project_configfile.yaml
+snakemake -p -j1 --use-conda --reason --config project_config=path/to/project_configfile.yaml
 ```
 
-if more than 25 jobs (current limit of submitted jobs at the same time) then submit the command also as a job
+cmd for cluster execution -> submits everything as separate job with dependencies
 ```
-sbatch -J atacseq_pipeline --mem=16000 --partition=longq --qos=longq --time=14-00:00:00 --wrap='snakemake -p --profile config/slurm.cemm --use-conda --reason --configfile path/to/project_configfile.yaml'
+snakemake -p --profile config/slurm.cemm --use-conda --reason --config project_config=path/to/project_configfile.yaml
 ```

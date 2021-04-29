@@ -9,8 +9,12 @@ project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_t
 genome: mm10
 adapter_sequence: GTCTCGTGGGCTCGG
 
-# atacseq quantification
+# processing and downstream analysis
 annotation_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_multiqc_report.csv
+plot_by:
+    - 'pass_qc'
+    - 'M Reads'
+    - 'FRiP'
 
 # MultiQC report
 title: BSA_0000_test_mm10_atac

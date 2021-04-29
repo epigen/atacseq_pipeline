@@ -115,7 +115,6 @@ def configurator(default, project_config):
                     if(os.path.exists(source)):
                         source_stats = os.stat(source)
                         raw_size_mb += int(source_stats.st_size / (1024 * 1024))
-                    #sample_dict['raw_bams'].append(source)
                 else:
                     print('WARNING: Could not locate {}'.format(source))
         if len(bam_sources) == 0:
@@ -138,10 +137,6 @@ report: "report/workflow.rst"
 # workdir: config['pipeline_dir']
 
 ##### set & load config and sample annotation sheets #####
-
-# only for testing
-# configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml"
-# configfile: "/research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml"
 configfile: os.path.join("config","pipeline_config.yaml")
 
 # print('config before')
@@ -178,10 +173,10 @@ rule all:
         project_config_file=report(config["atacseq.project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["atacseq.sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         annotation_metadata_file=report(config["atacseq.annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
-        quant_support=os.path.join(config["atacseq.project_path"],"quantification_support.csv"),
-        quant_counts=os.path.join(config["atacseq.project_path"],"quantification_counts.csv"),
-        umap_plots=expand(os.path.join(config["atacseq.project_path"],"UMAP_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),
-        pca_plots=expand(os.path.join(config["atacseq.project_path"],"PCA_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']),
+        quant_support=os.path.join(config["atacseq.project_path"],'all',"support_all.csv"),
+        quant_counts=os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
+        dimred_plots=expand(os.path.join(config["atacseq.project_path"],'all', 'unsupervised_analysis',"{dimred}_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by'], dimred=["UMAP","PCA"]) if len(samples)>2 else os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
+#         pca_plots=expand(os.path.join(config["atacseq.project_path"],'all', 'unsupervised_analysis',"PCA_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']) if len(samples)>2 else os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
     params:
@@ -207,4 +202,4 @@ include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"
 include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
-include: "rules/plot.smk"
+include: "rules/dimred.smk"

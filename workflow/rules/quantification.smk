@@ -5,7 +5,7 @@ rule get_consensus_regions:
         annotation = config["atacseq.annotation_metadata"],
         summits_bed = expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_summits.bed"),sample_name=samples.keys()),
     output:
-        consensus_regions = os.path.join(config["atacseq.project_path"],"consensus_regions.bed"),
+        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
     params:
         # paths
         results_dir = results_dir,
@@ -53,7 +53,7 @@ rule get_consensus_regions:
 # quantify coverage based on consensus regions support for every sample
 rule quantify_support_sample:
     input:
-        consensus_regions = os.path.join(config["atacseq.project_path"],"consensus_regions.bed"),
+        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
         peakfile = os.path.join(results_dir,"{sample}","peaks", "{sample}_summits.bed"),
     output:
         quant_support=os.path.join(results_dir,"{sample}","peaks", "{sample}_quantification_support.csv"),
@@ -78,7 +78,7 @@ rule quantify_support_aggregate:
         annotation = config["atacseq.annotation_metadata"],
         quant_support=expand(os.path.join(results_dir,"{sample_name}","peaks", "{sample_name}_quantification_support.csv"), sample_name=samples.keys()),
     output:
-        quant_support=os.path.join(config["atacseq.project_path"],"quantification_support.csv"),
+        quant_support=os.path.join(config["atacseq.project_path"],'all',"support_all.csv"),
     params:
         # paths
         results_dir = results_dir,
@@ -121,7 +121,7 @@ rule quantify_support_aggregate:
 # quantify coverage based on consensus regions counts for every sample
 rule quantify_counts_sample:
     input:
-        consensus_regions = os.path.join(config["atacseq.project_path"],"consensus_regions.bed"),
+        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
         bamfile = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
     output:
         quant_counts=os.path.join(results_dir,"{sample}","mapped", "{sample}_quantification_counts.csv"),
@@ -148,7 +148,7 @@ rule quantify_counts_aggregate:
         annotation = config["atacseq.annotation_metadata"],
         quant_counts=expand(os.path.join(results_dir,"{sample_name}","mapped", "{sample_name}_quantification_counts.csv"), sample_name=samples.keys()),
     output:
-        quant_counts=os.path.join(config["atacseq.project_path"],"quantification_counts.csv"),
+        quant_counts=os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
     params:
         # paths
         results_dir = results_dir,

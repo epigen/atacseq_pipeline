@@ -17,6 +17,9 @@ peakfiles = [os.path.join(results_dir,"{}".format(sample),"peaks", "{}_summits.b
 
 output_bed = None
 
+if not os.path.exists(os.path.split(output)[0]):
+    os.mkdir(os.path.split(output)[0])
+
 for peakfile in peakfiles:
     peak_bed = bedtools.BedTool(peakfile)
     if (blacklist_file is not None):

@@ -25,8 +25,8 @@ from functools import partial
 # annot=observations x annotations
 annot=pd.read_csv(snakemake.input[0], index_col=0)
 
-# data=observations x features
-data_df=pd.read_csv(snakemake.input[1], index_col=0)
+# type of dimensionality reduction
+dimred=snakemake.params["dimred"]
 
 # variables=columns of annot to plot
 variables=snakemake.params['variables']
@@ -37,12 +37,29 @@ label = snakemake.params["label"]
 # results folder
 results_dir = snakemake.params["results_dir"]
 
-# type of dimensionality reduction
-dimred=snakemake.params["dimred"]
+# if 3 samples or less UMAP could not be performed
+if (dimred=="UMAP" and annot.shape[0]<4):
+    from pathlib import Path
+    for variable in variables:
+        Path(os.path.join(results_dir, dimred+"_"+label+"_"+variable+".svg")).touch()
+    import sys
+    sys.exit()
+
+# if 2 samples or less PCA only consists of one PC
+if (dimred=="PCA" and annot.shape[0]<3):
+    from pathlib import Path
+    for variable in variables:
+        Path(os.path.join(results_dir, dimred+"_"+label+"_"+variable+".svg")).touch()
+    import sys
+    sys.exit()
+
+# data=observations x features
+data_df=pd.read_csv(snakemake.input[1], index_col=0)
 
 #plot parameters
 color_dict=None
 alpha=1
+
 
 
 # plot 2D UMAP of data
@@ -121,7 +138,7 @@ for variable in variables:
     y_postfix=''
 
     if dimred=='PCA':
-        explained_variance=list(pd.read_csv(os.path.join(results_dir,"PCA_explained_variance.csv"), index_col=0)['0'])
+        explained_variance=list(pd.read_csv(os.path.join(results_dir,"PCA_{}_{}_explained_variance.csv".format(snakemake.wildcards["split"],snakemake.wildcards["step"])), index_col=0)['0'])
         x_postfix=' ({:.1f}%)'.format(100*explained_variance[0])
         y_postfix=' ({:.1f}%)'.format(100*explained_variance[1])
 

@@ -9,7 +9,6 @@ results_dir = snakemake.params["results_dir"]
 
 # load annotation file and get sample names
 annotations = pd.read_csv(snakemake.input[0], index_col=0)
-annotations=annotations[(annotations['pass_qc']>0)]
 
 results=[]
 
@@ -20,4 +19,4 @@ for sample in annotations.index:
 
 results = [item for item in results if item is not None]
 results = pd.concat(results)
-results.T.to_csv(output,index_label='ID')
+results.set_index(results.columns[0]).T.to_csv(output)

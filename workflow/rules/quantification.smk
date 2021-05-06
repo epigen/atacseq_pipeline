@@ -6,6 +6,7 @@ rule get_consensus_regions:
         summits_bed = expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_summits.bed"),sample_name=samples.keys()),
     output:
         consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
+        annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
     params:
         # paths
         results_dir = results_dir,
@@ -75,10 +76,10 @@ rule quantify_support_sample:
 # aggregate support quantification of all samples
 rule quantify_support_aggregate:
     input:
-        annotation = config["atacseq.annotation_metadata"],
+        annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
         quant_support=expand(os.path.join(results_dir,"{sample_name}","peaks", "{sample_name}_quantification_support.csv"), sample_name=samples.keys()),
     output:
-        quant_support=os.path.join(config["atacseq.project_path"],'all',"support_all.csv"),
+        quant_support=os.path.join(config["atacseq.project_path"],'all',"all_support.csv"),
     params:
         # paths
         results_dir = results_dir,
@@ -145,10 +146,10 @@ rule quantify_counts_sample:
 # aggregate count quantification of all samples (8h for >650 samples)
 rule quantify_counts_aggregate:
     input:
-        annotation = config["atacseq.annotation_metadata"],
+        annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
         quant_counts=expand(os.path.join(results_dir,"{sample_name}","mapped", "{sample_name}_quantification_counts.csv"), sample_name=samples.keys()),
     output:
-        quant_counts=os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
+        quant_counts=os.path.join(config["atacseq.project_path"],'all',"all_counts.csv"),
     params:
         # paths
         results_dir = results_dir,

@@ -28,6 +28,9 @@ genome_sizes:
 mitochondria_names:
     hg38: chrM
     mm10: chrM
+genome_fasta:
+    hg38: /nobackup/lab_bsf/resources/genomes/hg38/hg38.fa
+    mm10: /nobackup/lab_bsf/resources/genomes/mm10/mm10.fa
 
 data_sources:
   # specify the ABSOLUTE PATH of input files using variable path expressions

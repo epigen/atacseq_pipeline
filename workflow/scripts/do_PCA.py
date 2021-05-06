@@ -18,9 +18,9 @@ from sklearn.decomposition import PCA
 
 # data=observations x features
 data=pd.read_csv(snakemake.input[0], index_col=0).T
-data=data.set_index(data.columns[0])
 
-output=snakemake.output[0]
+output_data=snakemake.output[0]
+output_expl_var=snakemake.output[1]
 
 if not os.path.exists(snakemake.params['results_dir']):
     os.mkdir(snakemake.params['results_dir'])
@@ -34,6 +34,6 @@ data_pca=pca_obj.fit_transform(StandardScaler().fit_transform(data))
 data_df = pd.DataFrame(data_pca, index=data.index,)
 data_df = data_df.rename_axis(("sample_name"))
 
-data_df.to_csv(output)
+data_df.to_csv(output_data)
 
-pd.DataFrame(pca_obj.explained_variance_ratio_).to_csv(os.path.join(snakemake.params['results_dir'],"PCA_explained_variance.csv"))
+pd.DataFrame(pca_obj.explained_variance_ratio_).to_csv(output_expl_var)

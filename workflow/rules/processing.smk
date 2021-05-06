@@ -1,0 +1,131 @@
+
+# split dataset into subsets by split_by parameter
+rule split_data:
+    input:
+        counts = os.path.join(config["atacseq.project_path"],'all',"all_counts.csv"),
+        annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
+    output:
+        split_data = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_counts.csv'),split=data_splits[1:]),
+        split_annot = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_annotation.csv'),split=data_splits[1:]),
+    params:
+        split_by = config["atacseq.split_by"],
+        project_path=config["atacseq.project_path"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/split_data.log"
+    script:
+        "../scripts/split_data.py"
+
+        
+# filter regions
+rule filter_regions:
+    input:
+        counts = os.path.join(config["atacseq.project_path"],'{split}',"{split}_counts.csv"),
+        support = os.path.join(config["atacseq.project_path"],'all',"all_support.csv"),
+    output:
+        filtered_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.csv"),
+        filtered_plots=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.svg"), caption="../report/filter_regions.rst", category="{split}", subcategory="filtered"),
+    params:
+        region_threshold = config["atacseq.region_threshold"],
+        proportion = config["atacseq.proportion"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/filter_regions_{split}.log"
+    script:
+        "../scripts/filter_regions.py"
+        
+        
+# normalize data via TMM (yields log2 CPM values)
+rule normalize_TMM:
+    input:
+        filtered_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.csv"),
+    output:
+        normTMM_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_normTMM.csv"),
+    params:
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/normalize_TMM_{split}.log"
+    script:
+        "../scripts/normalize_TMM.py"
+
+
+# normalize data via CQN
+rule normalize_CQN:
+    input:
+        filtered_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.csv"),
+        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
+    output:
+        normCQN_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_normCQN.csv"),
+    params:
+        genome_fasta=config["atacseq.genome_fasta"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/normalize_CQN_{split}.log"
+    script:
+        "../scripts/normalize_CQN.py"
+
+
+# select HVR
+rule select_HVR:
+    input:
+        norm_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}.csv"),
+    output:
+        HVR_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}_HVR.csv"),
+        HVR_plot=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}_HVR.svg"), caption="../report/region_variability.rst", category="{split}", subcategory="{norm}_HVR"),
+    params:
+        HVR_percentage = config["atacseq.HVR_percentage"],
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/select_HVR_{split}_{norm}.log"
+    script:
+        "../scripts/select_HVR.py"
+
+
+# plot mean-variance relationship for every split and step
+rule plot_mean_var:
+    input:
+        data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{step}.csv"),
+    output:
+        plot=report(os.path.join(config["atacseq.project_path"],'{split}',"MeanVariance_{split}_{step}.svg"), caption="../report/meanvar.rst", category="{split}", subcategory="{step}"),
+    params:
+        # cluster parameters
+        partition=partition,
+    threads: threads
+    resources:
+        mem=mem,
+    conda:
+        "../envs/atacseq_analysis.yaml",
+    log:
+        "logs/rules/plot_mean_var_{split}_{step}.log"
+    script:
+        "../scripts/plot_mean_var.py"

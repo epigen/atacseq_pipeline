@@ -13,6 +13,9 @@ results_dir = snakemake.params["results_dir"]
 # load annotation file and get sample names
 annotations = pd.read_csv(snakemake.input[0], index_col=0)
 annotations=annotations[(annotations['pass_qc']>0)]
+# save filtered annotation file
+annotations.to_csv(snakemake.output[1])
+
 peakfiles = [os.path.join(results_dir,"{}".format(sample),"peaks", "{}_summits.bed".format(sample)) for sample in annotations.index]
 
 output_bed = None

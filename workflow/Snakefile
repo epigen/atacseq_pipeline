@@ -72,6 +72,11 @@ def configurator(default, project_config):
                    'atacseq.sample_annotation': config['sample_annotation'],
                    'atacseq.annotation_metadata': config['annotation_metadata'],
                    'atacseq.plot_by': config['plot_by'],
+                   'atacseq.region_threshold': config['region_threshold'],
+                   'atacseq.proportion': config['proportion'],
+                   'atacseq.genome_fasta': config['genome_fasta'][project_genome],
+                   'atacseq.split_by': config['split_by'],
+                   'atacseq.HVR_percentage': config['HVR_percentage'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
@@ -152,6 +157,14 @@ config, samples = configurator(config, config["project_config"])
 ##### set global variables
 results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
 
+annotation_metadata=pd.read_csv(config["atacseq.annotation_metadata"], index_col=0)
+
+data_splits = ['all']
+if config["atacseq.split_by"]!='':
+    data_splits.extend(list(annotation_metadata[config["atacseq.split_by"]].unique()))
+    
+steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
+
 # cluster parameters
 partition="shortq"
 mem="32G"
@@ -173,10 +186,16 @@ rule all:
         project_config_file=report(config["atacseq.project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["atacseq.sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         annotation_metadata_file=report(config["atacseq.annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
-        quant_support=os.path.join(config["atacseq.project_path"],'all',"support_all.csv"),
-        quant_counts=os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
-        dimred_plots=expand(os.path.join(config["atacseq.project_path"],'all', 'unsupervised_analysis',"{dimred}_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by'], dimred=["UMAP","PCA"]) if len(samples)>2 else os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
-#         pca_plots=expand(os.path.join(config["atacseq.project_path"],'all', 'unsupervised_analysis',"PCA_"+config['atacseq.project_name']+"_{plot_by_variable}.svg"),plot_by_variable=config['atacseq.plot_by']) if len(samples)>2 else os.path.join(config["atacseq.project_path"],'all',"counts_all.csv"),
+        dimred_plots=expand(
+            os.path.join(config["atacseq.project_path"],'{split}', 'unsupervised_analysis',"{dimred}_{split}_{step}_{plot_by_variable}.svg"),
+            plot_by_variable=config['atacseq.plot_by'], 
+            dimred=["UMAP","PCA"],
+            split=data_splits,
+            step=steps) if len(samples)>3 else expand(
+            os.path.join(config["atacseq.project_path"],'{split}',"{split}_{step}.csv"),
+            split=data_splits,
+            step=steps),
+        meanvar_plots=expand(os.path.join(config["atacseq.project_path"],'{split}',"MeanVariance_{split}_{step}.svg"),split=data_splits, step=steps),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
     params:
@@ -202,4 +221,5 @@ include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"
 include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
+include: "rules/processing.smk"
 include: "rules/dimred.smk"

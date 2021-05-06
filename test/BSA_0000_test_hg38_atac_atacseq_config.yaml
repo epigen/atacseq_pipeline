@@ -15,6 +15,11 @@ plot_by:
     - 'pass_qc'
     - 'M Reads'
     - 'FRiP'
+    - 'category'
+region_threshold: 3
+proportion: 0.7
+split_by: 'category'
+HVR_percentage: 10
 
 # MultiQC report
 title: BSA_0000_test_hg38_atac

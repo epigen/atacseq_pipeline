@@ -14,10 +14,10 @@ from itertools import compress
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# utils for enumerating string lists
-from collections import defaultdict
-from itertools import count
-from functools import partial
+# # utils for enumerating string lists
+# from collections import defaultdict
+# from itertools import count
+# from functools import partial
 
 
 #### configurations
@@ -61,17 +61,23 @@ color_dict=None
 alpha=1
 
 
-
-# plot 2D UMAP of data
+# plot data in 2D
 # sns.set(color_codes=True)
 for variable in variables:
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))  # figsize=(3, 3))
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
     unique_vals = annot[variable].unique()
+    
+    if len(unique_vals)==1 or (sum(pd.isna(unique_vals))>0):
+        print("{} only one value or contains NaNs".format(variable))
+        continue
 
-    if len(unique_vals)<=20:
+    if all([isinstance(i, (str, bool)) for i in unique_vals]):
         print('discrete variable ', variable)
+        
         if color_dict==None:
-            colors = plt.cm.get_cmap("tab20").colors
+#             colors = plt.cm.get_cmap("tab20").colors
+            cm = plt.get_cmap('gist_rainbow')
+            colors=[cm(1.*i/len(unique_vals)) for i in range(len(unique_vals))]
         else:
             colors = [color_dict[x] for x in unique_vals]
 
@@ -112,14 +118,14 @@ for variable in variables:
         labels = list(compress(labels, legend_idx))
         axes.legend(handles, labels, loc="center left", bbox_to_anchor=(1.05, 0.5))
 
-    else:
+    elif all([isinstance(i, (int, float, np.int, np.float)) for i in unique_vals]):
         print('continous variable ', variable)
 
 
-        # check if enumerated ie numerical
-        if annot[variable].dtype != 'float64' and annot[variable].dtype != 'int64':
-            label_to_number = defaultdict(partial(next, count(1)))
-            annot[variable]=[label_to_number[label] for label in annot[variable]]
+        # check if enumerated ie numerical -> probably not needed anymore
+#         if annot[variable].dtype != 'float64' and annot[variable].dtype != 'int64':
+#             label_to_number = defaultdict(partial(next, count(1)))
+#             annot[variable]=[label_to_number[label] for label in annot[variable]]
 
         cmap = sns.cubehelix_palette(as_cmap=True)
         points = axes.scatter(
@@ -133,6 +139,10 @@ for variable in variables:
         )
         fig.colorbar(points)
 
+    else:
+        print("variable type not-detected for {}".format(variable))
+        continue
+    
     # show and save figure
     x_postfix=''
     y_postfix=''

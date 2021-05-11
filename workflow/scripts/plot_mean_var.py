@@ -14,7 +14,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # mean-variance relationship
-from sklearn.metrics import r2_score
+import statsmodels.formula.api as sm
 from scipy import stats
 
 
@@ -23,19 +23,30 @@ from scipy import stats
 # load data
 data=pd.read_csv(snakemake.input[0], index_col=0)
 
+if not os.path.exists(snakemake.params['results_dir']):
+    os.mkdir(snakemake.params['results_dir'])
+
 mean=data.mean(axis=1)
 std=data.std(axis=1)
 
 xaxis='mean'
 yaxis='std'
 title='Mean-StD Relationship'
-r2=r2_score(mean, std)
-spr=stats.spearmanr(mean, std)[0]
+
+lm_result = sm.ols(formula="std ~ mean", data=pd.DataFrame({'std': std, 'mean': mean})).fit()
+# print(lm_result.summary())
+# print(lm_result.rsquared, lm_result.rsquared_adj)
+p = lm_result.params
+x_dummy = np.arange(min(mean), max(mean))
+
+spr=stats.spearmanr(mean, std)
 
 plt.scatter(mean, std, marker='.', alpha=0.5)
+plt.plot(x_dummy, p.Intercept + p['mean'] * x_dummy, c='red')
+
 plt.xlabel(xaxis)
 plt.ylabel(yaxis) 
-plt.title("{} R2={:.2f} rho={:.2f}".format(title,r2,spr))
+plt.title("{} R2={:.2f} rho={:.2f} p={:.2f}".format(title,lm_result.rsquared,spr[0],spr[1]))
 
 # save plot
 plt.savefig(fname=snakemake.output[0],

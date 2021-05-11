@@ -28,12 +28,14 @@ rule filter_regions:
     input:
         counts = os.path.join(config["atacseq.project_path"],'{split}',"{split}_counts.csv"),
         support = os.path.join(config["atacseq.project_path"],'all',"all_support.csv"),
+        annot = os.path.join(config["atacseq.project_path"],'{split}',"{split}_annotation.csv"),
     output:
         filtered_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.csv"),
-        filtered_plots=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered.svg"), caption="../report/filter_regions.rst", category="{split}", subcategory="filtered"),
+        filtered_plots=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_filtered_regions.svg"), caption="../report/filter_regions.rst", category="{split}", subcategory="filtered"),
     params:
-        region_threshold = config["atacseq.region_threshold"],
+        peak_support_threshold = config["atacseq.peak_support_threshold"],
         proportion = config["atacseq.proportion"],
+        min_group = config["atacseq.min_group"],
         # cluster parameters
         partition=partition,
     threads: threads
@@ -95,7 +97,7 @@ rule select_HVR:
         norm_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}.csv"),
     output:
         HVR_data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}_HVR.csv"),
-        HVR_plot=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}_HVR.svg"), caption="../report/region_variability.rst", category="{split}", subcategory="{norm}_HVR"),
+        HVR_plot=report(os.path.join(config["atacseq.project_path"],'{split}',"{split}_{norm}_HVR_selection.svg"), caption="../report/region_variability.rst", category="{split}", subcategory="{norm}_HVR"),
     params:
         HVR_percentage = config["atacseq.HVR_percentage"],
         # cluster parameters
@@ -116,8 +118,9 @@ rule plot_mean_var:
     input:
         data=os.path.join(config["atacseq.project_path"],'{split}',"{split}_{step}.csv"),
     output:
-        plot=report(os.path.join(config["atacseq.project_path"],'{split}',"MeanVariance_{split}_{step}.svg"), caption="../report/meanvar.rst", category="{split}", subcategory="{step}"),
+        plot=report(os.path.join(config["atacseq.project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"), caption="../report/meanvar.rst", category="{split}", subcategory="{step}"),
     params:
+        results_dir=lambda w: os.path.join(config["atacseq.project_path"],'{}'.format(w.split),"mean_variance_analysis"),
         # cluster parameters
         partition=partition,
     threads: threads

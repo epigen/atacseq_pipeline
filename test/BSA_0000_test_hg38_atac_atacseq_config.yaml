@@ -10,14 +10,16 @@ genome: hg38
 adapter_sequence: GTCTCGTGGGCTCGG
 
 # processing and downstream analysis
+downstream_analysis: 1
 annotation_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_multiqc_report.csv
 plot_by:
     - 'pass_qc'
     - 'M Reads'
     - 'FRiP'
     - 'category'
-region_threshold: 3
+peak_support_threshold: 3
 proportion: 0.7
+min_group: 'category'
 split_by: 'category'
 HVR_percentage: 10
 

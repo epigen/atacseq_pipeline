@@ -72,11 +72,13 @@ def configurator(default, project_config):
                    'atacseq.sample_annotation': config['sample_annotation'],
                    'atacseq.annotation_metadata': config['annotation_metadata'],
                    'atacseq.plot_by': config['plot_by'],
-                   'atacseq.region_threshold': config['region_threshold'],
+                   'atacseq.peak_support_threshold': config['peak_support_threshold'],
                    'atacseq.proportion': config['proportion'],
+                   'atacseq.min_group': config['min_group'],
                    'atacseq.genome_fasta': config['genome_fasta'][project_genome],
                    'atacseq.split_by': config['split_by'],
                    'atacseq.HVR_percentage': config['HVR_percentage'],
+                   'atacseq.downstream_analysis': config['downstream_analysis'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
@@ -191,11 +193,8 @@ rule all:
             plot_by_variable=config['atacseq.plot_by'], 
             dimred=["UMAP","PCA"],
             split=data_splits,
-            step=steps) if len(samples)>3 else expand(
-            os.path.join(config["atacseq.project_path"],'{split}',"{split}_{step}.csv"),
-            split=data_splits,
-            step=steps),
-        meanvar_plots=expand(os.path.join(config["atacseq.project_path"],'{split}',"MeanVariance_{split}_{step}.svg"),split=data_splits, step=steps),
+            step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
+        meanvar_plots=expand(os.path.join(config["atacseq.project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
     params:

@@ -16,25 +16,23 @@ warnings.filterwarnings("ignore")
 
 
 # utility functions
-def tpm(counts_matrix, transcript_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=1, million=1e6):
+def cpm(counts_matrix, feature_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=1, million=1e6):
     """
-    Transcript per million normalization of gene expression
-    If transcript_len=1 then you get counts per million
+    Counts per million normalization
+    If feature_len=1 then you get counts per million
     Setting pseudocount=0.5, libsize_pseudocount=1 ensures results equivalent to LIMMA-voom
     """
-    rpk = counts_matrix.astype(float) / transcript_len
-    tpm = million * (rpk + pseudocount) / (rpk.sum(axis=0) * norm_factors + libsize_pseudocount)
+    rpk = counts_matrix.astype(float) / feature_len
+    cpm = million * (rpk + pseudocount) / (rpk.sum(axis=0) * norm_factors + libsize_pseudocount)
 
-    return np.log2(tpm) if log else tpm
+    return np.log2(cpm) if log else cpm
 
 def filter_by_reads(counts_df, min_group_n, cpm_df=None, min_count=10, min_total_count=15, large_min_n=10,
-                    large_min_n_proportion=0.7, for_large_min_n_use_only_proportion=False, verbose=True):
+                    large_min_n_proportion=0.7, verbose=True):
 
     if min_group_n > large_min_n:
-        if for_large_min_n_use_only_proportion:
-            min_n = min_group_n * large_min_n_proportion
-        else:
-            min_n = large_min_n + (min_group_n - large_min_n) * large_min_n_proportion
+        # edgeR
+        min_n = large_min_n + (min_group_n - large_min_n) * large_min_n_proportion
     else:
         min_n = min_group_n
 
@@ -79,43 +77,49 @@ def plot_sequenced_samples(df, n_samples=30, ax=None, xlabel='Read count', ylabe
 # input
 data_counts=pd.read_csv(snakemake.input[0], index_col=0)
 support=pd.read_csv(snakemake.input[1], index_col=0)
+annot=pd.read_csv(snakemake.input[2], index_col=0)
 
 # parameters
-region_threshold = snakemake.params["region_threshold"]
+peak_support_threshold = snakemake.params["peak_support_threshold"]
 large_min_n_proportion = snakemake.params["proportion"]
+min_group = snakemake.params["min_group"]
 
 # output
 output_data=snakemake.output[0]
 output_plot=snakemake.output[1]
 
-#####  filter regions by support
+#####  filter regions by peak support
+support = support.loc[data_counts.index,:]
 support_sum = support.sum(axis=1)
-region_filter_by_support = (support_sum>=region_threshold)
+region_filter_by_support = (support_sum>=peak_support_threshold)
 data_filtered=data_counts.loc[region_filter_by_support,:]
 
 print('before filtering by support', data_counts.shape[0])
 print('after filtering by support', data_filtered.shape[0])
 
 ##### filter regions by mean/variance distribution
-data_filtered_cpm = tpm(data_filtered, transcript_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=0)
+data_filtered_cpm = cpm(data_filtered, feature_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=0)
 
 assert data_filtered_cpm.columns.equals(data_filtered.columns)
 assert data_filtered_cpm.index.equals(data_filtered.index)
 
+# determine min_group_n
+if min_group=='':
+    min_group_n=data_filtered.shape[1]
+else:
+    min_group_n=annot.groupby(min_group)[min_group].count().min()
+
 min_count_mask = filter_by_reads(
     data_filtered,
-    min_group_n=data_filtered.shape[1],
+    min_group_n=min_group_n,
     cpm_df=data_filtered_cpm,
     large_min_n_proportion=large_min_n_proportion,
-#     for_large_min_n_use_only_proportion=True, #large_min_n_proportion!= 0.5,
 )
 
 print('before filtering', data_filtered.shape[0])
 print('after filtering', data_filtered.loc[min_count_mask, :].shape[0])
 
-
 lcpm = np.log2(data_filtered_cpm)
-
 
 fig, axs = plt.subplots(2, 2, figsize=(10, 10))
 plt.subplots_adjust(wspace=0.5, hspace=0.5)
@@ -138,6 +142,8 @@ ax.set_title('after filtering\n{} peaks'.format(min_count_mask.sum()))
 
 plot_sequenced_samples(lcpm, n_samples=None, ax=axs[1, 0], xlabel='Log$2$ CPM', ylabel='Density', title='before filtering', samples_as_rows=False)
 plot_sequenced_samples(lcpm.loc[min_count_mask, :], n_samples=None, ax=axs[1, 1], xlabel='Log$2$ CPM', ylabel='Density', title='after filtering', samples_as_rows=False)
+
+fig.suptitle('Region filtering with proportion={} and min group size={}'.format(large_min_n_proportion,min_group_n), fontsize=10)
 
 plt.savefig(output_plot, dpi=300)
 plt.show()

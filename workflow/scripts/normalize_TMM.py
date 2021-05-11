@@ -20,16 +20,16 @@ def calc_norm_factors(counts_df, method):
     r.source(os.path.join('workflow','scripts','utils_calcNormFactors.R'))
     return r.calcNormFactors(counts_df, method=method)
 
-def tpm(counts_matrix, transcript_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=1, million=1e6):
+def cpm(counts_matrix, feature_len=1, norm_factors=1, log=False, pseudocount=0.5, libsize_pseudocount=1, million=1e6):
     """
-    Transcript per million normalization of gene expression
-    If transcript_len=1 then you get counts per million
+    Counts per million normalization
+    If feature_len=1 then you get counts per million
     Setting pseudocount=0.5, libsize_pseudocount=1 ensures results equivalent to LIMMA-voom
     """
-    rpk = counts_matrix.astype(float) / transcript_len
-    tpm = million * (rpk + pseudocount) / (rpk.sum(axis=0) * norm_factors + libsize_pseudocount)
+    rpk = counts_matrix.astype(float) / feature_len
+    cpm = million * (rpk + pseudocount) / (rpk.sum(axis=0) * norm_factors + libsize_pseudocount)
 
-    return np.log2(tpm) if log else tpm
+    return np.log2(cpm) if log else cpm
 
 #### configurations
 
@@ -47,7 +47,7 @@ norm_factors = calc_norm_factors(filtered_counts, method=norm_method)
 norm_factors = pd.Series(norm_factors, index=filtered_counts.columns, name='norm_factor')
 
 # calculate normalized counts
-normalized_lcpm = tpm(filtered_counts, norm_factors=norm_factors, log=True, pseudocount=0.5, libsize_pseudocount=1)
+normalized_lcpm = cpm(filtered_counts, norm_factors=norm_factors, log=True, pseudocount=0.5, libsize_pseudocount=1)
 
 # save normalized counts
 normalized_lcpm.to_csv(os.path.join(output_data))

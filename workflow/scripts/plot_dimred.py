@@ -67,11 +67,13 @@ for variable in variables:
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
     unique_vals = annot[variable].unique()
     
-    if len(unique_vals)==1 or (sum(pd.isna(unique_vals))>0):
-        print("{} only one value or contains NaNs".format(variable))
-        continue
+#     if len(unique_vals)==1 or (sum(pd.isna(unique_vals))>0):
+#         print("{} only one value or contains NaNs".format(variable))
+#         continue
+        
+    unique_vals = unique_vals[pd.notna(unique_vals)]
 
-    if all([isinstance(i, (str, bool)) for i in unique_vals]):
+    if all([isinstance(i, (str, bool, np.bool_)) for i in unique_vals]):
         print('discrete variable ', variable)
         
         if color_dict==None:
@@ -118,7 +120,7 @@ for variable in variables:
         labels = list(compress(labels, legend_idx))
         axes.legend(handles, labels, loc="center left", bbox_to_anchor=(1.05, 0.5))
 
-    elif all([isinstance(i, (int, float, np.int, np.float)) for i in unique_vals]):
+    elif all([isinstance(i, (int, float, np.int, np.float, np.int64)) for i in unique_vals]):
         print('continous variable ', variable)
 
 

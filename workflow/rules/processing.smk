@@ -5,8 +5,8 @@ rule split_data:
         counts = os.path.join(config["atacseq.project_path"],'all',"all_counts.csv"),
         annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
     output:
-        split_data = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_counts.csv'),split=data_splits[1:]),
-        split_annot = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_annotation.csv'),split=data_splits[1:]),
+        split_data = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_counts.csv'),split=data_splits),
+        split_annot = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_annotation.csv'),split=data_splits),
     params:
         split_by = config["atacseq.split_by"],
         project_path=config["atacseq.project_path"],

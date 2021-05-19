@@ -76,9 +76,15 @@ def configurator(default, project_config):
                    'atacseq.proportion': config['proportion'],
                    'atacseq.min_group': config['min_group'],
                    'atacseq.genome_fasta': config['genome_fasta'][project_genome],
+                   'atacseq.gencode_gtf': config['gencode_gtf'][project_genome],
+                   'atacseq.regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
                    'atacseq.split_by': config['split_by'],
                    'atacseq.HVR_percentage': config['HVR_percentage'],
                    'atacseq.downstream_analysis': config['downstream_analysis'],
+                   'atacseq.tss_size': config['tss_size'],
+                   'atacseq.proximal_size_up': config['proximal_size_up'],
+                   'atacseq.proximal_size_dn': config['proximal_size_dn'],
+                   'atacseq.distal_size': config['distal_size'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
@@ -195,6 +201,7 @@ rule all:
             split=data_splits,
             step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
         meanvar_plots=expand(os.path.join(config["atacseq.project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
+        consensus_regions_annotation=os.path.join(config["atacseq.project_path"],'all',"consensus_regions_annotation.csv"),
     output:
         atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
     params:
@@ -222,3 +229,4 @@ include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
 include: "rules/processing.smk"
 include: "rules/dimred.smk"
+include: "rules/region_annotation.smk"

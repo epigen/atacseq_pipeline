@@ -19,3 +19,4 @@ dependencies:
   - seaborn
   - matplotlib
   - scikit-learn
+  - uropa

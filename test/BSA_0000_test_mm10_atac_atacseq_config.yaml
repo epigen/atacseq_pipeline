@@ -10,11 +10,17 @@ genome: mm10
 adapter_sequence: GTCTCGTGGGCTCGG
 
 # processing and downstream analysis
+downstream_analysis: 1
 annotation_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_multiqc_report.csv
 plot_by:
     - 'pass_qc'
     - 'M Reads'
     - 'FRiP'
+peak_support_threshold: 0
+proportion: 0.7
+min_group: ''
+split_by: ''
+HVR_percentage: 10
 
 # MultiQC report
 title: BSA_0000_test_mm10_atac

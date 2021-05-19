@@ -1,26 +1,27 @@
 
-# split dataset into subsets by split_by parameter
-rule split_data:
-    input:
-        counts = os.path.join(config["atacseq.project_path"],'all',"all_counts.csv"),
-        annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
-    output:
-        split_data = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_counts.csv'),split=data_splits),
-        split_annot = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_annotation.csv'),split=data_splits),
-    params:
-        split_by = config["atacseq.split_by"],
-        project_path=config["atacseq.project_path"],
-        # cluster parameters
-        partition=partition,
-    threads: threads
-    resources:
-        mem=mem,
-    conda:
-        "../envs/atacseq_analysis.yaml",
-    log:
-        "logs/rules/split_data.log"
-    script:
-        "../scripts/split_data.py"
+if len(data_splits)>1:
+    # split dataset into subsets by split_by parameter
+    rule split_data:
+        input:
+            counts = os.path.join(config["atacseq.project_path"],'all',"all_counts.csv"),
+            annotation_filtered = os.path.join(config["atacseq.project_path"],'all',"all_annotation.csv"),
+        output:
+            split_data = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_counts.csv'),split=data_splits[1:]),
+            split_annot = expand(os.path.join(config["atacseq.project_path"],'{split}', '{split}_annotation.csv'),split=data_splits[1:]),
+        params:
+            split_by = config["atacseq.split_by"],
+            project_path=config["atacseq.project_path"],
+            # cluster parameters
+            partition=partition,
+        threads: threads
+        resources:
+            mem=mem,
+        conda:
+            "../envs/atacseq_analysis.yaml",
+        log:
+            "logs/rules/split_data.log"
+        script:
+            "../scripts/split_data.py"
 
         
 # filter regions

@@ -78,7 +78,7 @@ for variable in variables:
         
         if color_dict==None:
 #             colors = plt.cm.get_cmap("tab20").colors
-            cm = plt.get_cmap('gist_rainbow')
+            cm = plt.get_cmap('gist_ncar')
             colors=[cm(1.*i/len(unique_vals)) for i in range(len(unique_vals))]
         else:
             colors = [color_dict[x] for x in unique_vals]

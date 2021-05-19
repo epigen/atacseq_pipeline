@@ -23,6 +23,12 @@ min_group: 'category'
 split_by: 'category'
 HVR_percentage: 10
 
+# region annotation parameters for uropa with gencode_gtf reference (pipeline config)
+tss_size: 100
+proximal_size_up: 1000
+proximal_size_dn: 500
+distal_size: 10000
+
 # MultiQC report
 title: BSA_0000_test_hg38_atac
 intro_text: Quality Control Metrics of the ATAC-seq pipeline

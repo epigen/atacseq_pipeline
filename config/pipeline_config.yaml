@@ -39,12 +39,6 @@ regulatory_build_gtf:
     hg38: /research/lab_bsf/resources/atacseq/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.20210107.gtf
     mm10: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm39.Regulatory_Build.regulatory_features.20201021.gtf
 
-# region annotation parameters for uropa with gencode_gtf reference
-tss_size: 100
-proximal_size_up: 1000
-proximal_size_dn: 500
-distal_size: 10000
-
 data_sources:
   # specify the ABSOLUTE PATH of input files using variable path expressions
   # entries correspond to values in the data_source column in sample_annotation table

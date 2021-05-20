@@ -3,11 +3,11 @@ rule misc_tasks:
         bam = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam"),
         bai = os.path.join(results_dir,"{sample}","mapped", "{sample}.filtered.bam.bai"),
     output:
-        bigWig = os.path.join(config["atacseq.project_path"], "atacseq_hub","{sample}.bigWig"),
+        bigWig = os.path.join(config["project_path"], "atacseq_hub","{sample}.bigWig"),
         tss_hist = os.path.join(results_dir,"{sample}","{sample}.tss_histogram.csv"),
     params:
         # paths
-        hub_dir = os.path.join(config["atacseq.project_path"], "atacseq_hub"),
+        hub_dir = os.path.join(config["project_path"], "atacseq_hub"),
         sample_dir = os.path.join(results_dir,"{sample}"),
         # sample information
         sample_name= lambda w: samples["{}".format(w.sample)]["sample_name"],
@@ -18,9 +18,9 @@ rule misc_tasks:
         noise_upper = noise_upper,
         double_slop = double_slop,
         # pipeline information
-        unique_tss = config["atacseq.unique_tss"],
-        chromosome_sizes = config["atacseq.chromosome_sizes"],
-        whitelist = config["atacseq.whitelisted_regions"],
+        unique_tss = config["unique_tss"],
+        chromosome_sizes = config["chromosome_sizes"],
+        whitelist = config["whitelisted_regions"],
         # cluster parameters
         partition=partition,
     threads: threads

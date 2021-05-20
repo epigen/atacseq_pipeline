@@ -45,9 +45,6 @@ def configurator(default, project_config):
 
     # rename the updated dictionary
     config = default
-    
-#     print("config in function")
-#     print(config)
 
     # Create project directory
     project_path = config['project_path']
@@ -56,38 +53,38 @@ def configurator(default, project_config):
 
     project_genome = config['genome']
     project_genome_size = config['genome_sizes'][project_genome]
-    inputs_dict = {'atacseq.project_name': config['project_name'],
-                   'atacseq.project_path': config['project_path'],
-                   'atacseq.project_config': config['project_config'],
-                   'atacseq.email': config['email'],
-                   'atacseq.genome': project_genome,
-                   'atacseq.adapter_fasta': config['adapter_fasta'],
-                   'atacseq.bowtie2_index': config['bowtie2_index'][project_genome],
-                   'atacseq.chromosome_sizes': config['chromosome_sizes'][project_genome],
-                   'atacseq.blacklisted_regions': config['blacklisted_regions'][project_genome],
-                   'atacseq.whitelisted_regions': config['whitelisted_regions'][project_genome],
-                   'atacseq.unique_tss': config['unique_tss'][project_genome],
-                   'atacseq.mitochondria_name': config['mitochondria_names'][project_genome],
-                   'atacseq.regulatory_regions': config['regulatory_regions'][project_genome],
-                   'atacseq.sample_annotation': config['sample_annotation'],
-                   'atacseq.annotation_metadata': config['annotation_metadata'],
-                   'atacseq.plot_by': config['plot_by'],
-                   'atacseq.peak_support_threshold': config['peak_support_threshold'],
-                   'atacseq.proportion': config['proportion'],
-                   'atacseq.min_group': config['min_group'],
-                   'atacseq.genome_fasta': config['genome_fasta'][project_genome],
-                   'atacseq.gencode_gtf': config['gencode_gtf'][project_genome],
-                   'atacseq.regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
-                   'atacseq.split_by': config['split_by'],
-                   'atacseq.HVR_percentage': config['HVR_percentage'],
-                   'atacseq.downstream_analysis': config['downstream_analysis'],
-                   'atacseq.tss_size': config['tss_size'],
-                   'atacseq.proximal_size_up': config['proximal_size_up'],
-                   'atacseq.proximal_size_dn': config['proximal_size_dn'],
-                   'atacseq.distal_size': config['distal_size'],
+    inputs_dict = {'project_name': config['project_name'],
+                   'project_path': config['project_path'],
+                   'project_config': config['project_config'],
+                   'email': config['email'],
+                   'genome': project_genome,
+                   'adapter_fasta': config['adapter_fasta'],
+                   'bowtie2_index': config['bowtie2_index'][project_genome],
+                   'chromosome_sizes': config['chromosome_sizes'][project_genome],
+                   'blacklisted_regions': config['blacklisted_regions'][project_genome],
+                   'whitelisted_regions': config['whitelisted_regions'][project_genome],
+                   'unique_tss': config['unique_tss'][project_genome],
+                   'mitochondria_name': config['mitochondria_names'][project_genome],
+                   'regulatory_regions': config['regulatory_regions'][project_genome],
+                   'sample_annotation': config['sample_annotation'],
+                   'annotation_metadata': config['annotation_metadata'],
+                   'plot_by': config['plot_by'],
+                   'peak_support_threshold': config['peak_support_threshold'],
+                   'proportion': config['proportion'],
+                   'min_group': config['min_group'],
+                   'genome_fasta': config['genome_fasta'][project_genome],
+                   'gencode_gtf': config['gencode_gtf'][project_genome],
+                   'regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
+                   'split_by': config['split_by'],
+                   'HVR_percentage': config['HVR_percentage'],
+                   'downstream_analysis': config['downstream_analysis'],
+                   'tss_size': config['tss_size'],
+                   'proximal_size_up': config['proximal_size_up'],
+                   'proximal_size_dn': config['proximal_size_dn'],
+                   'distal_size': config['distal_size'],
                    }
     if 'adapter_sequence' in config:
-        inputs_dict['atacseq.adapter_sequence'] = config['adapter_sequence']
+        inputs_dict['adapter_sequence'] = config['adapter_sequence']
     sas_file = config['sample_annotation']
     sas_dict = {}
     with open(sas_file, 'r') as sas:
@@ -99,7 +96,7 @@ def configurator(default, project_config):
                 else:
                     sas_dict[row['sample_name']] = [row]
 
-    inputs_dict['atacseq.sample_list'] = list(sas_dict.keys())
+    inputs_dict['sample_list'] = list(sas_dict.keys())
 
     sample_dicts = {}
     for sample in sas_dict:
@@ -152,24 +149,17 @@ report: "report/workflow.rst"
 ##### set & load config and sample annotation sheets #####
 configfile: os.path.join("config","pipeline_config.yaml")
 
-# print('config before')
-# print(config)
-
 # run configurator to get pipeline configs & sample annotations
 config, samples = configurator(config, config["project_config"])
 
-# print('config after')
-# print(config)
-# print(samples)
-
 ##### set global variables
-results_dir = os.path.join(config["atacseq.project_path"], "atacseq_results")
+results_dir = os.path.join(config["project_path"], "atacseq_results")
 
-annotation_metadata=pd.read_csv(config["atacseq.annotation_metadata"], index_col=0)
+annotation_metadata=pd.read_csv(config["annotation_metadata"], index_col=0)
 
 data_splits = ['all']
-if config["atacseq.split_by"]!='':
-    data_splits.extend(list(annotation_metadata[config["atacseq.split_by"]].unique()))
+if config["split_by"]!='':
+    data_splits.extend(list(annotation_metadata[config["split_by"]].unique()))
     
 steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
 
@@ -190,20 +180,20 @@ double_slop = ( tss_slop * 2 )
 # generates a HTML report from all the results as self-contained .zip archive for sharing
 rule all:
     input:
-        os.path.join(config["atacseq.project_path"],"atacseq_report"), # for the inclusion into snakemake report
-        project_config_file=report(config["atacseq.project_config"], caption="report/project_configfile.rst", category="Configuration"),
-        sample_annotation_file=report(config["atacseq.sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
-        annotation_metadata_file=report(config["atacseq.annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
+        os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report
+        project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
+        sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
+        annotation_metadata_file=report(config["annotation_metadata"], caption="report/annotation_metadata.rst", category="Configuration"),
         dimred_plots=expand(
-            os.path.join(config["atacseq.project_path"],'{split}', 'unsupervised_analysis',"{dimred}_{split}_{step}_{plot_by_variable}.svg"),
-            plot_by_variable=config['atacseq.plot_by'], 
+            os.path.join(config["project_path"],'{split}', 'unsupervised_analysis',"{dimred}_{split}_{step}_{plot_by_variable}.svg"),
+            plot_by_variable=config['plot_by'], 
             dimred=["UMAP","PCA"],
             split=data_splits,
-            step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
-        meanvar_plots=expand(os.path.join(config["atacseq.project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["atacseq.downstream_analysis"]==1 else os.path.join(config["atacseq.project_path"],"atacseq_report"),
-        consensus_regions_annotation=os.path.join(config["atacseq.project_path"],'all',"consensus_regions_annotation.csv"),
+            step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
+        meanvar_plots=expand(os.path.join(config["project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
+        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv"),
     output:
-        atacseq_report=os.path.join(config["atacseq.project_path"],"{}_report.zip".format(config["atacseq.project_name"])),
+        atacseq_report=os.path.join(config["project_path"],"{}_report.zip".format(config["project_name"])),
     params:
         # cluster parameters
         partition=partition,
@@ -215,12 +205,11 @@ rule all:
     shell:
         """
         snakemake --unlock
-        snakemake --configfile {config[atacseq.project_config]} --report {output.atacseq_report}
+        snakemake --configfile {config[project_config]} --report {output.atacseq_report}
         """
-# mail -s "snakemake ATAC-seq pipeline for {config[atacseq.project_name]} finished" {config[atacseq.email]}
+# mail -s "snakemake ATAC-seq pipeline for {config[project_name]} finished" {config[email]}
 
 ##### load rules #####
-
 include: "rules/install_homer.smk"
 include: "rules/bowtie2_align.smk"
 include: "rules/peak_calling.smk"

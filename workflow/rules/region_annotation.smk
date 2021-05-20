@@ -3,13 +3,13 @@
 # prepare configs for uropa    
 rule uropa_prepare:
     input:
-        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
+        consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),
     output:
-        gencode_config=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"consensus_regions_gencode.json"),
-        reg_config=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"consensus_regions_reg.json"),
+        gencode_config=os.path.join(config["project_path"],'all','consensus_regions_annotation',"consensus_regions_gencode.json"),
+        reg_config=os.path.join(config["project_path"],'all','consensus_regions_annotation',"consensus_regions_reg.json"),
     params:
         # paths
-        results_dir = os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation'),
+        results_dir = os.path.join(config["project_path"],'all','consensus_regions_annotation'),
         # cluster parameters
         partition=partition,
     threads: threads
@@ -23,11 +23,11 @@ rule uropa_prepare:
             gencode_template=Template(f.read())
 
         gencode_config=gencode_template.substitute({
-                'TSS_flanking':config['atacseq.tss_size'],
-                'TSS_proximal_upstream':config['atacseq.proximal_size_up'],
-                'TSS_proximal_downstream':config['atacseq.proximal_size_dn'],
-                'distal_distance':config['atacseq.distal_size'],
-                'gtf_file':'"{}"'.format(config["atacseq.gencode_gtf"]),
+                'TSS_flanking':config['tss_size'],
+                'TSS_proximal_upstream':config['proximal_size_up'],
+                'TSS_proximal_downstream':config['proximal_size_dn'],
+                'distal_distance':config['distal_size'],
+                'gtf_file':'"{}"'.format(config["gencode_gtf"]),
                 'bed_file':'"{}"'.format(input.consensus_regions)
             })
 
@@ -40,7 +40,7 @@ rule uropa_prepare:
             reg_template=Template(f.read())  
 
         reg_config=reg_template.substitute({
-            'gtf_file':'"{}"'.format(config["atacseq.regulatory_build_gtf"]),
+            'gtf_file':'"{}"'.format(config["regulatory_build_gtf"]),
             'bed_file':'"{}"'.format(input.consensus_regions)
         })
 
@@ -51,15 +51,15 @@ rule uropa_prepare:
 # run uropa on consensus regions
 rule uropa_region_annotation:
     input:
-        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
-        gencode_config=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"consensus_regions_gencode.json"),
-        reg_config=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"consensus_regions_reg.json"),
+        consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),
+        gencode_config=os.path.join(config["project_path"],'all','consensus_regions_annotation',"consensus_regions_gencode.json"),
+        reg_config=os.path.join(config["project_path"],'all','consensus_regions_annotation',"consensus_regions_reg.json"),
     output:
-        gencode_results=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"gencode_finalhits.txt"),
-        reg_results=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"reg_finalhits.txt"),
+        gencode_results=os.path.join(config["project_path"],'all','consensus_regions_annotation',"gencode_finalhits.txt"),
+        reg_results=os.path.join(config["project_path"],'all','consensus_regions_annotation',"reg_finalhits.txt"),
     params:
         # paths
-        results_dir = os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation'),
+        results_dir = os.path.join(config["project_path"],'all','consensus_regions_annotation'),
         # cluster parameters
         partition=partition,
     threads: 8
@@ -78,11 +78,11 @@ rule uropa_region_annotation:
 # peak annotation using homer
 rule homer_region_annotation:
     input:
-        consensus_regions = os.path.join(config["atacseq.project_path"],'all',"consensus_regions.bed"),
+        consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),
         homer_script=os.path.join("resources","homer","configureHomer.pl"), # needed so that homer installation rule is executed beforehand
     output:
-        homer_annotations = os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv"),
-        homer_annotations_log = os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv.log"),
+        homer_annotations = os.path.join(config["project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv"),
+        homer_annotations_log = os.path.join(config["project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv.log"),
     params:
         # paths
         homer_bin = os.path.join(os.getcwd(),"resources","homer","bin"),
@@ -99,7 +99,7 @@ rule homer_region_annotation:
         """
         export PATH="{params.homer_bin}:$PATH";
         
-        resources/homer/bin/annotatePeaks.pl {input.consensus_regions} {config[atacseq.genome]} \
+        resources/homer/bin/annotatePeaks.pl {input.consensus_regions} {config[genome]} \
             > {output.homer_annotations} \
             2> {output.homer_annotations_log};
         """ 
@@ -107,14 +107,14 @@ rule homer_region_annotation:
 # aggregate uropa and homer annotation results
 rule region_annotation_aggregate:
     input:
-        gencode_results=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"gencode_finalhits.txt"),
-        reg_results=os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"reg_finalhits.txt"),
-        homer_annotations = os.path.join(config["atacseq.project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv"),
+        gencode_results=os.path.join(config["project_path"],'all','consensus_regions_annotation',"gencode_finalhits.txt"),
+        reg_results=os.path.join(config["project_path"],'all','consensus_regions_annotation',"reg_finalhits.txt"),
+        homer_annotations = os.path.join(config["project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv"),
     output:
-        consensus_regions_annotation=os.path.join(config["atacseq.project_path"],'all',"consensus_regions_annotation.csv"),
+        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv"),
     params:
         # paths
-        results_dir = os.path.join(config["atacseq.project_path"],'all'),
+        results_dir = os.path.join(config["project_path"],'all'),
         # cluster parameters
         partition=partition,
     threads: threads

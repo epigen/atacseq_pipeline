@@ -47,21 +47,4 @@ data_sources:
   bsf: /nobackup/lab_bsf/samples/{flowcell}/{flowcell}_{lane}_samples/{flowcell}_{lane}#{BSF_name}.bam
   bsf_test: /nobackup/lab_bsf/users/berguener/junk/atac_test_data/{flowcell}_{lane}#{BSF_name}.bam
   cll: /research/lab_bock/projects/cll-progression/data/atac/raw/{flowcell}/{flowcell}_{lane}_samples/{flowcell}_{lane}#{BSF_name}.bam
-  #atac_cnv: /nobackup/lab_bock/shared/projects/cll-progression/data/atac_cnv/raw/{sra_accession}.bam
-
-# The following section contains command-line tools used by the pipeline
-tools:
-  fastqc: fastqc
-  java: java
-  picard: /cm/shared/apps/picard-tools/1.140/picard.jar
-  samtools: samtools
-  sambamba: sambamba
-  trimmomatic: trimmomatic
-  skewer: skewer
-  bedtools: bedtools
-  bamCoverage: bamCoverage  # from deeptools
-  macs2: macs2
-  # optional:
-  Rscript: Rscript
-  spp:  # You can find this here: https://raw.githubusercontent.com/crazyhottommy/phantompeakqualtools/master/run_spp.R
 

@@ -23,7 +23,7 @@ rule peak_calling:
         # peak calling parameters
         formating = lambda w: '--format BAMPE' if samples["{}".format(w.sample)]["read_type"] == "paired" else '--format BAM',
         # pipeline information
-        regulatory_regions = config["atacseq.regulatory_regions"],
+        regulatory_regions = config["regulatory_regions"],
         # cluster parameters
         partition=partition,
     threads: threads

@@ -38,7 +38,6 @@ report_header_info: null
 custom_logo: 'workflow/scripts/multiqc_atacseq/BSF_logo.png'
 custom_logo_url: 'https://www.biomedical-sequencing.org/'
 custom_logo_title: 'Biomedical Sequencing Facility'
-# atacseq_global_hdf: '/data/groups/lab_bsf/resources/global_stats/atacseq/global_atacseq_stats.hdf'
 pca_color_attribute: 'flowcell'
 exploratory_columns: ['flowcell']
 

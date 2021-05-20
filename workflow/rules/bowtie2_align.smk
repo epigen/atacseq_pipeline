@@ -21,13 +21,13 @@ rule bowtie2_align:
         #alignment parameters
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
-        filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["atacseq.whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["atacseq.whitelisted_regions"]),
+        filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["whitelisted_regions"]),
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         # pipeline information
-        adapter_sequence="-a " + config["atacseq.adapter_sequence"] if config["atacseq.adapter_sequence"] !="" else " ",
-        adapter_fasta="--adapter_fasta " + config["atacseq.adapter_fasta"] if config["atacseq.adapter_fasta"] !="" else " ",
-        bowtie2_index=config["atacseq.bowtie2_index"],
-        chrM=config["atacseq.mitochondria_name"],
+        adapter_sequence="-a " + config["adapter_sequence"] if config["adapter_sequence"] !="" else " ",
+        adapter_fasta="--adapter_fasta " + config["adapter_fasta"] if config["adapter_fasta"] !="" else " ",
+        bowtie2_index=config["bowtie2_index"],
+        chrM=config["mitochondria_name"],
         # cluster parameters
         partition=partition,
     threads: threads

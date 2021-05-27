@@ -17,6 +17,6 @@ for sample in annotations.index:
     result=pd.read_csv(os.path.join(results_dir,"{}".format(sample),"peaks", "{}_quantification_support.csv".format(sample)))
     results.append(result)
 
-results = [item for item in results if item is not None]
+# results = [item for item in results if item is not None]
 results = pd.concat(results)
 results.set_index(results.columns[0]).T.to_csv(output)

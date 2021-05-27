@@ -61,7 +61,7 @@ rule quantify_support_aggregate:
         results_dir = results_dir,
         # cluster parameters
         partition=partition,
-    threads: threads
+    threads: 4
     resources:
         mem="64G",
     conda:
@@ -107,7 +107,7 @@ rule quantify_counts_aggregate:
         results_dir = results_dir,
         # cluster parameters
         partition=partition,
-    threads: 2
+    threads: 4
     resources:
         mem="64G",
     conda:

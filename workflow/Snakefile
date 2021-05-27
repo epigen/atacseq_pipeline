@@ -12,6 +12,17 @@ import sys
 from collections.abc import Mapping
 from string import Template
 
+import subprocess
+
+##### install homer if needed #####
+if not os.path.exists(os.path.join("resources","homer","configureHomer.pl")):
+    homer_path= os.path.join("workflow", "scripts","install_homer.sh")
+    print("start homer installation (~10 minutes)")
+    subprocess.run('chmod +x {}'.format(homer_path), shell=True)
+    subprocess.call(homer_path, shell=True)
+    print("finished homer installation")
+
+
 ##### utility functions #####
 def get_raw_bams(wildcards):
     return str.split(samples[wildcards.sample]["raw_bams"])
@@ -210,7 +221,7 @@ rule all:
 # mail -s "snakemake ATAC-seq pipeline for {config[project_name]} finished" {config[email]}
 
 ##### load rules #####
-include: "rules/install_homer.smk"
+# include: "rules/install_homer.smk"
 include: "rules/bowtie2_align.smk"
 include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"

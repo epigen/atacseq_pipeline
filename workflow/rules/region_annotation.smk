@@ -79,7 +79,7 @@ rule uropa_region_annotation:
 rule homer_region_annotation:
     input:
         consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),
-        homer_script=os.path.join("resources","homer","configureHomer.pl"), # needed so that homer installation rule is executed beforehand
+        #homer_script=os.path.join("resources","homer","configureHomer.pl"), # needed so that homer installation rule is executed beforehand
     output:
         homer_annotations = os.path.join(config["project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv"),
         homer_annotations_log = os.path.join(config["project_path"],'all','consensus_regions_annotation',"homer_annotations.tsv.log"),

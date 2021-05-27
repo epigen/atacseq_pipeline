@@ -2,7 +2,7 @@
 # generate consensus regions set using (py)bedtools
 rule get_consensus_regions:
     input:
-        annotation = config["annotation_metadata"],
+        annotation = config["sample_metadata"],
         summits_bed = expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_summits.bed"),sample_name=samples.keys()),
     output:
         consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),

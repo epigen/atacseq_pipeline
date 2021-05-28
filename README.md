@@ -10,17 +10,19 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
     - peak annotation and motif analysis (homer)
     - MultiQC report generation (multiqc)
 - Quantification
-    - consensus region set creation
-    - consensus region set annotation (uropa with regulatory build and gencode; homer)
-    - read count and peak support quantification of the consensus region set across samples
-- optional: split data in multiple data sets (eg by cell type)
+    - consensus region set generation
+    - consensus region set annotation (uropa using regulatory build and gencode as refernce, and homer)
+    - read count and peak support quantification of the consensus region set across samples, yielding a count and a support matrix with dimensions regions X samples
+- optional: split data in multiple data subsets (eg by cell type, condition)
 - Downstream Analysis (performed on the whole data set and each split separately)
     - region filtering
-    - normalization by two different methods separately (TMM & CQN)
+    - normalization by two different methods separately ([TMM](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25) & [CQN](https://academic.oup.com/biostatistics/article/13/2/204/1746212))
     - highly variable region (HVR) selection for each normalized data set
-    - dimensionality reduction by PCA & UMAP and plotting of provided metadata after each step
-    - mean-variance-relationship plotafter each step
-- Snakemake report generation for workflow statistics, documentation, reproducibility and result inspection
+- Visualization after each analysis step
+    - step specific plots (eg region filtering, HVR selection)
+    - dimensionality reduction by PCA & UMAP and plotting of provided metadata
+    - mean-variance-relationship plot
+- Snakemake report generation for workflow statistics, documentation, reproducibility and result presentation
 
 # Installation (<10 minutes)
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
@@ -28,35 +30,35 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
 
 # Configuration
 You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths.
-- pipeline configuration (conifg/pipeline_config): one off set up in your environment
+- pipeline configuration (conifg/pipeline_config.yaml): one off set up in your environment
     - before execution edit the path to your project configuration (project_config)
-    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file
-- project configuration: different for every project/dataset
-- sample annotation: technical unit annotation for processing
-- sample metadata: metadata used in downstream analysis steps
+    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file and edi the project_config path
+- project configuration (project_config): different for every project/dataset
+- sample annotation (sample_annotation): technical unit annotation for processing
+- sample metadata (sample_metadata): metadata used in downstream analysis steps and for visualization
 
-detailed descriptions can be found in the appendix below
+detailed specifications can be found in the appendix below
 
 # Execution
-## Change working directory & activate conda environment
-Execution always from within top level of the workflow directory (ie atacseq_pipeline/).
+## 1. Change working directory & activate conda environment
+Execute always from within top level of the workflow directory (ie atacseq_pipeline/).
 Snakemake commands only work from within the snakemake conda environment.
 ```
 cd atacseq_pipeline
 conda activate snakemake
 ```
-## Execute a dry-run
+## 2. Execute a dry-run
 command for a dry-run with option -n (-p makes Snakemake print the resulting shell command for illustration)
 ```
 snakemake -p -n
 ```
-## Execute workflow local or on a cluster
-### Local execution
+## 3. Execute workflow local or on a cluster
+### 3a. Local execution
 command for execution with one core
 ```
 snakemake -p -j1 --use-conda
 ```
-### Cluster execution
+### 3b. Cluster execution
 command for **vanilla cluster execution** on cluster engines that support shell scripts and have access to a common filesystem, (e.g. the Sun Grid Engine), more info in the [Snakemake Cluster Execution documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
 ```
 snakemake -p --use-conda --cluster qsub -j 32
@@ -72,7 +74,7 @@ the profile for CeMM's slurm environment is provided in the config/ directory, o
 
 If you are using another setup get your cluster execution profile here: [The Snakemake-Profiles project](https://github.com/snakemake-profiles/doc)
 
-## Singularity execution (soon)
+## X. Singularity execution (soon)
 command for execution with singularity with flag --use-singularity
 ```
 snakemake -p --use-conda --use-singularity
@@ -100,8 +102,8 @@ Project directory structure:
 - atacseq_report: statistics and metrics from the processing part as input for the MultiQC report
 - atacseq_results: one directory per sample with all the processing and quantification results
 - projectName_report.zip: self contained HTML Snakemake report
-- split1: Downstream analysis results of subset 1 of the whole data
-- split2: Downstream analysis results of subset 2 of the whole data
+- split1 (optional): Downstream analysis results of subset 1 of the whole data
+- split2 (optional): Downstream analysis results of subset 2 of the whole data
 
 # Examples
 We provide configuration files for two example datasets (mm10 & hg38).
@@ -112,7 +114,7 @@ Additionally, the report zip archive of the hg38 test example is provided to sho
 - if unsure why a certain rule will be executed use option --reason in the dry run, this will give the reason for the execution of each rule
 - when there are 3 or less samples all the UMAP data and plots will be empty
 - when there are 2 or less samples all the PCA data and plots will be empty
-- in case the pipeline crashes, you manually canceled ll your jobs or when snakemake tries to "resume.. resubmit.." jobs, then remove .snakemake/incomplete directory!
+- in case the pipeline crashes, you manually canceled your jobs or when snakemake tries to "resume.. resubmit.." jobs, then remove the .snakemake/incomplete directory!
 - if you commit a lot of jobs eg via slurm (>500) this might take some time (ie 1s/job commit)
 - two comments on peak support quantification
     - even though the peak support of a region in a certain sample is 0, does not mean that there are no reads counted in the count matrix, it just states that there was no peak called
@@ -130,7 +132,7 @@ provided for both test examples in workflow/dags
 
 # Appendix
 ## pipeline configuration specifications
-The pipeline configuration has to be set up only once in your environment and acan be found in config/pipeline_config.yaml. It is mostly home to a lot of absolute paths to required reference data.
+The pipeline configuration has to be set up only once in your environment and can be found in config/pipeline_config.yaml. It is mostly home to a lot of absolute paths pointing to required reference data.
 - project_config: absolute path to your project configuration file (see next section)
 - adapter_fasta: (nextera) adapter fasta (.fa) file
 
@@ -138,8 +140,8 @@ the following files have always to be provided for each genome (hg39 & mm10), re
 
 - bowtie2_index: indices for Bowtie2
 - chromosome_sizes: 
-- blacklisted_regions: from ENCODE as .bed files
-- whitelisted_regions: complement to the blacklisted_regions, also as .bed files
+- blacklisted_regions: blacklisted regions from ENCODE as .bed files
+- whitelisted_regions: complement to the blacklisted regions, also as .bed files
 - unique_tss: .bed files, from gencode (hg38) or CCDS (mm10)
 - regulatory_regions: regulatory build regulatory features chromosomes only from eg Ensembl
 - genome_sizes: length of genomes as integers
@@ -147,27 +149,27 @@ the following files have always to be provided for each genome (hg39 & mm10), re
 - genome_fasta: genomes as .fa files
 - gencode_gtf: gencode .gtf files
 - regulatory_build_gtf: regulatory build regulatory features .gtf files (generated from gff.gz files from Ensembl with provided script /workflow/scripts/parse_reg_build_file.py)
-- data_sources: here you can specify the dynamics absolute paths to your raw data by using {variables}, which have to be columns in the sample annotation configuration file. The entries correspond to the values in the data_source column in sample annotation configuration file.
+- data_sources: here you can specify the dynamic absolute paths to your raw data by using {variables}, which have to be columns in the sample annotation configuration file. The entries correspond to the values in the data_source column in sample annotation configuration file.
 
 the provided configuration file is completely filled and set up for the environment at CeMM 
 
 ## project configuration specifications
 - general project information
-    - project_name: project name, used troughout the pipeline
+    - project_name: project name, used throughout the pipeline
     - project_uuid: unique ID
     - public_html_folder: in the folder a symlink with the unique ID will be created pointing to the results directory
-    - base_url: url from there the public_html directory can be accessed
+    - base_url: url from where the public_html directory can be accessed
     - sample_annotation: path to the sample annotation file (see below)
     - project_path: path to the project directory for all the generated results
     - project_config: path to this file
     - genome: used genome in the project (hg38 or mm10)
-    - adapter_sequence: nucelotide adapter sequence of the used ATAC-seq protocol
+    - adapter_sequence: nucleotide adapter sequence of the used ATAC-seq protocol
 - downstream analysis parameters
     - downstream_analysis: 0 for stopping after processing, 1 for executing the whole pipeline
     - sample_metadata: path to sample metadata file (see below)
     - plot_by: list of metadata of interest to be plotted
-    - peak_support_threshold: minimum number of peaks per region to be kept 
-    - proportion: proportion of samples within min_group that has to express a peak to not be filtered
+    - peak_support_threshold: minimum number of peaks per region, for region to be kept after filtering 
+    - proportion: proportion of samples within min_group that has to "express" a region to not be filtered out
     - min_group: column in the sample metadata file that distinguishes between groups of interest (eg condition)
     - split_by: column in the sample metadata file that distinguishes between subsets of the data that should be analyzed individually
     - HVR_percentage: percentage of regions to keep as highly variable regions
@@ -186,12 +188,13 @@ the provided configuration file is completely filled and set up for the environm
 - first column (sample_name) contains the sample name
 - mandatory columns: data_source, skip_prepocess (yes/no, if yes -> sample will not be processed), all columns used in the respective data_source field in the pipeline configuration
 - columns describe technical variables flowcell, lane,...
-- 2 examples (hg38 & mm10) are provided in the test/ directory
+
+2 examples (hg38 & mm10) are provided in the test/ directory
 
 
 ## sample metadata specifications
 - every sample is a row and the columns correspond to metadata entries eg cell type or condition
+- first column (sample_name) contains the sample name
 - mandatory columns: pass_qc with numeric value between 0 and 1; every sample >0 is included in the downstream analysis
-- 2 examples (hg38 & mm10) are provided in the test/ directory
 
-
+2 examples (hg38 & mm10) are provided in the test/ directory

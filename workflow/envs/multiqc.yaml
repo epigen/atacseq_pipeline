@@ -9,4 +9,5 @@ dependencies:
   - pandas
   - pip
   - pip:
-    - ../../workflow/scripts/multiqc_atacseq
+    - 'git+https://github.com/sreichl/atacseq_pipeline/#egg=atacseq_report&subdirectory=workflow/scripts/multiqc_atacseq'
+#    - ../../workflow/scripts/multiqc_atacseq

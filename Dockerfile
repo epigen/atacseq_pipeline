@@ -1,6 +1,6 @@
 FROM condaforge/mambaforge:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="a98036313028f4241a727920ea8476d7cbd61cc9f6d262515898a9768fff98a5"
+LABEL io.github.snakemake.conda_env_hash="1edea5e34db303f686c9ba7def023d9e00bb7c073393755e7ecb0e01f20d21bb"
 
 # Step 1: Retrieve conda environments
 
@@ -34,7 +34,7 @@ COPY workflow/envs/atacseq_analysis.yaml /conda-envs/7446df8c60aaf3ad74baf0bb53b
 
 # Conda environment:
 #   source: workflow/envs/atacseq_pipeline.yaml
-#   prefix: /conda-envs/f2ab82afce323fed86ecb58f1eda1cb2
+#   prefix: /conda-envs/dd893befd7aea0d9e0745536449d2522
 #   name: atacseq_pipeline
 #   channels:
 #     - conda-forge
@@ -55,8 +55,9 @@ COPY workflow/envs/atacseq_analysis.yaml /conda-envs/7446df8c60aaf3ad74baf0bb53b
 #     - csvkit
 #     - pandas
 #     - matplotlib=3.2.2
-RUN mkdir -p /conda-envs/f2ab82afce323fed86ecb58f1eda1cb2
-COPY workflow/envs/atacseq_pipeline.yaml /conda-envs/f2ab82afce323fed86ecb58f1eda1cb2/environment.yaml
+#     - r-base=4.0.3
+RUN mkdir -p /conda-envs/dd893befd7aea0d9e0745536449d2522
+COPY workflow/envs/atacseq_pipeline.yaml /conda-envs/dd893befd7aea0d9e0745536449d2522/environment.yaml
 
 # Conda environment:
 #   source: workflow/envs/multiqc.yaml
@@ -80,6 +81,6 @@ COPY workflow/envs/multiqc.yaml /conda-envs/494316cb52aa6128751c7764db7f1832/env
 # Step 2: Generate conda environments
 
 RUN mamba env create --prefix /conda-envs/7446df8c60aaf3ad74baf0bb53bf99ff --file /conda-envs/7446df8c60aaf3ad74baf0bb53bf99ff/environment.yaml && \
-    mamba env create --prefix /conda-envs/f2ab82afce323fed86ecb58f1eda1cb2 --file /conda-envs/f2ab82afce323fed86ecb58f1eda1cb2/environment.yaml && \
+    mamba env create --prefix /conda-envs/dd893befd7aea0d9e0745536449d2522 --file /conda-envs/dd893befd7aea0d9e0745536449d2522/environment.yaml && \
     mamba env create --prefix /conda-envs/494316cb52aa6128751c7764db7f1832 --file /conda-envs/494316cb52aa6128751c7764db7f1832/environment.yaml && \
     mamba clean --all -y

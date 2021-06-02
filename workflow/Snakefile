@@ -208,7 +208,7 @@ rule all:
         meanvar_plots=expand(os.path.join(config["project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
         consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv"),
     output:
-        atacseq_report=os.path.join(config["project_path"],"{}_report.zip".format(config["project_name"])),
+        confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
     params:
         # cluster parameters
         partition=partition,
@@ -217,11 +217,12 @@ rule all:
         mem=mem,
     log:
         os.path.join("logs","rules","all.log")
-    shell:
-        """
-        snakemake --unlock
-        snakemake --configfile {config[project_config]} --report {output.atacseq_report}
-        """
+    run:
+        command_str="touch {}".format(os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])))
+        subprocess.run(command_str, shell=True)
+
+# snakemake --unlock
+# snakemake --configfile {config[project_config]} --report {output.atacseq_report}
 # mail -s "snakemake ATAC-seq pipeline for {config[project_name]} finished" {config[email]}
 
 ##### load rules #####

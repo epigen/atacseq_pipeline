@@ -26,7 +26,9 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
 
 # Installation (<10 minutes)
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-2. clone/download this repository
+2. clone/download this repository (eg git clone https://github.com/sreichl/atacseq_pipeline.git)
+
+All software/package dependencies are installed and managed automatically via Snakemake and conda.
 
 # Configuration
 You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths.
@@ -41,7 +43,7 @@ detailed specifications can be found in the appendix below
 
 # Execution
 ## 1. Change working directory & activate conda environment
-Execute always from within top level of the workflow directory (ie atacseq_pipeline/).
+Execute always from within top level of the pipeline directory (ie atacseq_pipeline/).
 Snakemake commands only work from within the snakemake conda environment.
 ```
 cd atacseq_pipeline
@@ -74,17 +76,25 @@ the profile for CeMM's slurm environment is provided in the config/ directory, o
 
 If you are using another setup get your cluster execution profile here: [The Snakemake-Profiles project](https://github.com/snakemake-profiles/doc)
 
-## X. Singularity execution (soon)
-command for execution with singularity with flag --use-singularity
+## X. Singularity execution
+Singularity has to be installed (system wide by root) and available/loaded (eg module load singularity).
+The pipeline automatically loads the correct singularity image from [Dockerhub](https://hub.docker.com/r/sreichl/atacseq_pipeline)
+
+command for execution with singularity, just add the flag --use-singularity and use --singularity-args to provide all the necessary directories the pipeline needs access to (in the example it is configured for the three relevant partitions at CeMM)
 ```
-snakemake -p --use-conda --use-singularity
+snakemake -p --use-conda --use-singularity --singularity-args "--bind /nobackup:/nobackup --bind /research:/research --bind /home:/home"
 ```
 # Use as module in another Snakemake workflow (soon)
 - [https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#snakefiles-modules](https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#snakefiles-modules)
 - [https://slides.com/johanneskoester/snakemake-6#/8](https://slides.com/johanneskoester/snakemake-6#/8)
 
 # Report
-The pipeline automatically generates a self contained HTML based report in a zip archive containing the following sections:
+command for report generation (this can take a few minutes, depending on the size of the dataset)
+```
+snakemake --report /absolute/path/to/report.zip
+```
+
+The command creates a self contained HTML based report in a zip archive containing the following sections:
 - Workflow: interactive rulegraph to recapitulate individual steps, used software and conrete code (reproducibility)
 - Statistics: duration and timing of individual steps
 - Configuration: used pipeline configuration (accountability)

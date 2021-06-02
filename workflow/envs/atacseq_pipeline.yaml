@@ -18,3 +18,4 @@ dependencies:
   - csvkit
   - pandas
   - matplotlib=3.2.2
+  - r-base=4.0.3

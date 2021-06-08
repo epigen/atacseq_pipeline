@@ -1,7 +1,9 @@
 # Ultimate ATAC-seq Data Processing & Analysis Pipeline
 From r**A**w (unaligned) BAM files to normali**Z**ed counts
 
-A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility is ensured by using conda and Singularity(soon).
+A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility is ensured by using conda and Singularity.
+
+![Workflow Rulegraph](./workflow/dags/atacseq_pipeline_rulegraph.svg)
 
 # Features
 - Processing

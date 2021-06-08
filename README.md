@@ -82,7 +82,7 @@ the profile for CeMM's slurm environment is provided in the config/ directory, o
 
 If you are using another setup get your cluster execution profile here: [The Snakemake-Profiles project](https://github.com/snakemake-profiles/doc)
 
-## X. Singularity execution
+## X. Singularity execution (not tested)
 Singularity has to be installed (system wide by root) and available/loaded (eg module load singularity).
 The pipeline automatically loads the correct singularity image from [Dockerhub](https://hub.docker.com/r/sreichl/atacseq_pipeline)
 

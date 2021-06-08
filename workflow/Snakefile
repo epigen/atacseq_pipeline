@@ -94,6 +94,9 @@ def configurator(default, project_config):
                    'proximal_size_up': config['proximal_size_up'],
                    'proximal_size_dn': config['proximal_size_dn'],
                    'distal_size': config['distal_size'],
+                   'partition': config['partition'],
+                   'memory': config['memory'],
+                   'threads': config['threads'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['adapter_sequence'] = config['adapter_sequence']
@@ -179,9 +182,9 @@ if config["split_by"]!='':
 steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
 
 # cluster parameters
-partition="shortq"
-mem="32G"
-threads=2
+partition=config['partition']
+mem=config['memory']
+threads=config['threads']
 
 # calculate parameters (for misc tasks)
 tss_slop = 2000

@@ -20,8 +20,8 @@ unique_tss:
     hg38: /research/lab_bsf/resources/atacseq/hg38_gencode_tss_unique.sorted.bed
     mm10: /research/lab_bsf/resources/atacseq/mm10_CCDS_tss_unique.bed
 regulatory_regions:
-    hg38: /research/lab_bock/resources/regions/ensembl_regulatory_build/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.chromosomes_only.20161111.bed
-    mm10: /research/lab_bock/resources/regions/ensembl_regulatory_build/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20161111.sorted.bed
+    hg38: /research/lab_bsf/resources/atacseq/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.chromosomes_only.20161111.bed
+    mm10: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20161111.sorted.bed
 genome_sizes:
     hg38: 2747877777
     mm10: 2407883318
@@ -48,3 +48,7 @@ data_sources:
   bsf_test: /nobackup/lab_bsf/users/berguener/junk/atac_test_data/{flowcell}_{lane}#{BSF_name}.bam
   cll: /research/lab_bock/projects/cll-progression/data/atac/raw/{flowcell}/{flowcell}_{lane}_samples/{flowcell}_{lane}#{BSF_name}.bam
 
+# cluster parameters
+partition: 'shortq'
+memory: '32G'
+threads: 2

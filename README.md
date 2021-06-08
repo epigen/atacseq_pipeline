@@ -24,6 +24,12 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
     - mean-variance-relationship plot
 - Snakemake report generation for workflow statistics, documentation, reproducibility and result presentation
 
+# Recommended Usage
+1. perform only the processing, by setting the downstram_analysis flag to 0 in the project configuration
+2. use the generated multiQC report (project_path/atacseq_report/multiqc_report.html) to judge the quality of your samples
+3. fill out the mandatory quality control column (pass_qc) in the sample metadata configuration file (you can even use some of the quality metrics for plotting eg like I did in the example files with 'FRiP')
+4. finally execute the remaining donwstream analysis steps by setting the respective flag to 1 only on the samples that passed quality control
+
 # Installation (<10 minutes)
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 2. clone/download this repository (eg git clone https://github.com/sreichl/atacseq_pipeline.git)
@@ -31,15 +37,15 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
 All software/package dependencies are installed and managed automatically via Snakemake and conda.
 
 # Configuration
-You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths.
+You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths. If in doubt try the default values.
 - pipeline configuration (conifg/pipeline_config.yaml): one off set up in your environment
     - before execution edit the path to your project configuration (project_config)
-    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file and edi the project_config path
+    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file and only edit the project_config path
 - project configuration (project_config): different for every project/dataset
 - sample annotation (sample_annotation): technical unit annotation for processing
 - sample metadata (sample_metadata): metadata used in downstream analysis steps and for visualization
 
-detailed specifications can be found in the appendix below
+detailed specifications can be found in the appendix below.
 
 # Execution
 ## 1. Change working directory & activate conda environment
@@ -149,7 +155,7 @@ The pipeline configuration has to be set up only once in your environment and ca
 the following files have always to be provided for each genome (hg39 & mm10), respectively
 
 - bowtie2_index: indices for Bowtie2
-- chromosome_sizes: 
+- chromosome_sizes: files to define the chromosome lengths for a given genome
 - blacklisted_regions: blacklisted regions from ENCODE as .bed files
 - whitelisted_regions: complement to the blacklisted regions, also as .bed files
 - unique_tss: .bed files, from gencode (hg38) or CCDS (mm10)
@@ -160,6 +166,10 @@ the following files have always to be provided for each genome (hg39 & mm10), re
 - gencode_gtf: gencode .gtf files
 - regulatory_build_gtf: regulatory build regulatory features .gtf files (generated from gff.gz files from Ensembl with provided script /workflow/scripts/parse_reg_build_file.py)
 - data_sources: here you can specify the dynamic absolute paths to your raw data by using {variables}, which have to be columns in the sample annotation configuration file. The entries correspond to the values in the data_source column in sample annotation configuration file.
+- cluster parameters:
+    - partition: on which partition to submit the jobs
+    - memory: how much memory for each job
+    - threads: how many threads/cpus-per-task are needed for each job
 
 the provided configuration file is completely filled and set up for the environment at CeMM 
 
@@ -173,14 +183,14 @@ the provided configuration file is completely filled and set up for the environm
     - project_path: path to the project directory for all the generated results
     - project_config: path to this file
     - genome: used genome in the project (hg38 or mm10)
-    - adapter_sequence: nucleotide adapter sequence of the used ATAC-seq protocol
+    - adapter_sequence: nucleotide adapter sequence of the used ATAC-seq protocol (used by bowtie2 if provided, can be empty)
 - downstream analysis parameters
-    - downstream_analysis: 0 for stopping after processing, 1 for executing the whole pipeline
+    - downstream_analysis: 0 for stopping after processing (and inspection of multiQC report in project_path/atacseq_report/multiqc_report.html), 1 for executing the whole pipeline including all downstream steps
     - sample_metadata: path to sample metadata file (see below)
-    - plot_by: list of metadata of interest to be plotted
+    - plot_by: list of metadata of interest to be plotted, elements need to be columns in the sample metadata file (see below) (put only 'pass_qc' for simple plots)
     - peak_support_threshold: minimum number of peaks per region, for region to be kept after filtering 
     - proportion: proportion of samples within min_group that has to "express" a region to not be filtered out
-    - min_group: column in the sample metadata file that distinguishes between groups of interest (eg condition)
+    - min_group: column in the sample metadata file that distinguishes between groups of interest (eg condition), used during region filtering step to ensure that regions of interest, which are only present in subgroups, are retained (can be empty, eg '')
     - split_by: column in the sample metadata file that distinguishes between subsets of the data that should be analyzed individually
     - HVR_percentage: percentage of regions to keep as highly variable regions
 - region annotation parameters (number of bases, all integers)

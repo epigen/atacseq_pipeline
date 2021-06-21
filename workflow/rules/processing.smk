@@ -30,9 +30,13 @@ rule filter_regions:
         counts = os.path.join(config["project_path"],'{split}',"{split}_counts.csv"),
         support = os.path.join(config["project_path"],'all',"all_support.csv"),
         annot = os.path.join(config["project_path"],'{split}',"{split}_annotation.csv"),
+        consensus_regions = os.path.join(config["project_path"],'all',"consensus_regions.bed"),
+        regions_annot = os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv"),
     output:
         filtered_data=os.path.join(config["project_path"],'{split}',"{split}_filtered.csv"),
         filtered_plots=report(os.path.join(config["project_path"],'{split}',"{split}_filtered_regions.svg"), caption="../report/filter_regions.rst", category="{split}", subcategory="filtered"),
+        filtered_consensus_regions=os.path.join(config["project_path"],'{split}',"{split}_consensus_regions_filtered.bed"),
+        filtered_regions_annot=os.path.join(config["project_path"],'{split}',"{split}_consensus_regions_annotation_filtered.csv"),
     params:
         peak_support_threshold = config["peak_support_threshold"],
         proportion = config["proportion"],

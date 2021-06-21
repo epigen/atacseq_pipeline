@@ -3,7 +3,7 @@
 #### filter regions by support and mean/variance distribution ####
 
 #### libraries
-import pybedtools
+import pybedtools as bedtools
 import os
 import time
 import pandas as pd
@@ -75,9 +75,9 @@ def plot_sequenced_samples(df, n_samples=30, ax=None, xlabel='Read count', ylabe
 #### configurations
 
 # input
-data_counts=pd.read_csv(snakemake.input[0], index_col=0)
-support=pd.read_csv(snakemake.input[1], index_col=0)
-annot=pd.read_csv(snakemake.input[2], index_col=0)
+data_counts=pd.read_csv(snakemake.input['counts'], index_col=0)
+support=pd.read_csv(snakemake.input['support'], index_col=0)
+annot=pd.read_csv(snakemake.input['annot'], index_col=0)
 
 # parameters
 peak_support_threshold = snakemake.params["peak_support_threshold"]
@@ -85,8 +85,8 @@ large_min_n_proportion = snakemake.params["proportion"]
 min_group = snakemake.params["min_group"]
 
 # output
-output_data=snakemake.output[0]
-output_plot=snakemake.output[1]
+output_data=snakemake.output['filtered_data']
+output_plot=snakemake.output['filtered_plots']
 
 #####  filter regions by peak support
 support = support.loc[data_counts.index,:]
@@ -153,3 +153,16 @@ plt.close()
 filtered_counts = data_filtered.loc[min_count_mask, :]
 # save filtered counts
 filtered_counts.to_csv(output_data)
+
+### generate filtered consensus region set and region annotations
+# load consensus region set
+consensus_regions = pd.read_csv(snakemake.input['consensus_regions'], sep='\t', index_col=3, header=None,)
+# load consensus region set annotations
+annot_regions = pd.read_csv(snakemake.input['regions_annot'], index_col=0, header=0,)
+# apply filter on consensus region set and annotations
+consensus_regions = consensus_regions.loc[filtered_counts.index,:]
+annot_regions = annot_regions.loc[filtered_counts.index,:]
+# save filtered consensus region set and annotations
+consensus_regions['ID'] = consensus_regions.index
+bedtools.BedTool().from_dataframe(consensus_regions).saveas(snakemake.output['filtered_consensus_regions'])
+annot_regions.to_csv(snakemake.output['filtered_regions_annot'])

@@ -1,1 +1,1 @@
-Sample metadata file from {{snakemake.config["atacseq.sample_metadata"]}}
+Sample metadata file from {{snakemake.config["sample_metadata"]}}

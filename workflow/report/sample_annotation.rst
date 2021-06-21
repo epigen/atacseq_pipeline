@@ -1,1 +1,1 @@
-Sample annotation file from {{snakemake.config["atacseq.sample_annotation"]}}
+Sample annotation file from {{snakemake.config["sample_annotation"]}}

@@ -30,13 +30,13 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
 1. perform only the processing, by setting the downstram_analysis flag to 0 in the project configuration
 2. use the generated multiQC report (project_path/atacseq_report/multiqc_report.html) to judge the quality of your samples
 3. fill out the mandatory quality control column (pass_qc) in the sample metadata configuration file (you can even use some of the quality metrics for plotting eg like I did in the example files with 'FRiP')
-4. finally execute the remaining donwstream analysis steps by setting the respective flag to 1 only on the samples that passed quality control
+4. finally execute the remaining donwstream analysis steps by setting the respective flag to 1, thereby only the samples that passed quality control will be included
 
 # Installation (<10 minutes)
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 2. clone/download this repository (eg git clone https://github.com/sreichl/atacseq_pipeline.git)
 
-All software/package dependencies are installed and managed automatically via Snakemake and conda.
+All software/package dependencies are installed and managed automatically via Snakemake and conda (and optional Singularity).
 
 # Configuration
 You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths. If in doubt try the default values.

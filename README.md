@@ -208,7 +208,7 @@ the provided configuration file is completely filled and set up for the environm
 ## sample annotation specifications
 - every sequencing unit is a row and one sample can have multiple rows
 - first column (sample_name) contains the sample name
-- mandatory columns: data_source, skip_prepocess (yes/no, if yes -> sample will not be processed), all columns used in the respective data_source field in the pipeline configuration
+- mandatory columns: data_source, skip_preprocess (yes/no, if yes -> sample will not be processed, this value has to be the same for all rows of the same sample!), all columns used in the respective data_source field in the pipeline configuration
 - columns describe technical variables flowcell, lane,...
 
 2 examples (hg38 & mm10) are provided in the test/ directory

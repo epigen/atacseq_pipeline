@@ -179,7 +179,7 @@ the provided configuration file is completely filled and set up for the environm
 - general project information
     - project_name: project name, used throughout the pipeline
     - project_uuid: unique ID
-    - public_html_folder: in the folder a symlink with the unique ID will be created pointing to the results directory
+    - public_html_folder: in the folder a symlink with the unique ID will be created pointing to the results directory (this folder has to exist!)
     - base_url: url from where the public_html directory can be accessed
     - sample_annotation: path to the sample annotation file (see below)
     - project_path: path to the project directory for all the generated results

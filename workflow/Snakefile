@@ -209,7 +209,7 @@ rule all:
             split=data_splits,
             step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
         meanvar_plots=expand(os.path.join(config["project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
-        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv"),
+        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
     output:
         confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
     params:

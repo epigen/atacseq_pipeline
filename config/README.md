@@ -68,3 +68,6 @@ the provided configuration file is completely filled and set up for the environm
 - every sample is a row and the columns correspond to metadata entries eg cell type or condition
 - first column (sample_name) contains the sample name
 - mandatory columns: pass_qc with numeric value between 0 and 1; every sample >0 is included in the downstream analysis
+
+
+2 examples (hg38 & mm10) are provided in the test/ directory

@@ -3,5 +3,6 @@ usage:
   # at least conda, singularity, or both
   software-stack-deployment:
     conda: true
-    singularity: true
+    singularity: false
+    singularity+conda: true
   report: true

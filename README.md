@@ -29,8 +29,9 @@ Table of contents
 
 # Software
 This project wouldn't be possible without the following software
+
 | Software       | Reference (DOI)                                   |
-| -------------- | ------------------------------------------------- |
+| :------------: | :-----------------------------------------------: |
 | bedtools       | https://doi.org/10.1093/bioinformatics/btq033     |
 | Bowtie2        | https://doi.org/10.1038/nmeth.1923                |
 | CQN            | https://doi.org/10.1093/biostatistics/kxr054      |

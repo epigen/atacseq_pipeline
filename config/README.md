@@ -1,4 +1,14 @@
 # Configuration
+
+You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths. If in doubt try the default values.
+- pipeline configuration (conifg/pipeline_config.yaml): one off set up in your environment
+    - before execution edit the path to your project configuration (project_config)
+    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file and only edit the project_config path
+- project configuration (project_config): different for every project/dataset
+- sample annotation (sample_annotation): technical unit annotation for processing
+- sample metadata (sample_metadata): metadata used in downstream analysis steps and for visualization
+
+
 ## pipeline configuration specifications
 The pipeline configuration has to be set up only once in your environment and can be found in config/pipeline_config.yaml. It is mostly home to a lot of absolute paths pointing to required reference data.
 - project_config: absolute path to your project configuration file (see next section)

@@ -1,11 +1,44 @@
 # Ultimate ATAC-seq Data Processing & Analysis Pipeline
 From r**A**w (unaligned) BAM files to normali**Z**ed counts.
 
-A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility is ensured by using conda and Singularity.
-
-Standardized Snakemake [usage instructions](https://snakemake.github.io/snakemake-workflow-catalog?usage=sreichl/atacseq_pipeline).
+A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility and Scalability is ensured by using Snakemake, conda and Singularity.
 
 ![Workflow Rulegraph](./workflow/dags/atacseq_pipeline_rulegraph.svg)
+
+Table of contents
+----------------
+  * [Authors](#authors)
+  * [Software](#software)
+  * [Methods](#methods)
+  * [Features](#features)
+  * [Usage](#usage)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+  * [Execution](#execution)
+  * [Module](#module)
+  * [Report](#report)
+  * [Results](#results)
+  * [Examples](#examples)
+  * [Tips & FAQs](#tips)
+
+# Authors
+- [Stephan Reichl](https://github.com/sreichl)
+- [Bekir Ergüner](https://github.com/berguner)
+- [Daniele Barreca](https://github.com/DanieleBarreca)
+- [Lukas Folkman](https://github.com/lukas-folkman)
+
+# Software
+This project wouldn't be possible without the following open source software
+(coming soon)
+| Software       | Reference                                         |
+| -------------- | ------------------------------------------------- |
+| Bowtie2        | https://doi.org/10.1038/nmeth.1923                |
+| TBA            | URL                                               |
+
+
+
+# Methods
+Method Template coming soon
 
 # Features
 - Processing
@@ -28,17 +61,21 @@ Standardized Snakemake [usage instructions](https://snakemake.github.io/snakemak
     - mean-variance-relationship plot
 - Snakemake report generation for workflow statistics, documentation, reproducibility and result presentation
 
-# Recommended Usage
+# Usage
+These steps are the recommended usage for the first run of the workflow:
 1. perform only the processing, by setting the downstram_analysis flag to 0 in the project configuration
 2. use the generated multiQC report (project_path/atacseq_report/multiqc_report.html) to judge the quality of your samples
 3. fill out the mandatory quality control column (pass_qc) in the sample metadata configuration file (you can even use some of the quality metrics for plotting eg like I did in the example files with 'FRiP')
 4. finally execute the remaining donwstream analysis steps by setting the respective flag to 1, thereby only the samples that passed quality control will be included
 
-# Installation (<10 minutes)
+This workflow is written with snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=sreichl/atacseq_pipeline).
+
+# Installation
+This should take less than 10 minutes.
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
 2. clone/download this repository (eg git clone https://github.com/sreichl/atacseq_pipeline.git)
 
-All software/package dependencies are installed and managed automatically via Snakemake and conda (and optional Singularity).
+All software/package dependencies are installed and managed automatically via Snakemake and conda (and optional Singularity) and installed upon the first run of the workflow.
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
@@ -86,7 +123,8 @@ command for execution with singularity, just add the flag --use-singularity and 
 ```
 snakemake -p --use-conda --use-singularity --singularity-args "--bind /nobackup:/nobackup --bind /research:/research --bind /home:/home"
 ```
-# Use as module in another Snakemake workflow (soon)
+# Module
+Use as module in another Snakemake workflow (soon)
 - [https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#snakefiles-modules](https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#snakefiles-modules)
 - [https://slides.com/johanneskoester/snakemake-6#/8](https://slides.com/johanneskoester/snakemake-6#/8)
 
@@ -121,7 +159,8 @@ Project directory structure:
 We provide configuration files for two example datasets (mm10 & hg38).
 Additionally, the report zip archive of the hg38 test example is provided to showcase the pipeline results.
 
-# Tips, FAQ & Troubleshooting
+# Tips
+Here are some tips for troubleshooting & FAQs:
 - always first perform a dry-run with option -n
 - if unsure why a certain rule will be executed use option --reason in the dry run, this will give the reason for the execution of each rule
 - when there are 3 or less samples all the UMAP data and plots will be empty

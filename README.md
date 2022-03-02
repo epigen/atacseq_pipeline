@@ -1,7 +1,9 @@
 # Ultimate ATAC-seq Data Processing & Analysis Pipeline
-From r**A**w (unaligned) BAM files to normali**Z**ed counts
+From r**A**w (unaligned) BAM files to normali**Z**ed counts.
 
 A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility is ensured by using conda and Singularity.
+
+Standardized Snakemake [usage instructions](https://snakemake.github.io/snakemake-workflow-catalog?usage=sreichl/atacseq_pipeline).
 
 ![Workflow Rulegraph](./workflow/dags/atacseq_pipeline_rulegraph.svg)
 
@@ -39,15 +41,7 @@ A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/
 All software/package dependencies are installed and managed automatically via Snakemake and conda (and optional Singularity).
 
 # Configuration
-You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths. If in doubt try the default values.
-- pipeline configuration (conifg/pipeline_config.yaml): one off set up in your environment
-    - before execution edit the path to your project configuration (project_config)
-    - if you are a [CeMMie](https://cemm.at/) you can just take the provided file and only edit the project_config path
-- project configuration (project_config): different for every project/dataset
-- sample annotation (sample_annotation): technical unit annotation for processing
-- sample metadata (sample_metadata): metadata used in downstream analysis steps and for visualization
-
-detailed specifications can be found here config/README.md
+Detailed specifications can be found here [./config/README.md](./config/README.md)
 
 # Execution
 ## 1. Change working directory & activate conda environment

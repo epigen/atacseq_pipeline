@@ -37,6 +37,9 @@ This project wouldn't be possible without the following software
 | deeptools      | https://doi.org/10.1093/nar/gkw257                |
 | fastp          | https://doi.org/10.1093/bioinformatics/bty560     |
 | HOMER          | https://doi.org/10.1016/j.molcel.2010.05.004      |
+| MACS2          | https://doi.org/10.1186/gb-2008-9-9-r137          |
+| matplotlib     | https://doi.org/10.1109/MCSE.2007.55              |
+| MultiQC        | https://doi.org/10.1093/bioinformatics/btw354     |
 | pybedtools     | https://doi.org/10.1093/bioinformatics/btr539     |
 | pandas         | https://doi.org/10.5281/zenodo.3509134            |
 | samblaster     | https://doi.org/10.1093/bioinformatics/btu314     |
@@ -46,11 +49,6 @@ This project wouldn't be possible without the following software
 | TMM            | https://doi.org/10.1186/gb-2010-11-3-r25          |
 | UMAP           | https://doi.org/10.21105/joss.00861               |
 | UROPA          | https://doi.org/10.1038/s41598-017-02464-y        |
-| MACS2          | https://doi.org/10.1186/gb-2008-9-9-r137          |
-| matplotlib     | https://doi.org/10.1109/MCSE.2007.55              |
-| MultiQC        | https://doi.org/10.1093/bioinformatics/btw354     |
-
-
 
 # Methods
 Method Template coming soon

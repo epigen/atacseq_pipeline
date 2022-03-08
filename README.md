@@ -30,6 +30,8 @@ Table of contents
 - [Bekir Ergüner](https://github.com/berguner)
 - [Daniele Barreca](https://github.com/DanieleBarreca)
 - [Lukas Folkman](https://github.com/lukas-folkman)
+- [Lina Dobnikar](https://github.com/ld401)
+- [Christoph Bock](https://github.com/chrbock)
 
 # Software
 This project wouldn't be possible without the following software

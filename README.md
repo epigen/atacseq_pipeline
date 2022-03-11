@@ -212,6 +212,11 @@ Project directory structure:
 We provide configuration files for two example datasets (mm10 & hg38).
 Additionally, the report zip archive of the hg38 test example is provided to showcase the pipeline results.
 
+# Resources
+To ensure reproducibility of results and to make the pipeline easy-to-use we provide all required reference data for the analysis of ATAC-seq samples for both supported genomes on Zendodo: 
+- [resources for the GRCm38 (mm10) assembly of the mouse genome](https://doi.org/10.5281/zenodo.6344321)
+- [resources for the GRCh38 (hg38) assembly of the human genome](https://doi.org/10.5281/zenodo.6344173)
+
 # Tips
 Here are some tips for troubleshooting & FAQs:
 - always first perform a dry-run with option -n

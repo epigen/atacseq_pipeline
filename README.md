@@ -121,12 +121,12 @@ These steps are the recommended usage for the first run of the workflow:
 3. fill out the mandatory quality control column (pass_qc) in the sample metadata configuration file (you can even use some of the quality metrics for plotting eg like I did in the example files with 'FRiP')
 4. finally execute the remaining donwstream analysis steps by setting the respective flag to 1, thereby only the samples that passed quality control will be included
 
-This workflow is written with snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=sreichl/atacseq_pipeline).
+This workflow is written with snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
 # Installation
 This should take less than 10 minutes.
 1. install snakemake, which requires conda & mamba, according to the [documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
-2. clone/download this repository (eg git clone https://github.com/sreichl/atacseq_pipeline.git)
+2. clone/download this repository (eg git clone https://github.com/epigen/atacseq_pipeline.git)
 
 All software/package dependencies are installed and managed automatically via Snakemake and conda (and optional Singularity) and installed upon the first run of the workflow.
 
@@ -170,7 +170,8 @@ If you are using another setup get your cluster execution profile here: [The Sna
 
 ## X. Singularity execution (not tested)
 Singularity has to be installed (system wide by root) and available/loaded (eg module load singularity).
-The pipeline automatically loads the correct singularity image from [Dockerhub](https://hub.docker.com/r/sreichl/atacseq_pipeline)
+The pipeline automatically loads the correct singularity image from [Dockerhub](https://hub.docker.com/r/
+/atacseq_pipeline)
 
 command for execution with singularity, just add the flag --use-singularity and use --singularity-args to provide all the necessary directories the pipeline needs access to (in the example it is configured for the three relevant partitions at CeMM)
 ```

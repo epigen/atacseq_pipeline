@@ -23,8 +23,9 @@ Table of contents
   * [Report](#report)
   * [Results](#results)
   * [Examples](#examples)
-  * [Resources](#resources)
+  * [Data Resources](#resources)
   * [Tips & FAQs](#tips)
+  * [Links](#links)
 
 # Authors
 - [Stephan Reichl](https://github.com/sreichl)
@@ -62,7 +63,7 @@ This project wouldn't be possible without the following software
 | UROPA          | https://doi.org/10.1038/s41598-017-02464-y        |
 
 # Methods
-This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table below. Versions (ver) have to be read out from the respective conda environment specifications (.yaml file) or post execution. Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g. [X].
+This is a template for the **Methods** section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (.yaml file) or post execution. Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g. [X].
 
 **Processing.**
 Sequencing adapters were removed using the software fastp (ver) [ref]. Bowtie2 (ver) [ref] was used for the alignment of the short reads (representing locations of transposition events) to the [GRCh38 (hg38)/GRCm38 (mm10)] assembly of the [human/mouse] genome using the “--very-sensitive” parameter. PCR duplicates were marked using samblaster (ver) [ref]. Aligned BAM files were then sorted, filtered using ENCODE blacklisted regions [ref], and indexed using samtools (ver) [ref]. To detect the open chromatin regions, peak calling was performed using MACS2 (ver) [ref] using the “--nomodel”, “--keep-dup auto” and “--extsize 147” options on each sample. Homer (ver) [ref] function findMotifs was used for motif enrichment analysis over the detected open chromatin regions.
@@ -239,3 +240,9 @@ provided in workflow/dags
 snakemake --dag --forceall | dot -Tsvg > workflow/dags/all_DAG.svg
 ```
 provided for both test examples in workflow/dags
+
+# Links
+- [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)
+- [GitHub Page](https://epigen.github.io/atacseq_pipeline/)
+- [Zenodo Repository](https://doi.org/10.5281/zenodo.6323634)
+- [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline)

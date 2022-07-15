@@ -19,4 +19,4 @@ dependencies:
   - seaborn
   - matplotlib
   - scikit-learn
-  - uropa
+  - uropa==4.0.2

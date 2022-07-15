@@ -1,8 +1,11 @@
 
-project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml
+project_config: /research/home/sreichl/projects/imstruct/config/atac_atacseq_config.yaml
+# project_config: /research/home/sreichl/projects/titans/config/atac_atacseq_config.yaml
+# project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml
 # project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_mm10_atac_atacseq_config.yaml
 
 # The following section contains resource files required by the pipeline
+# adapter_fasta: ''
 adapter_fasta: /research/lab_bsf/resources/atacseq/nextera_adapters.fa
 bowtie2_index:
     hg38: /nobackup/lab_bsf/resources/genomes/hg38/indices_for_Bowtie2/hg38
@@ -44,9 +47,7 @@ data_sources:
   # entries correspond to values in the data_source column in sample_annotation table
   # {variable} can be used to replace environment variables or other sample_annotation columns
   # If you use {variable} codes, you should quote the field so python can parse it.
-  bsf: /nobackup/lab_bsf/samples/{flowcell}/{flowcell}_{lane}_samples/{flowcell}_{lane}#{BSF_name}.bam
-  bsf_test: /nobackup/lab_bsf/users/berguener/junk/atac_test_data/{flowcell}_{lane}#{BSF_name}.bam
-  cll: /research/lab_bock/projects/cll-progression/data/atac/raw/{flowcell}/{flowcell}_{lane}_samples/{flowcell}_{lane}#{BSF_name}.bam
+  imstruct: /research/lab_bock/projects/imstruct/data/MJ_041_ATACSEQ_L5362/{bam}
 
 # cluster parameters
 partition: 'shortq'

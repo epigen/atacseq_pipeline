@@ -4,6 +4,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.8
   - multiqc=1.9
   - setuptools
   - pandas

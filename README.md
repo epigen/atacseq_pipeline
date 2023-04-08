@@ -5,7 +5,7 @@ From r**A**w (unaligned) BAM files to normali**Z**ed counts.
 
 A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream processing and unsupervised analyses steps using bash, python and R. Reproducibility and Scalability is ensured by using Snakemake, conda and Singularity.
 
-**If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository and its DOI (see Zenodo badge above).**
+**If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634).**
 
 ![Workflow Rulegraph](./workflow/dags/atacseq_pipeline_rulegraph.svg)
 
@@ -92,7 +92,7 @@ Trimmed mean of M-values (TMM) normalization (ver) [ref] was performed on the fi
 **Unsupervised Analysis & Visualization.**
 We applied both linear and non-linear unsupervised dimensionality reduction methods to normalized data to visualize emerging sample-wise patterns in two dimensions. We used Principal Component Analysis (PCA) [ref] from scikit-learn (ver) [ref] as the linear approach and Uniform Manifold Approximation projection (UMAP) from umap-learn (ver) [ref] with the correlation metric as the non-linear approach. For visualization matplotlib (ver) [ref] was used.
 
-The processing and analysis described here was performed using a publicly available Snakemake [ver] (ref) workflow [ref - cite this workflow here].
+The processing and analysis described here was performed using a publicly available Snakemake [ver] (ref) workflow [[10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634)].
 
 # Features
 - Processing
@@ -246,3 +246,7 @@ provided for both test examples in workflow/dags
 - [GitHub Page](https://epigen.github.io/atacseq_pipeline/)
 - [Zenodo Repository](https://doi.org/10.5281/zenodo.6323634)
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline)
+
+# Publications
+The following publications successfully used this module for their analyses.
+- [Casteels et al (2022) Cell Reports - SMNDC1 links chromatin remodeling and splicing to regulate pancreatic hormone expression.](https://doi.org/10.1016/j.celrep.2022.111288)

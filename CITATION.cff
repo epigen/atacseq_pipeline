@@ -1,0 +1,52 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Ultimate ATAC-seq Data Processing Pipeline
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - affiliation: CeMM Research Center for Molecular Medicine
+    given-names: Stephan
+    family-names: Reichl
+    orcid: 'https://orcid.org/0000-0001-8555-7198'
+  - given-names: Bekir
+    family-names: Ergüner
+    orcid: 'https://orcid.org/0000-0001-5475-0892'
+    affiliation: CeMM Research Center for Molecular Medicine
+  - given-names: Daniele
+    family-names: Barreca
+    orcid: 'https://orcid.org/0000-0003-3373-9939'
+    affiliation: CeMM Research Center for Molecular Medicine
+  - given-names: Lukas
+    family-names: Folkman
+    orcid: 'https://orcid.org/0000-0002-5811-8875'
+    affiliation: CeMM Research Center for Molecular Medicine
+  - given-names: Lina
+    family-names: Dobnikar
+    affiliation: CeMM Research Center for Molecular Medicine
+  - given-names: Christoph
+    family-names: Bock
+    orcid: 'https://orcid.org/0000-0001-6091-3088'
+    affiliation: CeMM Research Center for Molecular Medicine
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.6323634
+    description: >-
+      This DOI represents all versions, and will always
+      resolve to the latest one.
+repository-code: 'https://github.com/epigen/atacseq_pipeline'
+url: 'https://epigen.github.io/atacseq_pipeline/'
+abstract: >-
+  A Snakemake implementation of the BSF's ATAC-seq Data
+  Processing Pipeline extended by downstream processing and
+  unsupervised analyses steps using bash, python, and R.
+keywords:
+  - Bioinformatics
+  - ATAC-seq
+  - Epigenetics
+  - Workflow
+  - Snakemake
+license: GPL-3.0

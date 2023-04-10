@@ -26,6 +26,7 @@ Table of contents
   * [Data Resources](#resources)
   * [Tips & FAQs](#tips)
   * [Links](#links)
+  * [Publications](#publications)
 
 # Authors
 - [Stephan Reichl](https://github.com/sreichl)

@@ -154,9 +154,6 @@ def configurator(default, project_config):
 ##### set minimum snakemake version #####
 min_version("6.0.3")
 
-##### container image #####
-# containerized: "docker://sreichl/atacseq_pipeline"
-
 ##### setup report #####
 report: "report/workflow.rst"
     

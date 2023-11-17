@@ -1,6 +1,0 @@
-__default__:
-  error: "logs/logs_slurm/{rule}_{wildcards}.err"
-  output: "logs/logs_slurm/{rule}_{wildcards}.out"
-  partition: "{params.partition}"
-  qos: "{params.partition}"
-  kill-on-invalid-dep: "yes"

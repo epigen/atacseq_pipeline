@@ -1,0 +1,12 @@
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/18b2bf53c6ae53904d0cb7de7bc826e1
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/1a98653dc2df2978820a8ae5e3b32b1c
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/21fcdf45e51bac7d7c418b7fcc1dd5b8
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/43088df5cace79ff036d33ad02e2f015
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/4ee5b5895db934e654b74efae3350420
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/5538aaea489f3d56c2b3b4e0369969bc
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/578dffc0e8c321209137095701940165
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/85626a1ba6b4dfe92fa60c8bc89b24c9
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/86ef6dc42f70b6f3d06072e044fa5c41
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/8ccf49af55d590e8d2a68886ae41d3de
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/8e9de4c5a247d355cd6c4ad98d028a78
+/home/sreichl/projects/atacseq_pipeline/.snakemake/conda/ae54307dda1a69eea37e976ecdee3da9

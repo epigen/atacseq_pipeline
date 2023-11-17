@@ -1,0 +1,24 @@
+name: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/4ee5b5895db934e654b74efae3350420
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python==3.8
+  - bedtools==2.27.1
+  - ucsc-twobittofa
+  - bioconductor-deseq2
+  - bioconductor-cqn
+  - ipykernel
+  - bioconductor-copywriter
+  - rpy2
+  - sra-tools
+  - umap-learn
+  - pandas
+  - pybedtools
+  - seaborn
+  - matplotlib
+  - scikit-learn
+prefix: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/4ee5b5895db934e654b74efae3350420

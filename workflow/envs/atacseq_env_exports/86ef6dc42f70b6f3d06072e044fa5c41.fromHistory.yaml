@@ -1,0 +1,22 @@
+name: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/86ef6dc42f70b6f3d06072e044fa5c41
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - samtools
+  - fastp
+  - samblaster==0.1.24
+  - bedtools
+  - macs2
+  - deeptools
+  - bowtie2
+  - setuptools
+  - json
+  - csvkit
+  - pandas
+  - matplotlib==3.2.2
+  - r-base==4.0.3
+prefix: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/86ef6dc42f70b6f3d06072e044fa5c41

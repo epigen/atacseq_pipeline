@@ -1,0 +1,15 @@
+name: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/578dffc0e8c321209137095701940165
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python==3.8
+  - multiqc==1.9
+  - setuptools
+  - pandas
+  - pytables
+  - pip
+prefix: 
+  /home/sreichl/projects/atacseq_pipeline/.snakemake/conda/578dffc0e8c321209137095701940165

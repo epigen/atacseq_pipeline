@@ -1,1 +1,0 @@
-Dimensionality reduced plots to two dimensions by {{snakemake.wildcards["dimred"]}} colored by specified metadata

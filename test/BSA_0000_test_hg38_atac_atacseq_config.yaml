@@ -12,10 +12,6 @@ adapter_sequence: GTCTCGTGGGCTCGG
 # processing and downstream analysis
 downstream_analysis: 1
 sample_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_sample_metadata.csv
-plot_by:
-    - 'pass_qc'
-    - 'FRiP'
-    - 'category'
 peak_support_threshold: 3
 proportion: 0.7
 min_group: 'category'

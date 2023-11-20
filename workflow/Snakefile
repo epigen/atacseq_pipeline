@@ -199,12 +199,6 @@ rule all:
         project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
-#         dimred_plots=expand(
-#             os.path.join(config["project_path"],'{split}', 'unsupervised_analysis',"{dimred}_{split}_{step}_{plot_by_variable}.svg"),
-#             plot_by_variable=config['plot_by'], 
-#             dimred=["UMAP","PCA"],
-#             split=data_splits,
-#             step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
         meanvar_plots=expand(os.path.join(config["project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
         consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
     output:
@@ -221,10 +215,6 @@ rule all:
         command_str="touch {}".format(os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])))
         subprocess.run(command_str, shell=True)
 
-# snakemake --unlock
-# snakemake --configfile {config[project_config]} --report {output.atacseq_report}
-# mail -s "snakemake ATAC-seq pipeline for {config[project_name]} finished" {config[email]}
-
 ##### load rules #####
 # include: "rules/install_homer.smk"
 include: "rules/bowtie2_align.smk"
@@ -233,5 +223,4 @@ include: "rules/misc_tasks.smk"
 include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
 include: "rules/processing.smk"
-include: "rules/dimred.smk"
 include: "rules/region_annotation.smk"

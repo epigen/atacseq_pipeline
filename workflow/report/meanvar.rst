@@ -1,1 +1,0 @@
-Plot mean-variance relationship to inform if variance stabilizing measures have to be taken

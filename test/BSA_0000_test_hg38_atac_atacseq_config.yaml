@@ -9,14 +9,7 @@ project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_t
 genome: hg38
 adapter_sequence: GTCTCGTGGGCTCGG
 
-# processing and downstream analysis
-downstream_analysis: 1
 sample_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_sample_metadata.csv
-peak_support_threshold: 3
-proportion: 0.7
-min_group: 'category'
-split_by: 'category'
-HVR_percentage: 10
 
 # region annotation parameters for uropa with gencode_gtf reference (pipeline config)
 tss_size: 100

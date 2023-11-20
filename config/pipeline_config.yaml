@@ -47,6 +47,8 @@ data_sources:
   # entries correspond to values in the data_source column in sample_annotation table
   # {variable} can be used to replace environment variables or other sample_annotation columns
   # If you use {variable} codes, you should quote the field so python can parse it.
+  bsf: /nobackup/lab_bsf/samples/{flowcell}/{flowcell}_{lane}samples/{flowcell}{lane}#{BSF_name}.bam
+  bsf_test: /nobackup/lab_bsf/users/berguener/junk/atac_test_data/{flowcell}_{lane}#{BSF_name}.bam
   imstruct: /research/lab_bock/projects/imstruct/data/MJ_041_ATACSEQ_L5362/{bam}
 
 # cluster parameters

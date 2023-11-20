@@ -80,16 +80,9 @@ def configurator(default, project_config):
                    'regulatory_regions': config['regulatory_regions'][project_genome],
                    'sample_annotation': config['sample_annotation'],
                    'sample_metadata': config['sample_metadata'],
-                   'plot_by': config['plot_by'],
-                   'peak_support_threshold': config['peak_support_threshold'],
-                   'proportion': config['proportion'],
-                   'min_group': config['min_group'],
                    'genome_fasta': config['genome_fasta'][project_genome],
                    'gencode_gtf': config['gencode_gtf'][project_genome],
                    'regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
-                   'split_by': config['split_by'],
-                   'HVR_percentage': config['HVR_percentage'],
-                   'downstream_analysis': config['downstream_analysis'],
                    'tss_size': config['tss_size'],
                    'proximal_size_up': config['proximal_size_up'],
                    'proximal_size_dn': config['proximal_size_dn'],
@@ -173,9 +166,6 @@ results_dir = os.path.join(config["project_path"], "atacseq_results")
 sample_metadata=pd.read_csv(config["sample_metadata"], index_col=0)
 
 data_splits = ['all']
-if config["split_by"]!='':
-    data_splits.extend(list(sample_metadata[config["split_by"]].unique()))
-    
 steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
 
 # cluster parameters
@@ -195,11 +185,10 @@ double_slop = ( tss_slop * 2 )
 # generates a HTML report from all the results as self-contained .zip archive for sharing
 rule all:
     input:
-        os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report
+        os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report -> WHAT?
         project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
-        meanvar_plots=expand(os.path.join(config["project_path"],'{split}',"mean_variance_analysis","mean_variance_{split}_{step}.svg"),split=data_splits, step=steps) if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
         consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
     output:
         confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
@@ -222,5 +211,4 @@ include: "rules/peak_calling.smk"
 include: "rules/misc_tasks.smk"
 include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
-include: "rules/processing.smk"
 include: "rules/region_annotation.smk"

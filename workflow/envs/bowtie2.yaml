@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - samtools=1.12
+  - fastp=0.20.1
+  - bowtie2=2.4.4
+  - samblaster=0.1.24

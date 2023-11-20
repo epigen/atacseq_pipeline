@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - deeptools=3.5.1
+  - bedtools=2.27.1
+  - python=3.8
+  - pandas=1.2.4
+  - pybedtools=0.8.2

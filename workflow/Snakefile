@@ -198,10 +198,8 @@ rule all:
         subprocess.run(command_str, shell=True)
 
 ##### load rules #####
-# include: "rules/install_homer.smk"
-include: "rules/bowtie2_align.smk"
-include: "rules/peak_calling.smk"
-include: "rules/misc_tasks.smk"
+include: "rules/install_homer.smk"
+include: "rules/processing.smk"
 include: "rules/multiqc.smk"
 include: "rules/quantification.smk"
 include: "rules/region_annotation.smk"

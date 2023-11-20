@@ -66,7 +66,7 @@ rule uropa_region_annotation:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 8)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/uropa.yaml",
     log:
         "logs/rules/uropa_run.log"
     shell:
@@ -92,7 +92,7 @@ rule homer_region_annotation:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
     conda:
-        "../envs/atacseq_pipeline.yaml",
+        "../envs/macs2_homer.yaml",
     log:
         "logs/rules/homer_region_annotation.log"
     shell:

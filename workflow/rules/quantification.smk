@@ -21,7 +21,7 @@ rule get_consensus_regions:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/pybedtools.yaml",
     log:
         "logs/rules/get_consensus_regions.log"
     script:
@@ -43,7 +43,7 @@ rule quantify_support_sample:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/pybedtools.yaml",
     log:
         "logs/rules/quantify_support_sample_{sample}.log"
     script:
@@ -65,7 +65,7 @@ rule quantify_support_aggregate:
         mem_mb=config.get("mem", "32000"),
     threads: config.get("threads", 4)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/pybedtools.yaml",
     log:
         "logs/rules/quantify_support_aggregate.log"
     script:
@@ -89,7 +89,7 @@ rule quantify_counts_sample:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/pybedtools.yaml",
     log:
         "logs/rules/quantify_counts_sample_{sample}.log"
     script:
@@ -111,7 +111,7 @@ rule quantify_counts_aggregate:
         mem_mb=config.get("mem", "32000"),
     threads: config.get("threads", 4)
     conda:
-        "../envs/atacseq_analysis.yaml",
+        "../envs/pybedtools.yaml",
     log:
         "logs/rules/quantify_counts_aggregate.log"
     script:

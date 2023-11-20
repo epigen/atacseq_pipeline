@@ -8,7 +8,7 @@ rule install_homer:
         mem_mb=config.get("mem", "8000"),
     threads: config.get("threads", 1)
     conda:
-        "../envs/homer.yaml",
+        "../envs/macs2_homer.yaml",
     log:
         "logs/rules/install_homer.log"
     shell:

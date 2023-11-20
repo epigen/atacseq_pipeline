@@ -1,4 +1,10 @@
 
+##### RESOURCES #####
+mem: '32000'
+threads: 2
+partition: 'shortq'
+
+
 # project_config: /research/home/sreichl/projects/imstruct/config/atac_atacseq_config.yaml
 # project_config: /research/home/sreichl/projects/titans/config/atac_atacseq_config.yaml
 project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_config.yaml
@@ -50,8 +56,3 @@ data_sources:
   bsf: /nobackup/lab_bsf/samples/{flowcell}/{flowcell}_{lane}samples/{flowcell}{lane}#{BSF_name}.bam
   bsf_test: /nobackup/lab_bsf/users/berguener/junk/atac_test_data/{flowcell}_{lane}#{BSF_name}.bam
   imstruct: /research/lab_bock/projects/imstruct/data/MJ_041_ATACSEQ_L5362/{bam}
-
-# cluster parameters
-partition: 'shortq'
-memory: '32G'
-threads: 2

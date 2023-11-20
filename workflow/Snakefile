@@ -87,9 +87,7 @@ def configurator(default, project_config):
                    'proximal_size_up': config['proximal_size_up'],
                    'proximal_size_dn': config['proximal_size_dn'],
                    'distal_size': config['distal_size'],
-                   'partition': config['partition'],
-                   'memory': config['memory'],
-                   'threads': config['threads'],
+                   'quantification_flag': config['quantification_flag'],
                    }
     if 'adapter_sequence' in config:
         inputs_dict['adapter_sequence'] = config['adapter_sequence']
@@ -145,7 +143,7 @@ def configurator(default, project_config):
     return inputs_dict, sample_dicts
 
 ##### set minimum snakemake version #####
-min_version("6.0.3")
+min_version("7.15.2")
 
 ##### setup report #####
 report: "report/workflow.rst"
@@ -168,11 +166,6 @@ sample_metadata=pd.read_csv(config["sample_metadata"], index_col=0)
 data_splits = ['all']
 steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
 
-# cluster parameters
-partition=config['partition']
-mem=config['memory']
-threads=config['threads']
-
 # calculate parameters (for misc tasks)
 tss_slop = 2000
 noise_lower = 100
@@ -189,15 +182,15 @@ rule all:
         project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
         sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
         sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
-        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["downstream_analysis"]==1 else os.path.join(config["project_path"],"atacseq_report"),
+        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["quantification_flag"]==1 else [],
     output:
         confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
     params:
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "8000"),
+    threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","all.log")
     run:

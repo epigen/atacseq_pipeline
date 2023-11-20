@@ -22,10 +22,10 @@ rule misc_tasks:
         chromosome_sizes = config["chromosome_sizes"],
         whitelist = config["whitelisted_regions"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:

@@ -11,10 +11,10 @@ rule uropa_prepare:
         # paths
         results_dir = os.path.join(config["project_path"],'all','consensus_regions_annotation'),
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     log:
         "logs/rules/uropa_prepare.log"
     run:
@@ -61,10 +61,10 @@ rule uropa_region_annotation:
         # paths
         results_dir = os.path.join(config["project_path"],'all','consensus_regions_annotation'),
         # cluster parameters
-        partition=partition,
-    threads: 8
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 8)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:
@@ -87,10 +87,10 @@ rule homer_region_annotation:
         # paths
         homer_bin = os.path.join(os.getcwd(),"resources","homer","bin"),
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:
@@ -116,10 +116,10 @@ rule region_annotation_aggregate:
         # paths
         results_dir = os.path.join(config["project_path"],'all'),
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     log:
         "logs/rules/region_annotation_aggregate.log"
     run:

@@ -3,10 +3,10 @@ rule install_homer:
     output:
         homer_script=os.path.join("resources","homer","configureHomer.pl"),
     params:
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "8000"),
+    threads: config.get("threads", 1)
     conda:
         "../envs/homer.yaml",
     log:

@@ -9,10 +9,10 @@ rule multiqc:
         project_config = config["project_config"],
         project_path = config["project_path"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/multiqc.yaml",
     log:

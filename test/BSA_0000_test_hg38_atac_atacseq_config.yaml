@@ -9,6 +9,8 @@ project_config: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_t
 genome: hg38
 adapter_sequence: GTCTCGTGGGCTCGG
 
+quantification_flag: 1
+
 sample_metadata: /research/home/sreichl/projects/atacseq_pipeline/test/BSA_0000_test_hg38_atac_atacseq_sample_metadata.csv
 
 # region annotation parameters for uropa with gencode_gtf reference (pipeline config)

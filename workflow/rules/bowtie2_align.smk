@@ -29,10 +29,10 @@ rule bowtie2_align:
         bowtie2_index=config["bowtie2_index"],
         chrM=config["mitochondria_name"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_pipeline.yaml",
     log:

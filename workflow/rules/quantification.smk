@@ -16,10 +16,10 @@ rule get_consensus_regions:
         blacklist_file = config["blacklisted_regions"],
         chrom_file = config["chromosome_sizes"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:
@@ -38,10 +38,10 @@ rule quantify_support_sample:
         # pipeline information
         chrom_file = config["chromosome_sizes"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:
@@ -60,10 +60,10 @@ rule quantify_support_aggregate:
         # paths
         results_dir = results_dir,
         # cluster parameters
-        partition=partition,
-    threads: 4
+        partition=config.get("partition"),
     resources:
-        mem="64G",
+        mem_mb=config.get("mem", "32000"),
+    threads: config.get("threads", 4)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:
@@ -84,10 +84,10 @@ rule quantify_counts_sample:
         # pipeline information
         chrom_file = config["chromosome_sizes"],
         # cluster parameters
-        partition=partition,
-    threads: threads
+        partition=config.get("partition"),
     resources:
-        mem=mem,
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:
@@ -106,10 +106,10 @@ rule quantify_counts_aggregate:
         # paths
         results_dir = results_dir,
         # cluster parameters
-        partition=partition,
-    threads: 4
+        partition=config.get("partition"),
     resources:
-        mem="64G",
+        mem_mb=config.get("mem", "32000"),
+    threads: config.get("threads", 4)
     conda:
         "../envs/atacseq_analysis.yaml",
     log:

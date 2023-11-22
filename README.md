@@ -124,7 +124,7 @@ Additionally, the report zip archive of the hg38 test example is provided to sho
   - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between samples.
   - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significant features between sample groups.
   - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis)  for biomedical interpretation of results.
-  - [Genome Tracks](https://github.com/epigen/genome_tracks) for visualization of top hits.
+  - [Genome Tracks](https://github.com/epigen/genome_tracks) for visualization of genmoics regions of interest or top hits.
 
 # Publications
 The following publications successfully used this module for their analyses.

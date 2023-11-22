@@ -1,5 +1,14 @@
 # Configuration
 
+## NEW
+required columns:
+- sample_name (first column!)
+- read_type: single or paired
+- bam_file: path to bam file
+- pass_qc: between 0 (not used for quantification) until 1 -> maybe use this as implicit quantification flag?
+
+## OLD
+
 You need 2 configuration files and 2 annotation files to run the complete workflow from A to Z. You can use the provided examples as starting point. Always use absolute paths. If in doubt try the default values.
 - pipeline configuration (conifg/pipeline_config.yaml): one off set up in your environment
     - before execution edit the path to your project configuration (project_config)

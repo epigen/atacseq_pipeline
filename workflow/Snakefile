@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from snakemake.utils import validate, min_version
 
+# TODO: check if all libraries are still required
 import argparse
 import yaml, json
 import csv
@@ -14,192 +15,183 @@ from string import Template
 
 import subprocess
 
-##### install homer if needed #####
-if not os.path.exists(os.path.join("resources","homer","configureHomer.pl")):
-    homer_path= os.path.join("workflow", "scripts","install_homer.sh")
-    print("start homer installation (~10 minutes)")
-    command_str = 'chmod +x {}'.format(homer_path)
-    subprocess.run(command_str, shell=True)
-    subprocess.call(homer_path, shell=True)
-    print("finished homer installation")
+module_name = "atacseq_pipeline"
 
+# ##### utility functions #####
+# def update(d, u):
+#     """
+#     Recursively updates the entries in a given dictionary
+#     :param d: The dictionary to be updated
+#     :param u: The values which will be added to the input dictionary
+#     :return: Updated dictionary
+#     """
+#     for k, v in u.items():
+#         if isinstance(v, Mapping):
+#             d[k] = update(d.get(k, {}), v)
+#         else:
+#             d[k] = v
+#     return d
 
-##### utility functions #####
-def get_raw_bams(wildcards):
-    return str.split(samples[wildcards.sample]["raw_bams"])
+# def configurator(default, project_config):
 
-def update(d, u):
-    """
-    Recursively updates the entries in a given dictionary
-    :param d: The dictionary to be updated
-    :param u: The values which will be added to the input dictionary
-    :return: Updated dictionary
-    """
-    for k, v in u.items():
-        if isinstance(v, Mapping):
-            d[k] = update(d.get(k, {}), v)
-        else:
-            d[k] = v
-    return d
+#     # Read in project specific config file
+#     specific = {}
 
-def configurator(default, project_config):
-
-    # Read in project specific config file
-    specific = {}
-
-    with open(project_config, 'r') as stream:
-        try:
-            specific = yaml.safe_load(stream)
-        except yaml.YAMLError as exception:
-            sys.stderr.write(str(exception))
+#     with open(project_config, 'r') as stream:
+#         try:
+#             specific = yaml.safe_load(stream)
+#         except yaml.YAMLError as exception:
+#             sys.stderr.write(str(exception))
             
-    update(default, specific)
+#     update(default, specific)
 
-    # rename the updated dictionary
-    config = default
+#     # rename the updated dictionary
+#     config = default
 
-    # Create project directory
-    project_path = config['project_path']
-    if not os.path.exists(project_path):
-        os.mkdir(project_path)
+#     # Create project directory
+#     project_path = config['project_path']
+#     if not os.path.exists(project_path):
+#         os.mkdir(project_path)
 
-    project_genome = config['genome']
-    project_genome_size = config['genome_sizes'][project_genome]
-    inputs_dict = {'project_name': config['project_name'],
-                   'project_path': config['project_path'],
-                   'project_config': config['project_config'],
-                   'email': config['email'],
-                   'genome': project_genome,
-                   'adapter_fasta': config['adapter_fasta'],
-                   'bowtie2_index': config['bowtie2_index'][project_genome],
-                   'chromosome_sizes': config['chromosome_sizes'][project_genome],
-                   'blacklisted_regions': config['blacklisted_regions'][project_genome],
-                   'whitelisted_regions': config['whitelisted_regions'][project_genome],
-                   'unique_tss': config['unique_tss'][project_genome],
-                   'mitochondria_name': config['mitochondria_names'][project_genome],
-                   'regulatory_regions': config['regulatory_regions'][project_genome],
-                   'sample_annotation': config['sample_annotation'],
-                   'sample_metadata': config['sample_metadata'],
-                   'genome_fasta': config['genome_fasta'][project_genome],
-                   'gencode_gtf': config['gencode_gtf'][project_genome],
-                   'regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
-                   'tss_size': config['tss_size'],
-                   'proximal_size_up': config['proximal_size_up'],
-                   'proximal_size_dn': config['proximal_size_dn'],
-                   'distal_size': config['distal_size'],
-                   'quantification_flag': config['quantification_flag'],
-                   }
-    if 'adapter_sequence' in config:
-        inputs_dict['adapter_sequence'] = config['adapter_sequence']
-    sas_file = config['sample_annotation']
-    sas_dict = {}
-    with open(sas_file, 'r') as sas:
-        reader = csv.DictReader(sas, dialect='excel')
-        for row in reader:
-            if 'sample_name' in row:
-                if row['sample_name'] in sas_dict:
-                    sas_dict[row['sample_name']].append(row)
-                else:
-                    sas_dict[row['sample_name']] = [row]
+#     project_genome = config['genome']
+#     project_genome_size = config['genome_sizes'][project_genome]
+#     inputs_dict = {'project_name': config['project_name'],
+#                    'project_path': config['project_path'],
+#                    'project_config': config['project_config'],
+#                    'email': config['email'],
+#                    'genome': project_genome,
+#                    'adapter_fasta': config['adapter_fasta'],
+#                    'bowtie2_index': config['bowtie2_index'][project_genome],
+#                    'chromosome_sizes': config['chromosome_sizes'][project_genome],
+#                    'blacklisted_regions': config['blacklisted_regions'][project_genome],
+#                    'whitelisted_regions': config['whitelisted_regions'][project_genome],
+#                    'unique_tss': config['unique_tss'][project_genome],
+#                    'mitochondria_name': config['mitochondria_names'][project_genome],
+#                    'regulatory_regions': config['regulatory_regions'][project_genome],
+#                    'sample_annotation': config['sample_annotation'],
+#                    'sample_metadata': config['sample_metadata'],
+#                    'genome_fasta': config['genome_fasta'][project_genome],
+#                    'gencode_gtf': config['gencode_gtf'][project_genome],
+#                    'regulatory_build_gtf': config['regulatory_build_gtf'][project_genome],
+#                    'tss_size': config['tss_size'],
+#                    'proximal_size_up': config['proximal_size_up'],
+#                    'proximal_size_dn': config['proximal_size_dn'],
+#                    'distal_size': config['distal_size'],
+#                    'quantification_flag': config['quantification_flag'],
+#                    }
+#     if 'adapter_sequence' in config:
+#         inputs_dict['adapter_sequence'] = config['adapter_sequence']
+#     sas_file = config['sample_annotation']
+#     sas_dict = {}
+#     with open(sas_file, 'r') as sas:
+#         reader = csv.DictReader(sas, dialect='excel')
+#         for row in reader:
+#             if 'sample_name' in row:
+#                 if row['sample_name'] in sas_dict:
+#                     sas_dict[row['sample_name']].append(row)
+#                 else:
+#                     sas_dict[row['sample_name']] = [row]
 
-    inputs_dict['sample_list'] = list(sas_dict.keys())
+#     inputs_dict['sample_list'] = list(sas_dict.keys())
 
-    sample_dicts = {}
-    for sample in sas_dict:
-        sample_dict = {'sample_name': sample,
-                       'read_type': sas_dict[sample][0]['read_type'],
-                       'organism': sas_dict[sample][0]['organism'],
-                       'skip_preprocess': sas_dict[sample][0]['skip_preprocess'],
-                       'genome': project_genome,
-                       'genome_size': project_genome_size,
-                       'raw_bams': ''}
+#     sample_dicts = {}
+#     for sample in sas_dict:
+#         sample_dict = {'sample_name': sample,
+#                        'read_type': sas_dict[sample][0]['read_type'],
+#                        'organism': sas_dict[sample][0]['organism'],
+#                        'skip_preprocess': sas_dict[sample][0]['skip_preprocess'],
+#                        'genome': project_genome,
+#                        'genome_size': project_genome_size,
+#                        'raw_bams': ''}
 
-        # skip this sample if indicated (note: it is still in the sample list of the project dict)
-        if sample_dict['skip_preprocess'] == "yes":
-            continue
+#         # skip this sample if indicated (note: it is still in the sample list of the project dict)
+#         if sample_dict['skip_preprocess'] == "yes":
+#             continue
         
-        row_list = sas_dict[sample]
-        number_of_rows = len(row_list)
-        bam_sources = []
-        raw_size_mb = 0
-        for i in range(number_of_rows):
-            if 'data_source' in row_list[i] and row_list[i]['data_source'] != '':
-                source_template = config['data_sources'][row_list[i]['data_source']]
-                source = source_template.format(**row_list[i])
-                if os.path.exists(source):
-                    bam_sources.append(source)
-                    if(os.path.exists(source)):
-                        source_stats = os.stat(source)
-                        raw_size_mb += int(source_stats.st_size / (1024 * 1024))
-                else:
-                    print('WARNING: Could not locate {}'.format(source))
-        if len(bam_sources) == 0:
-            print('WARNING: Could not locate any raw data files for sample {}, skipping.'.format(sample))
-        else:
-            sample_dict['raw_bams'] = ' '.join(bam_sources)
-            sample_dict['raw_size_mb'] = raw_size_mb
-            sample_dicts[sample]=sample_dict
+#         row_list = sas_dict[sample]
+#         number_of_rows = len(row_list)
+#         bam_sources = []
+#         raw_size_mb = 0
+#         for i in range(number_of_rows):
+#             if 'data_source' in row_list[i] and row_list[i]['data_source'] != '':
+#                 source_template = config['data_sources'][row_list[i]['data_source']]
+#                 source = source_template.format(**row_list[i])
+#                 if os.path.exists(source):
+#                     bam_sources.append(source)
+#                     if(os.path.exists(source)):
+#                         source_stats = os.stat(source)
+#                         raw_size_mb += int(source_stats.st_size / (1024 * 1024))
+#                 else:
+#                     print('WARNING: Could not locate {}'.format(source))
+#         if len(bam_sources) == 0:
+#             print('WARNING: Could not locate any raw data files for sample {}, skipping.'.format(sample))
+#         else:
+#             sample_dict['raw_bams'] = ' '.join(bam_sources)
+#             sample_dict['raw_size_mb'] = raw_size_mb
+#             sample_dicts[sample]=sample_dict
     
-    return inputs_dict, sample_dicts
+#     return inputs_dict, sample_dicts
 
 ##### set minimum snakemake version #####
 min_version("7.15.2")
 
 ##### setup report #####
-report: "report/workflow.rst"
-    
-#### setup workdir (necessary for portability) ####
-# todo: put in pipeline config: pipeline_dir: "/path/to/pipeline"
-# workdir: config['pipeline_dir']
+report: os.path.join("report", "workflow.rst")
 
-##### set & load config and sample annotation sheets #####
-configfile: os.path.join("config","pipeline_config.yaml")
+##### load config and sample annotation sheets #####
+configfile: os.path.join("config","config.yaml")
+# print(config)
+
+# load sample/unit annotation
+annot = pd.read_csv(config["annotation"], index_col="sample_name")
+samples_quantify = annot[annot['pass_qc'] != 0].index.unique().tolist()
+# print(annot)
+# samples = list(set(annot.index))
+# print(samples)
 
 # run configurator to get pipeline configs & sample annotations
-config, samples = configurator(config, config["project_config"])
+# config, samples = configurator(config, config["project_config"])
+
+# convert annot into dictionary for parametrization of rules, by deduplicating by sample_name (should only differ by bam_file)
+samples = annot.reset_index().drop_duplicates(subset='sample_name', keep='first').set_index("sample_name").to_dict(orient="index")
+# samples = annot.to_dict(orient='index')
+# print(samples)
 
 ##### set global variables
-results_dir = os.path.join(config["project_path"], "atacseq_results")
-
-sample_metadata=pd.read_csv(config["sample_metadata"], index_col=0)
-
-data_splits = ['all']
-steps = ['counts','filtered','normTMM','normCQN','normTMM_HVR', 'normCQN_HVR']
-
-# calculate parameters (for misc tasks)
-tss_slop = 2000
-noise_lower = 100
-noise_upper = ( tss_slop * 2 ) - noise_lower
-double_slop = ( tss_slop * 2 )
-
+result_path = os.path.join(config["result_path"], module_name)
+HOMER_path = os.path.abspath(os.path.join("resources", config["project_name"], "HOMER"))
 
 ##### target rules #####
-
-# generates a HTML report from all the results as self-contained .zip archive for sharing
 rule all:
     input:
-        os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report -> WHAT?
-        project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
-        sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
-        sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
-        consensus_regions_annotation=os.path.join(config["project_path"],'all',"consensus_regions_annotation.csv") if config["quantification_flag"]==1 else [],
-    output:
-        confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
+#         os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report -> WHAT?
+#         project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
+#         sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
+#         sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
+        # PROCESSING endpoint
+        multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
+        # QUANTIFICATION & ANNOTATION endpoint
+#         consensus_regions_annotation = os.path.join(result_path,'counts',"consensus_regions_annotation.csv") if len(samples_quantify)>0 else [],
+#         envs = expand(os.path.join(config["result_path"],'envs','dea_limma','{env}.yaml'),env=['limma','volcanos','ggplot','heatmap']),
+#         configs = os.path.join(config["result_path"],'configs','dea_limma','{}_config.yaml'.format(config["project_name"])),
+#         annotations = os.path.join(config["result_path"],'configs','dea_limma','{}_annot.csv'.format(config["project_name"])),
+#     output:
+#         confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
     params:
-        # cluster parameters
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "8000"),
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","all.log")
-    run:
-        command_str="touch {}".format(os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])))
-        subprocess.run(command_str, shell=True)
+#     run:
+#         command_str="touch {}".format(os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])))
+#         subprocess.run(command_str, shell=True)
 
 ##### load rules #####
-include: "rules/install_homer.smk"
+include: "rules/common.smk"
+include: "rules/resources.smk"
 include: "rules/processing.smk"
 include: "rules/multiqc.smk"
-include: "rules/quantification.smk"
-include: "rules/region_annotation.smk"
+# include: "rules/quantification.smk"
+# include: "rules/region_annotation.smk"

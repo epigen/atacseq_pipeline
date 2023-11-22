@@ -1,23 +1,35 @@
 #!/bin/env python
 
+
+
+#### libraries
 import os
 import pandas as pd
 import pybedtools as bedtools
 
-# configuration
-output = snakemake.output[0]
-chrom_file = snakemake.params["chrom_file"]
-sample=snakemake.wildcards["sample"]
+#### configurations
 
-consensus_peaks = bedtools.BedTool(snakemake.input[0])
-consensus_peaks_df = bedtools.BedTool(snakemake.input[0]).to_dataframe().set_index('name')
+# input
+consensus_regions_path = snakemake.input["consensus_regions"]
+peakfile_path = snakemake.input["peakfile"]
+chrom_file = snakemake.config["chromosome_sizes"]
 
-peakfile=snakemake.input[1]
+# output
+quant_support_path = snakemake.output["quant_support"]
+
+# parameters
+sample = snakemake.wildcards["sample"]
+
+# quantify peak support within sample
+consensus_peaks = bedtools.BedTool(consensus_regions_path)
+consensus_peaks_df = bedtools.BedTool(consensus_regions_path).to_dataframe().set_index('name')
+
+# peakfile=snakemake.input[1]
 result = pd.DataFrame(0,index=consensus_peaks_df.index,columns=[sample])
     
 try:
-    if (peakfile is not None):
-        sample_peaks = bedtools.BedTool(peakfile)
+    if (peakfile_path is not None):
+        sample_peaks = bedtools.BedTool(peakfile_path)
         result = consensus_peaks.intersect(
             sample_peaks,
             g=chrom_file, 
@@ -31,4 +43,4 @@ try:
 except Exception as e:
     print("Error occured while processing sample "+sample)
 finally:
-    result.T.to_csv(output)
+    result.T.to_csv(quant_support_path)

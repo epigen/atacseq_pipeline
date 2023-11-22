@@ -1,13 +1,23 @@
+
 rule multiqc:
     input:
-        expand(os.path.join(results_dir,"{sample_name}","mapped", "{sample_name}.filtered.bam"), sample_name=samples.keys()),
-        expand(os.path.join(results_dir,"{sample_name}","peaks","{sample_name}_peaks.narrowPeak"), sample_name=samples.keys()),
-        expand(os.path.join(config["project_path"], "atacseq_hub","{sample_name}.bigWig"),sample_name=samples.keys()),
+        expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"), sample=samples.keys()),
+        expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak"), sample=samples.keys()),
+        expand(os.path.join(result_path, "hub","{sample}.bigWig"),sample=samples.keys()),
     output:
-        multiqc_report=report(directory(os.path.join(config["project_path"],"atacseq_report")), caption="../report/multiqc.rst", htmlindex="multiqc_report.html", category="QC reports"),  # for inclusion into snakemake report
+        multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
+        multiqc_report_dir = report(directory(os.path.join(result_path,"report")), 
+                              caption="../report/multiqc.rst",
+                              htmlindex="multiqc_report.html",
+                              category="{}_{}".format(config["project_name"], module_name),
+                              subcategory="QC",
+                               labels={
+                                  "name": "MultiQC report",
+                                  "type": "HTML",
+                              }),
     params:
-        project_config = config["project_config"],
-        project_path = config["project_path"],
+        #project_config = config["project_config"], # not easy to resolve -> think about modules... look up docs, maybe parameters can be passed directly into multiqc call?
+        result_path = result_path,
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -19,5 +29,7 @@ rule multiqc:
         "logs/rules/multiqc.log"
     shell:
         """
-        multiqc -fc {params.project_config} {params.project_path}
+        multiqc -f {params.result_path}
         """
+#         --cl-config 'qualimap_config: { general_stats_coverage: [20,40,200] }' https://multiqc.info/docs/getting_started/config/#command-line-config
+#         multiqc -fc {params.project_config} {params.result_path}

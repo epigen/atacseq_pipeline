@@ -2,13 +2,13 @@
 [![DOI](https://zenodo.org/badge/350342694.svg)](https://zenodo.org/badge/latestdoi/350342694)
 
 From r**A**w (unaligned) BAM files to count**Z**.
-A Snakemake implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream quantification and annotation steps using bash, python and R. Reproducibility and scalability is ensured by using Snakemake and conda.
+A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream quantification and annotation steps using bash and Python.
 
 This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details and modules check out the project's repository.
 
 **If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634).**
 
-![Workflow Rulegraph](./workflow/dags/atacseq_pipeline_rulegraph.svg)
+![Workflow Rulegraph](./workflow/dags/rulegraph.svg)
 
 Table of contents
 ----------------
@@ -32,7 +32,7 @@ Table of contents
 - [Christoph Bock](https://github.com/chrbock)
 
 # Software
-This project wouldn't be possible without the following software
+This project wouldn't be possible without the following software and their dependencies:
 
 | Software       | Reference (DOI)                                   |
 | :------------: | :-----------------------------------------------: |
@@ -52,7 +52,7 @@ This project wouldn't be possible without the following software
 | UROPA          | https://doi.org/10.1038/s41598-017-02464-y        |
 
 # Methods
-This is a template for the **Methods** section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (.yaml file) or post execution. Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g. [X].
+This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (workflow/envs/\*.yaml file) or post execution in the result directory (/envs/atacseq_pipeline/\*.yaml). Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g., [X].
 
 **Processing.**
 Sequencing adapters were removed using the software fastp (ver) [ref]. Bowtie2 (ver) [ref] was used for the alignment of the short reads (representing locations of transposition events) to the [GRCh38 (hg38)/GRCm38 (mm10)] assembly of the [human/mouse] genome using the “--very-sensitive” parameter. PCR duplicates were marked using samblaster (ver) [ref]. Aligned BAM files were then sorted, filtered using ENCODE blacklisted regions [ref], and indexed using samtools (ver) [ref]. To detect the open chromatin regions, peak calling was performed using MACS2 (ver) [ref] using the “--nomodel”, “--keep-dup auto” and “--extsize 147” options on each sample. Homer (ver) [ref] function findMotifs was used for motif enrichment analysis over the detected open chromatin regions.
@@ -60,8 +60,7 @@ Sequencing adapters were removed using the software fastp (ver) [ref]. Bowtie2 (
 Quality control metrics were aggregated and reported using MultiQC (ver) [ref], [X] sample(s) needed to be removed.
 
 **Quantification.**
-A consensus region set, comprising of [X] genomic regions, was generated, by merging the identified peak summits, extended by 250 bp on both sides using the slop function from bedtools (ver) [ref] and pybedtools (ver) [ref], across all samples while again discarding peaks overlapping blacklisted features as defined by the ENCODE project [ref].
-Consensus regions were annotated using annotatePeaks function from Homer (ver) [ref].
+A consensus region set, comprising of [X] genomic regions, was generated, by merging the identified peak summits, extended by 250 bp on both sides using the slop function from bedtools (ver) [ref] and pybedtools (ver) [ref], across all samples while again discarding peaks overlapping blacklisted features as defined by the ENCODE project [ref]. Consensus regions were annotated using annotatePeaks function from Homer (ver) [ref].
 
 Additionally, we annotated all consensus regions using UROPA (ver) [ref] and genomic features from the [GENCODE vX] basic gene annotation as: “TSS proximal” if the region’s midpoint was within [X] bp upstream or [X] bp downstream from a TSS, or if the region overlapped with a TSS; “gene body” if the region overlapped with a gene; “distal” if the region’s midpoint was within [X] bp of a TSS; and “intergenic” otherwise. For each region, only the closest feature was considered, and the annotations took precedence in the following order: TSS proximal, gene body, distal, and intergenic. 
 
@@ -79,11 +78,12 @@ The processing and analysis described here was performed using a publicly availa
     - MultiQC report generation (multiqc)
 - Quantification
     - consensus region set generation
-    - consensus region set annotation (uropa using regulatory build and gencode as refernce, and homer)
     - read count and peak support quantification of the consensus region set across samples, yielding a count and a support matrix with dimensions regions X samples
+- Annotation
+    - consensus region set annotation (UROPA using regulatory build and gencode as refernce, and HOMER)
 - Snakemake report generation for workflow statistics, documentation, reproducibility and result presentation using the same structure as the result files.
 
-# Results (TODO: integrate into Features)
+# Results (TODO: update and integrate into Features)
 Project directory structure:
 - all: Downstream analysis results of the whole data, including consensus region set and region annotation
 - atacseq_hub: genome browser track files (.bigWig) for each sample

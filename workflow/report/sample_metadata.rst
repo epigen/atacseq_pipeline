@@ -1,1 +1,0 @@
-Sample metadata file from {{snakemake.config["sample_metadata"]}}

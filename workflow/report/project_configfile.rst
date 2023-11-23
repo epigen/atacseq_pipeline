@@ -1,1 +1,0 @@
-Project configuration file from {{snakemake.config["project_config"]}}

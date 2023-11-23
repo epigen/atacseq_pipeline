@@ -53,12 +53,12 @@ rule quantify_support_sample:
 rule quantify_support_aggregate:
     input:
 #         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
-        quant_support=expand(os.path.join(result_path,"results","{sample_name}","peaks", "{sample_name}_quantification_support.csv"), sample_name=samples.keys()),
+        quant_support = expand(os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"), sample=samples_quantify),
     output:
-        quant_support=os.path.join(result_path,"counts","all_support.csv"),
+        quant_support_agg = os.path.join(result_path,"counts","support.csv"),
     params:
         # paths
-        results_dir = os.path.join(result_path,"results"),
+#         results_dir = os.path.join(result_path,"results"),
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -69,7 +69,7 @@ rule quantify_support_aggregate:
     log:
         "logs/rules/quantify_support_aggregate.log"
     script:
-        "../scripts/quantify_support_aggregate.py"
+        "../scripts/aggregate_counts.py"
 
 # quantify coverage based on consensus regions counts for every sample
 rule quantify_counts_sample:
@@ -77,12 +77,12 @@ rule quantify_counts_sample:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
         bamfile = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
     output:
-        quant_counts=os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"),
+        quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"),
     params:
         # paths
-        results_dir = os.path.join(result_path,"results"),
+#         results_dir = os.path.join(result_path,"results"),
         # pipeline information
-        chrom_file = config["chromosome_sizes"],
+#         chrom_file = config["chromosome_sizes"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -99,12 +99,12 @@ rule quantify_counts_sample:
 rule quantify_counts_aggregate:
     input:
 #         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
-        quant_counts=expand(os.path.join(result_path,"results","{sample_name}","mapped", "{sample_name}_quantification_counts.csv"), sample_name=samples.keys()),
+        quant_counts = expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"), sample=samples_quantify),
     output:
-        quant_counts=os.path.join(result_path,"counts","all_counts.csv"),
+        quant_counts_agg = os.path.join(result_path,"counts","counts.csv"),
     params:
         # paths
-        results_dir = os.path.join(result_path,"results"),
+#         results_dir = os.path.join(result_path,"results"),
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -115,4 +115,4 @@ rule quantify_counts_aggregate:
     log:
         "logs/rules/quantify_counts_aggregate.log"
     script:
-        "../scripts/quantify_counts_aggregate.py"
+        "../scripts/aggregate_counts.py"

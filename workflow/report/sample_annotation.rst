@@ -1,1 +1,0 @@
-Sample annotation file from {{snakemake.config["sample_annotation"]}}

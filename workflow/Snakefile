@@ -137,6 +137,9 @@ min_version("7.15.2")
 
 ##### setup report #####
 report: os.path.join("report", "workflow.rst")
+    
+# list of names of the used environment specifications in workflow/envs/{env_name}.yaml
+envs = ["bowtie2","macs2_homer","multiqc","pybedtools","uropa"]
 
 ##### load config and sample annotation sheets #####
 configfile: os.path.join("config","config.yaml")
@@ -164,19 +167,17 @@ HOMER_path = os.path.abspath(os.path.join("resources", config["project_name"], "
 ##### target rules #####
 rule all:
     input:
-#         os.path.join(config["project_path"],"atacseq_report"), # for the inclusion into snakemake report -> WHAT?
-#         project_config_file=report(config["project_config"], caption="report/project_configfile.rst", category="Configuration"),
-#         sample_annotation_file=report(config["sample_annotation"], caption="report/sample_annotation.rst", category="Configuration"),
-#         sample_metadata_file=report(config["sample_metadata"], caption="report/sample_metadata.rst", category="Configuration"),
-        # PROCESSING endpoint
+        # PROCESSING
         multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
-        # QUANTIFICATION & ANNOTATION endpoint
-#         consensus_regions_annotation = os.path.join(result_path,'counts',"consensus_regions_annotation.csv") if len(samples_quantify)>0 else [],
-#         envs = expand(os.path.join(config["result_path"],'envs','dea_limma','{env}.yaml'),env=['limma','volcanos','ggplot','heatmap']),
-#         configs = os.path.join(config["result_path"],'configs','dea_limma','{}_config.yaml'.format(config["project_name"])),
-#         annotations = os.path.join(config["result_path"],'configs','dea_limma','{}_annot.csv'.format(config["project_name"])),
-#     output:
-#         confirmation=os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])),
+        # QUANTIFICATION
+        support = os.path.join(result_path,"counts","support.csv") if len(samples_quantify)>0 else [],
+        counts = os.path.join(result_path,"counts","counts.csv") if len(samples_quantify)>0 else [],
+        # ANNOTATION
+        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
+        # EXPORT environments and configurations
+        envs = expand(os.path.join(config["result_path"],'envs',module_name,'{env}.yaml'),env=envs),
+        configs = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),
+        annotations = os.path.join(config["result_path"],'configs',module_name,'{}_annot.csv'.format(config["project_name"])),
     params:
         partition=config.get("partition"),
     resources:
@@ -184,14 +185,12 @@ rule all:
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","all.log")
-#     run:
-#         command_str="touch {}".format(os.path.join(config["project_path"],"{}_successfully_completed.txt".format(config["project_name"])))
-#         subprocess.run(command_str, shell=True)
 
 ##### load rules #####
-include: "rules/common.smk"
-include: "rules/resources.smk"
-include: "rules/processing.smk"
-include: "rules/multiqc.smk"
-# include: "rules/quantification.smk"
-# include: "rules/region_annotation.smk"
+include: os.path.join("rules", "export.smk")
+include: os.path.join("rules", "common.smk")
+include: os.path.join("rules", "resources.smk")
+include: os.path.join("rules", "processing.smk")
+include: os.path.join("rules", "multiqc.smk")
+include: os.path.join("rules", "quantification.smk")
+include: os.path.join("rules", "region_annotation.smk")

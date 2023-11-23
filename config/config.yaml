@@ -5,14 +5,15 @@ threads: 2
 partition: 'shortq'
 
 ##### GENERAL #####
-annotation: test/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
-result_path: results/mm10test/ #/path/to/results/ # path to the output folder
 project_name: mm10test #MyATACproject # name of the project/dataset
+result_path: results/mm10test/ #/path/to/results/ # path to the output folder
+annotation: test/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
 
 ##### PROCESSING #####
 
-genome: hg38
-
+genome: mm10
+# hg38
+# mm10
 
 # MultiQC report
 title: BSA_0000_test_hg38_atac
@@ -65,7 +66,7 @@ bowtie2_index: /nobackup/lab_bsf/resources/genomes/mm10/indices_for_Bowtie2/mm10
 # hg38: /nobackup/lab_bsf/resources/genomes/hg38/indices_for_Bowtie2/hg38
 # mm10: /nobackup/lab_bsf/resources/genomes/mm10/indices_for_Bowtie2/mm10
 
-chromosome_sizes: /research/lab_bsf/resources/atacseq/hg38.chromSizes
+chromosome_sizes: /research/lab_bsf/resources/atacseq/mm10.chromSizes
 # hg38: /research/lab_bsf/resources/atacseq/hg38.chromSizes
 # mm10: /research/lab_bsf/resources/atacseq/mm10.chromSizes
 

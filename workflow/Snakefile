@@ -6,7 +6,7 @@ from snakemake.utils import validate, min_version
 
 # TODO: check if all libraries are still required
 import argparse
-import yaml, json
+import json
 import csv
 import os
 import sys

@@ -57,10 +57,11 @@ class MultiqcModule(BaseMultiqcModule):
         self.atacseq_data = self.ignore_samples(self.atacseq_data)
 
         # Load the sample annotation sheet
-        sample_sas_path = config.sample_annotation
+        sample_sas_path = config.annotation
         sample_sas = csv.DictReader(open(sample_sas_path, 'r'))
         self.sample_sas_dict = {}
         for k in sample_sas:
+            print(k)
             self.sample_sas_dict[k['sample_name']] = k
 
         # Check if there are any paired end sample in the current project
@@ -339,8 +340,8 @@ class MultiqcModule(BaseMultiqcModule):
 
     def add_download_table(self):
         # Create a table with download links to various files
-        results_url = '../atacseq_results' #os.path.join(config.base_url, config.project_uuid, 'atacseq_results')
-        project_url = os.path.join(config.base_url, config.project_uuid)
+        results_url = '../results' #os.path.join(config.base_url, config.project_uuid, 'results')
+#         project_url = os.path.join(config.base_url, config.project_uuid)
 
         # Configuration for the MultiQC table
         table_config = {
@@ -393,14 +394,14 @@ class MultiqcModule(BaseMultiqcModule):
         }
 
         # Fill the download table with URLs
-        igv_links = []
+#         igv_links = []
         sample_names = []
         data = OrderedDict()
         for sample_name in self.atacseq_data:
             sample_names.append(sample_name)
             # generate links list for loading them on IGV
-            igv_link = project_url + '/atacseq_hub/' + self.genome_version + '/' + sample_name + '.bigWig'
-            igv_links.append(igv_link)
+#             igv_link = project_url + '/atacseq_hub/' + self.genome_version + '/' + sample_name + '.bigWig'
+#             igv_links.append(igv_link)
             # TODO: Generate the URL for the raw bam files
             sample_bam_url = '{}/{}/mapped/{}.bam'.format(results_url, sample_name, sample_name)
             sample_bai_url = '{}/{}/mapped/{}.bam.bai'.format(results_url, sample_name, sample_name)
@@ -421,23 +422,23 @@ class MultiqcModule(BaseMultiqcModule):
                 'motifs': '<a href=\"{}\">{} Known</a><br><a href=\"{}\">{} DeNovo</a>'.format(sample_known_motifs_url, sample_name, sample_denovo_motifs_url, sample_name)
             }
 
-        # Generate the UCSC genome browser link
-        track_hubs_url = project_url + '/atacseq_hub/hub.txt'
-        genome_browser_url = 'http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}'.format(self.genome_version, track_hubs_url)
-        section_description = '<a href=\"{}\" target=\"_blank\">Click here to view the coverage tracks on UCSC Genome Browser <span class="glyphicon glyphicon-new-window"></span></a>'.format(genome_browser_url)
+#         # Generate the UCSC genome browser link
+#         track_hubs_url = project_url + '/atacseq_hub/hub.txt'
+#         genome_browser_url = 'http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}'.format(self.genome_version, track_hubs_url)
+#         section_description = '<a href=\"{}\" target=\"_blank\">Click here to view the coverage tracks on UCSC Genome Browser <span class="glyphicon glyphicon-new-window"></span></a>'.format(genome_browser_url)
 
-        igv_load_link = '<a href=http://localhost:60151/load?file={}?names={}?genome={}?goto=chr1>Click here to load the coverage tracks on your IGV session (Genome: {}) <span class="glyphicon glyphicon-new-window"></span></a>'.format(
-            ','.join(igv_links),
-            ','.join(sample_names),
-            self.genome_version,
-            self.genome_version
-        )
-        section_description += '<br>' + igv_load_link
+#         igv_load_link = '<a href=http://localhost:60151/load?file={}?names={}?genome={}?goto=chr1>Click here to load the coverage tracks on your IGV session (Genome: {}) <span class="glyphicon glyphicon-new-window"></span></a>'.format(
+#             ','.join(igv_links),
+#             ','.join(sample_names),
+#             self.genome_version,
+#             self.genome_version
+#         )
+#         section_description += '<br>' + igv_load_link
         # Finally add a MultiQC section together with the URL table
         self.add_section(
             name='Download Links & Coverage Tracks',
             anchor='atacseq_download',
-            description=section_description,
+#             description=section_description,
             helptext='You can click on the table elements to download the files',
             plot=table.plot(data, headers, table_config)
         )
@@ -458,49 +459,49 @@ class MultiqcModule(BaseMultiqcModule):
 
 
 
-    def add_pca_plots(self):
-        results_path = config.metadata['output_dir']
-        pca_csv_path = os.path.join(results_path, 'unsupervised', 'PCA.csv')
-        if not os.path.exists(pca_csv_path):
-            return 0
-        # Read the PCA values
-        for sample in csv.DictReader(open(pca_csv_path, 'r')):
-            self.pca_dict[sample['sample']] = sample
-        principle_components = {}
-        for p in sample:
-            pc = p.split(' ')[0]
-            principle_components[pc] = p
-        pca_plot_config = {
-            'data_labels': [
-                {'name': 'PC1 vs. PC2', 'xlab': principle_components['PC1'], 'ylab': principle_components['PC2']},
-                {'name': 'PC2 vs. PC3', 'xlab': principle_components['PC2'], 'ylab': principle_components['PC3']},
-                {'name': 'PC3 vs. PC4', 'xlab': principle_components['PC3'], 'ylab': principle_components['PC4']},
-                {'name': 'PC4 vs. PC5', 'xlab': principle_components['PC4'], 'ylab': principle_components['PC5']}
-            ],
-            'id': 'atacseq_pca_plot',
-            'marker_size': 5
-        }
+#     def add_pca_plots(self):
+#         results_path = config.metadata['output_dir']
+#         pca_csv_path = os.path.join(results_path, 'unsupervised', 'PCA.csv')
+#         if not os.path.exists(pca_csv_path):
+#             return 0
+#         # Read the PCA values
+#         for sample in csv.DictReader(open(pca_csv_path, 'r')):
+#             self.pca_dict[sample['sample']] = sample
+#         principle_components = {}
+#         for p in sample:
+#             pc = p.split(' ')[0]
+#             principle_components[pc] = p
+#         pca_plot_config = {
+#             'data_labels': [
+#                 {'name': 'PC1 vs. PC2', 'xlab': principle_components['PC1'], 'ylab': principle_components['PC2']},
+#                 {'name': 'PC2 vs. PC3', 'xlab': principle_components['PC2'], 'ylab': principle_components['PC3']},
+#                 {'name': 'PC3 vs. PC4', 'xlab': principle_components['PC3'], 'ylab': principle_components['PC4']},
+#                 {'name': 'PC4 vs. PC5', 'xlab': principle_components['PC4'], 'ylab': principle_components['PC5']}
+#             ],
+#             'id': 'atacseq_pca_plot',
+#             'marker_size': 5
+#         }
 
-        pca_plot_data = [self.generate_pca_plot_data(principle_components['PC1'],principle_components['PC2']),
-                         self.generate_pca_plot_data(principle_components['PC2'], principle_components['PC3']),
-                         self.generate_pca_plot_data(principle_components['PC3'], principle_components['PC4']),
-                         self.generate_pca_plot_data(principle_components['PC4'], principle_components['PC5'])]
-        self.add_section(
-            name='Principal Component Analysis',
-            anchor='atacseq_pca',
-            description='Scatter plots of PCA results',
-            helptext='You can see the plots of principal components',
-            plot=scatter.plot(pca_plot_data, pconfig=pca_plot_config)
-        )
+#         pca_plot_data = [self.generate_pca_plot_data(principle_components['PC1'],principle_components['PC2']),
+#                          self.generate_pca_plot_data(principle_components['PC2'], principle_components['PC3']),
+#                          self.generate_pca_plot_data(principle_components['PC3'], principle_components['PC4']),
+#                          self.generate_pca_plot_data(principle_components['PC4'], principle_components['PC5'])]
+#         self.add_section(
+#             name='Principal Component Analysis',
+#             anchor='atacseq_pca',
+#             description='Scatter plots of PCA results',
+#             helptext='You can see the plots of principal components',
+#             plot=scatter.plot(pca_plot_data, pconfig=pca_plot_config)
+#         )
 
-    def generate_pca_plot_data(self, component1, component2):
-        data = OrderedDict()
-        for sample in self.pca_dict:
-            sample_annotation = self.sample_sas_dict[sample]
-            data[sample] = {
-                'x': float(self.pca_dict[sample][component1]),
-                'y': float(self.pca_dict[sample][component2]),
-                'name': sample_annotation[self.color_attribute],
-                'color': self.attribute_colors[sample_annotation[self.color_attribute]]
-            }
-        return data
+#     def generate_pca_plot_data(self, component1, component2):
+#         data = OrderedDict()
+#         for sample in self.pca_dict:
+#             sample_annotation = self.sample_sas_dict[sample]
+#             data[sample] = {
+#                 'x': float(self.pca_dict[sample][component1]),
+#                 'y': float(self.pca_dict[sample][component2]),
+#                 'name': sample_annotation[self.color_attribute],
+#                 'color': self.attribute_colors[sample_annotation[self.color_attribute]]
+#             }
+#         return data

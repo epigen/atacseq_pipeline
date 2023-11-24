@@ -16,25 +16,28 @@ genome: mm10
 # mm10
 
 # MultiQC report
-title: BSA_0000_test_hg38_atac
+title: mm10test
 intro_text: Quality Control Metrics of the ATAC-seq pipeline.
-comment: null
-report_comment: null
-report_header_info: null
-custom_logo: 'workflow/scripts/multiqc_atacseq/BSF_logo.png'
-custom_logo_url: 'https://www.biomedical-sequencing.org/'
-custom_logo_title: 'Biomedical Sequencing Facility'
-pca_color_attribute: 'flowcell'
-exploratory_columns: ['flowcell']
+# comment: null
+# report_comment: null
+# report_header_info: null
+# custom_logo: 'workflow/scripts/multiqc_atacseq/BSF_logo.png'
+# custom_logo_url: 'https://www.biomedical-sequencing.org/'
+# custom_logo_title: 'Biomedical Sequencing Facility'
+# pca_color_attribute: 'flowcell'
+exploratory_columns: ['flowcell'] # (optional) can be empty []. must be columns in the annotation
+# project_uuid: mm10test
+# public_html_folder: results/mm10test/public_html/
+# base_url: https://medical-epigenomics.org/data/
 
-# UCSC Genome Browser trackhubs:
-trackhub_dir: atacseq_hub
-trackhub_sort_order: sample_name
-trackhub_color_by: flowcell
-parent_track_name: ATACseq
-trackhub_visibility: full
-trackhub_name: BSA_0000_test_hg38_atac
-trackhub_short_label_column: sample_name
+# UCSC Genome Browser trackhubs
+# trackhub_dir: hub
+# trackhub_sort_order: sample_name
+trackhub_color_by: flowcell # (optional) can be empty "". must be a column in the annotation
+# parent_track_name: ATAC-seq
+trackhub_visibility: full # options: full, ?
+# trackhub_name: BSA_0000_test_hg38_atac
+# trackhub_short_label_column: sample_name
 email: sreichl@cemm.at
 
 ##### QUANTIFICATION #####

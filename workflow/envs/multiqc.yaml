@@ -10,5 +10,6 @@ dependencies:
   - pytables=3.9.1
   - pip=23.3.1
   - pip:
-    - 'git+https://github.com/epigen/atacseq_pipeline/#egg=atacseq_report&subdirectory=workflow/scripts/multiqc_atacseq'
-#    - ../../workflow/scripts/multiqc_atacseq
+    - -e /home/sreichl/projects/atacseq_pipeline/workflow/scripts/multiqc_atacseq
+#     - -e ./module_to_install_in_editable_mode # does not work
+#     - 'git+https://github.com/epigen/atacseq_pipeline/#egg=atacseq_report&subdirectory=workflow/scripts/multiqc_atacseq' # works, but remote!

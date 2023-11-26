@@ -111,7 +111,7 @@ rule multiqc:
         expand(os.path.join(result_path, "hub","{sample}.bigWig"),sample=samples.keys()),
         expand(os.path.join(result_path, 'report', '{sample}_peaks.xls'), sample=samples.keys()), # representing symlinked stats
         trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"), # representing UCSC hub
-        config_export = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),
+#         config_export = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),
     output:
         multiqc_report = report(os.path.join(result_path,"report","multiqc_report.html"),
                                 caption="../report/multiqc.rst",
@@ -121,18 +121,9 @@ rule multiqc:
                                     "name": "MultiQC report",
                                     "type": "HTML",
                                 }),
-#         multiqc_report_dir = report(directory(os.path.join(result_path,"report")), # ERROR with SLURM dependencies when input or output is a directory
-#                               caption="../report/multiqc.rst",
-#                               htmlindex="multiqc_report.html",
-#                               category="{}_{}".format(config["project_name"], module_name),
-#                               subcategory="QC",
-#                                labels={
-#                                   "name": "MultiQC report",
-#                                   "type": "HTML",
-#                               }),
     params:
-        #project_config = config["project_config"], # not easy to resolve -> think about modules... look up docs, maybe parameters can be passed directly into multiqc call?
         result_path = result_path,
+        multiqc_configs = "{{'title': '{name}', 'intro_text': 'Quality Control Metrics of the ATAC-seq pipeline.', 'fastp': {{'s_name_filenames': true}}, 'annotation': '{annot}', 'genome': '{genome}', 'exploratory_columns': [flowcell]}}".format(name = config["project_name"], annot = config["annotation"], genome = config["genome"]), # TODO: exploratory columns -> annot.columns?! -> or just from within atacseq module where annot anyway is loaded, but as dict...
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -144,57 +135,5 @@ rule multiqc:
         "logs/rules/multiqc.log"
     shell:
         """
-        multiqc --force --outdir {params.result_path}/report -c {input.config_export} {params.result_path}
+        multiqc --force --outdir {params.result_path}/report --filename multiqc_report.html --cl-config "{params.multiqc_configs}" --verbose  {params.result_path}/report
         """
-        
-        # --disable-atacseq-report
-#         --cl-config 'qualimap_config: { general_stats_coverage: [20,40,200] }' https://multiqc.info/docs/getting_started/config/#command-line-config
-#         multiqc -fc {params.project_config} {params.result_path}
-
-
-# ### FROM GPT-4
-# rule prepare_multiqc_config:
-#     output:
-#         "report/multiqc_config.yaml"
-#     run:
-#         search_patterns = {
-#             'atacseq': {'fn': '*.stats.tsv', 'contents': 'frip'},
-#             'atacseq/tss': {'fn': '*TSS.csv', 'contents': 'count'}
-#         }
-#         with open(output[0], 'w') as config_file:
-#             yaml.dump({'search_patterns': search_patterns}, config_file)
-            
-
-# rule symlink_pipeline_outputs:
-#     input:
-#         # Specify your input files such as mapped bam files, peak files, etc.
-#     output:
-#         touch("report/symlink_pipeline_outputs_status.txt")
-#     params:
-#         dir="results/"
-#     run:
-#         dst_dir = "report/atacseq_report/"
-#         if not os.path.exists(dst_dir):
-#             os.makedirs(dst_dir)
-#         for sample_file in input:
-#             sample_name = os.path.basename(sample_file).split('.')[0]
-#             symlink_target = os.path.join(dst_dir, '{}.bam'.format(sample_name))
-#             if not os.path.exists(symlink_target):
-#                 os.symlink(os.path.join(params.dir, sample_file), symlink_target)
-#         with open(output[0], 'w') as file:
-#             file.write('Symlinks for pipeline outputs created.\n')
-            
-# rule multiqc:
-#     input:
-#         config="report/multiqc_config.yaml",
-#         symlink_status="report/symlink_status.txt",
-#         directories="report/atacseq_report",
-#         symlink_outputs="report/symlink_pipeline_outputs_status.txt"
-#     output:
-#         multiqc_report="report/multiqc_report.html"
-#     params:
-#         outdir="report"
-#     conda:
-#         "../envs/multiqc.yaml"
-#     shell:
-#         "multiqc --force --config {input.config} --outdir {params.outdir} {input.directories}"

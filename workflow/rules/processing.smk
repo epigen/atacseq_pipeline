@@ -7,6 +7,10 @@ rule align:
         output_bai =  os.path.join(result_path,"results","{sample}","mapped", "{sample}.bam.bai"),
         filtered_bam = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
         filtered_bai = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam.bai"),
+        bowtie_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.txt'),
+        fastp_json = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.fastp.json'),
+        samblaster_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samblaster.log'),
+        samtools_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
     params:
         # result paths
         results_dir = os.path.join(result_path,"results"),
@@ -116,6 +120,8 @@ rule peak_calling:
         macs2_xls = os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.xls"),
         summits_bed = os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"),
         homer_log = os.path.join(result_path,"results","{sample}","homer","{sample}.homer.log"),
+        stats = os.path.join(result_path, 'results', "{sample}", '{sample}.stats.tsv'),
+        macs2_log = os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}.macs2.log'),
     params:
         # paths
         results_dir = os.path.join(result_path,"results"),

@@ -87,8 +87,8 @@ rule ucsc_hub:
             for sample_name in samples.keys():
                 track_color = '255,40,0'
                 
-                if config["trackhub_color_by"]!="":
-                    color_hash = hash(samples[sample_name][config["trackhub_color_by"]])
+                if config["annot_columns"][0]!="":
+                    color_hash = hash(samples[sample_name][config["annot_columns"][0]])
                     track_color = colors[color_hash % len(colors)]
                 
                 track = ['track {}'.format(sample_name),
@@ -111,7 +111,6 @@ rule multiqc:
         expand(os.path.join(result_path, "hub","{sample}.bigWig"),sample=samples.keys()),
         expand(os.path.join(result_path, 'report', '{sample}_peaks.xls'), sample=samples.keys()), # representing symlinked stats
         trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"), # representing UCSC hub
-#         config_export = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),
     output:
         multiqc_report = report(os.path.join(result_path,"report","multiqc_report.html"),
                                 caption="../report/multiqc.rst",
@@ -123,7 +122,7 @@ rule multiqc:
                                 }),
     params:
         result_path = result_path,
-        multiqc_configs = "{{'title': '{name}', 'intro_text': 'Quality Control Metrics of the ATAC-seq pipeline.', 'fastp': {{'s_name_filenames': true}}, 'annotation': '{annot}', 'genome': '{genome}', 'exploratory_columns': [flowcell]}}".format(name = config["project_name"], annot = config["annotation"], genome = config["genome"]), # TODO: exploratory columns -> annot.columns?! -> or just from within atacseq module where annot anyway is loaded, but as dict...
+        multiqc_configs = "{{'title': '{name}', 'intro_text': 'Quality Control Metrics of the ATAC-seq pipeline.', 'fastp': {{'s_name_filenames': true}}, 'annotation': '{annot}', 'genome': '{genome}', 'exploratory_columns': {exploratory_columns}, 'skip_versions_section': true}}".format(name = config["project_name"], annot = config["annotation"], genome = config["genome"], exploratory_columns = config["annot_columns"]),
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -135,5 +134,5 @@ rule multiqc:
         "logs/rules/multiqc.log"
     shell:
         """
-        multiqc --force --outdir {params.result_path}/report --filename multiqc_report.html --cl-config "{params.multiqc_configs}" --verbose  {params.result_path}/report
+        multiqc {params.result_path}/report --force --verbose --outdir {params.result_path}/report --filename multiqc_report.html --cl-config "{params.multiqc_configs}"
         """

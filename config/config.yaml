@@ -15,30 +15,15 @@ genome: mm10
 # hg38
 # mm10
 
-# MultiQC report
-# title: mm10test
-# intro_text: Quality Control Metrics of the ATAC-seq pipeline.
-# comment: null
-# report_comment: null
-# report_header_info: null
-# custom_logo: 'workflow/scripts/multiqc_atacseq/BSF_logo.png'
-# custom_logo_url: 'https://www.biomedical-sequencing.org/'
-# custom_logo_title: 'Biomedical Sequencing Facility'
-# pca_color_attribute: 'flowcell'
-exploratory_columns: ['flowcell'] # (optional) can be empty []. must be columns in the annotation
-# project_uuid: mm10test
-# public_html_folder: results/mm10test/public_html/
-# base_url: https://medical-epigenomics.org/data/
+##### REPORT #####
 
-# UCSC Genome Browser trackhubs
-# trackhub_dir: hub
-# trackhub_sort_order: sample_name
-trackhub_color_by: flowcell # (optional) can be empty "". must be a column in the annotation
-# parent_track_name: ATAC-seq
-trackhub_visibility: full # options: full, ?
-# trackhub_name: BSA_0000_test_hg38_atac
-# trackhub_short_label_column: sample_name
+# sample(!) specific annotation columns of interest from the annotation sheet (note: unit specific annotations are not retained)
+# first entry is used to color UCSC Genome Browser tracks
+annot_columns: ['flowcell','read_type','Treatment'] # (optional) can be empty [""]. must be columns in the annotation
+
+# UCSC Genome Browser tracks
 email: sreichl@cemm.at
+trackhub_visibility: full # options: full, ?
 
 ##### QUANTIFICATION #####
 # coverage calculation with bedtools for QC report

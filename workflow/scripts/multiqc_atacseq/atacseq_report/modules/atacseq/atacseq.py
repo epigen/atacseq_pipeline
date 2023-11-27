@@ -35,6 +35,7 @@ class MultiqcModule(BaseMultiqcModule):
                                             href='https://github.com/berguner/atacseq_pipeline',
                                             info="The ATAC-seq pipeline processes ATAC-seq data.")
         log.info('Initialized atacseq module')
+        
         # Parse ATAC-seq stats for each sample
         self.atacseq_data = dict()
         for f in self.find_log_files(sp_key='atacseq'):
@@ -51,6 +52,7 @@ class MultiqcModule(BaseMultiqcModule):
             my_sample_name = f['s_name'].replace('_TSS','')
             self.atacseq_tss_data[f['s_name']], self.atacseq_data[my_sample_name]['tss_max'] = self.parse_atacseq_tss(f['f'])
         log.info('Found TSS file for {} ATAC-seq samples'.format(len(self.atacseq_tss_data)))
+        
         # Remove ignored samples if there is any
         self.atacseq_tss_data = self.ignore_samples(self.atacseq_tss_data)
         # Remove ignored samples if there is any
@@ -66,11 +68,11 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Check if there are any paired end sample in the current project
         self.pairedSampleExists = False
-        self.organism = ''
+#         self.organism = ''
         for sample in self.sample_sas_dict:
             if self.sample_sas_dict[sample]['read_type'] == 'paired':
                 self.pairedSampleExists = True
-            self.organism = self.sample_sas_dict[sample]['organism']
+#             self.organism = self.sample_sas_dict[sample]['organism']
 
         # # Set the color palette for PCA plot
         # self.attribute_colors = {}
@@ -79,6 +81,7 @@ class MultiqcModule(BaseMultiqcModule):
         #     if self.sample_sas_dict[s][self.color_attribute] not in self.attribute_colors:
         #         self.attribute_colors[self.sample_sas_dict[s][self.color_attribute]] = '#%02x%02x%02x' % tuple(
         #             np.random.choice(range(256), size=3))
+        
         # Get the genome version
         self.genome_version = config.genome
 
@@ -260,83 +263,83 @@ class MultiqcModule(BaseMultiqcModule):
         }
         self.general_stats_addcols(data, headers)
 
-    def add_frip_plot(self):
-        frip_plot_config = {
-            'data_labels': [
-                {'name': 'FRiP', 'ylab': 'FRiP', 'xlab': 'Number of filtered peaks'},
-                {'name': 'Oracle FRiP', 'ylab': 'Oracle FRiP', 'xlab': 'Number of filtered peaks'}
-            ],
-            'id': 'atacseq_frip_plot',
-            'marker_size': 3
-        }
-        frip_plot_data = [self.generate_frip_plot_data(frip_type='frip'),
-                          self.generate_frip_plot_data(frip_type='regulatory_fraction')]
-        self.add_section(
-            name='Fraction of Reads in Peaks',
-            anchor='atacseq_frip',
-            description='Scatter plot of FRiP vs. number of filtered peaks',
-            helptext='This plot shows the FRiP values relative to number of filtered peaks. '
-                     'Having high FRiP/Peaks ratio means there is low background noise. '
-                     'Dark blue samples belong to this project and light ones are from previous projects '
-                     'which can be taken as reference.',
-            plot=scatter.plot(frip_plot_data, pconfig=frip_plot_config)
-        )
+#     def add_frip_plot(self):
+#         frip_plot_config = {
+#             'data_labels': [
+#                 {'name': 'FRiP', 'ylab': 'FRiP', 'xlab': 'Number of filtered peaks'},
+#                 {'name': 'Oracle FRiP', 'ylab': 'Oracle FRiP', 'xlab': 'Number of filtered peaks'}
+#             ],
+#             'id': 'atacseq_frip_plot',
+#             'marker_size': 3
+#         }
+#         frip_plot_data = [self.generate_frip_plot_data(frip_type='frip'),
+#                           self.generate_frip_plot_data(frip_type='regulatory_fraction')]
+#         self.add_section(
+#             name='Fraction of Reads in Peaks',
+#             anchor='atacseq_frip',
+#             description='Scatter plot of FRiP vs. number of filtered peaks',
+#             helptext='This plot shows the FRiP values relative to number of filtered peaks. '
+#                      'Having high FRiP/Peaks ratio means there is low background noise. '
+#                      'Dark blue samples belong to this project and light ones are from previous projects '
+#                      'which can be taken as reference.',
+#             plot=scatter.plot(frip_plot_data, pconfig=frip_plot_config)
+#         )
 
-    def generate_frip_plot_data(self, frip_type):
-        frip_plot_data = OrderedDict()
-        for sample_name in self.atacseq_data:
-            xvalue = None
-            yvalue = None
-            if 'peaks' in self.atacseq_data[sample_name]:
-                try:
-                    xvalue = int(self.atacseq_data[sample_name]['peaks'])
-                except:
-                    xvalue = None
-            if 'frip' in self.atacseq_data[sample_name]:
-                try:
-                    yvalue = float(self.atacseq_data[sample_name][frip_type])
-                except:
-                    yvalue = None
-            frip_plot_data[sample_name] = {
-                'x': xvalue,
-                'y': yvalue,
-                'color': '#3182bd',
-                'name': 'Current Project'
-            }
-        # Retreive global statistics
-        global_stats = self.global_stats.transpose().to_dict(orient='dict')
-        count = 0
-        for key in global_stats:
-            count += 1
-            sample_name = 'external_' + str(count) # global_stats[key]['sample_name']
-            if sample_name in self.atacseq_data:
-                # print('Skipping {}'.format(sample_name))
-                continue
-            # Skip paired-end samples if the current project is single-end
-            if global_stats[key]['read_type'] == 'paired' and not self.pairedSampleExists:
-                continue
-            # Skip samples with different organism
-            if global_stats[key]['organism'] != self.organism:
-                continue
-            xvalue = None
-            yvalue = None
-            if 'peaks' in global_stats[key]:
-                try:
-                    xvalue = int(global_stats[key]['peaks'])
-                except:
-                    xvalue = None
-            if 'frip' in global_stats[key]:
-                try:
-                    yvalue = float(global_stats[key][frip_type])
-                except:
-                    yvalue = None
-            frip_plot_data[sample_name] = {
-                'x': xvalue,
-                'y': yvalue,
-                'color': '#deebf7',
-                'name': 'Previous Projects'
-            }
-        return frip_plot_data
+#     def generate_frip_plot_data(self, frip_type):
+#         frip_plot_data = OrderedDict()
+#         for sample_name in self.atacseq_data:
+#             xvalue = None
+#             yvalue = None
+#             if 'peaks' in self.atacseq_data[sample_name]:
+#                 try:
+#                     xvalue = int(self.atacseq_data[sample_name]['peaks'])
+#                 except:
+#                     xvalue = None
+#             if 'frip' in self.atacseq_data[sample_name]:
+#                 try:
+#                     yvalue = float(self.atacseq_data[sample_name][frip_type])
+#                 except:
+#                     yvalue = None
+#             frip_plot_data[sample_name] = {
+#                 'x': xvalue,
+#                 'y': yvalue,
+#                 'color': '#3182bd',
+#                 'name': 'Current Project'
+#             }
+#         # Retreive global statistics
+#         global_stats = self.global_stats.transpose().to_dict(orient='dict')
+#         count = 0
+#         for key in global_stats:
+#             count += 1
+#             sample_name = 'external_' + str(count) # global_stats[key]['sample_name']
+#             if sample_name in self.atacseq_data:
+#                 # print('Skipping {}'.format(sample_name))
+#                 continue
+#             # Skip paired-end samples if the current project is single-end
+#             if global_stats[key]['read_type'] == 'paired' and not self.pairedSampleExists:
+#                 continue
+#             # Skip samples with different organism
+#             if global_stats[key]['organism'] != self.organism:
+#                 continue
+#             xvalue = None
+#             yvalue = None
+#             if 'peaks' in global_stats[key]:
+#                 try:
+#                     xvalue = int(global_stats[key]['peaks'])
+#                 except:
+#                     xvalue = None
+#             if 'frip' in global_stats[key]:
+#                 try:
+#                     yvalue = float(global_stats[key][frip_type])
+#                 except:
+#                     yvalue = None
+#             frip_plot_data[sample_name] = {
+#                 'x': xvalue,
+#                 'y': yvalue,
+#                 'color': '#deebf7',
+#                 'name': 'Previous Projects'
+#             }
+#         return frip_plot_data
 
     def add_download_table(self):
         # Create a table with download links to various files
@@ -359,36 +362,37 @@ class MultiqcModule(BaseMultiqcModule):
         headers = OrderedDict()
         headers['BAM'] = {
             'title': 'BAM',
-            'description': 'Bowtie2 alignment results in BAM format',
-            'scale': False
+            'description': 'Bowtie2 alignment results in BAM format.',
+            'scale': False,
+            'hidden': False
         }
         headers['filtered_BAM'] = {
             'title': 'Filtered BAM',
-            'description': 'BAM files without the low quality alignments',
+            'description': 'BAM files without the low quality alignments.',
             'scale': False,
-            'hidden': True
+            'hidden': False
         }
         headers['filtered_peaks'] = {
             'title': 'Peaks',
-            'description': 'Peak calls by MACS2 in bed format',
+            'description': 'Peak calls by MACS2 in bed format.',
             'scale': False,
             'hidden': False
         }
         headers['summits_bed'] = {
             'title': 'Summits',
-            'description': 'Summits of the peaks in bed format',
+            'description': 'Summits of the peaks in bed format.',
             'scale': False,
             'hidden': False
         }
         headers['motifs'] = {
             'title': 'Motifs',
-            'description': 'HOMER motif analysis results',
+            'description': 'HOMER motif analysis results.',
             'scale': False,
             'hidden': False
         }
         headers['coverage_bigwig'] = {
             'title': 'Coverage BigWig',
-            'description': 'Genome wide coverage data in UCSC bigWig format',
+            'description': 'Genome wide coverage data in UCSC bigWig format.',
             'scale': False,
             'hidden': False
         }
@@ -400,9 +404,8 @@ class MultiqcModule(BaseMultiqcModule):
         for sample_name in self.atacseq_data:
             sample_names.append(sample_name)
             # generate links list for loading them on IGV
-#             igv_link = project_url + '/atacseq_hub/' + self.genome_version + '/' + sample_name + '.bigWig'
+#             igv_link = project_url + '/hub/' + self.genome_version + '/' + sample_name + '.bigWig'
 #             igv_links.append(igv_link)
-            # TODO: Generate the URL for the raw bam files
             sample_bam_url = '{}/{}/mapped/{}.bam'.format(results_url, sample_name, sample_name)
             sample_bai_url = '{}/{}/mapped/{}.bam.bai'.format(results_url, sample_name, sample_name)
             sample_filtered_bam_url = '{}/{}/mapped/{}.filtered.bam'.format(results_url, sample_name, sample_name)
@@ -412,20 +415,20 @@ class MultiqcModule(BaseMultiqcModule):
             sample_summits_url = '{}/{}/peaks/{}_summits.bed'.format(results_url, sample_name, sample_name)
             sample_known_motifs_url = '{}/{}/homer/knownResults.html'.format(results_url, sample_name)
             sample_denovo_motifs_url = '{}/{}/homer/homerResults.html'.format(results_url, sample_name)
-            sample_bigwig_url = '../atacseq_hub/{}.bigWig'.format(sample_name)
+            sample_bigwig_url = '../hub/{}.bigWig'.format(sample_name)
             data[sample_name] = {
-                'BAM': '<a href=\"{}\">{} BAM</a><br><a href=\"{}\">{} BAI</a>'.format(sample_bam_url, sample_name, sample_bai_url, sample_name),
-                'filtered_BAM': '<a href=\"{}\">{} flt BAM</a><br><a href=\"{}\">{} flt BAI</a>'.format(sample_filtered_bam_url, sample_name, sample_filtered_bai_url, sample_name),
-                'filtered_peaks': '<a href=\"{}\">{} Peaks</a><br><a href=\"{}\">{} Annotated Peaks</a>'.format(sample_peaks_url, sample_name, sample_annotated_peaks_url, sample_name),
-                'summits_bed': '<a href=\"{}\">{} Summits</a>'.format(sample_summits_url, sample_name),
-                'coverage_bigwig': '<a href=\"{}\">{} bigWig</a>'.format(sample_bigwig_url, sample_name),
-                'motifs': '<a href=\"{}\">{} Known</a><br><a href=\"{}\">{} DeNovo</a>'.format(sample_known_motifs_url, sample_name, sample_denovo_motifs_url, sample_name)
+                'BAM': '<a href={}>{} BAM</a></br><a href={}>{} BAI</a>'.format(sample_bam_url, sample_name, sample_bai_url, sample_name),
+                'filtered_BAM': '<a href={}>{} flt BAM</a></br><a href={}>{} flt BAI</a>'.format(sample_filtered_bam_url, sample_name, sample_filtered_bai_url, sample_name),
+                'filtered_peaks': '<a href={}>{} Peaks</a></br><a href={}>{} Annotated Peaks</a>'.format(sample_peaks_url, sample_name, sample_annotated_peaks_url, sample_name),
+                'summits_bed': '<a href={}>{} Summits</a>'.format(sample_summits_url, sample_name),
+                'coverage_bigwig': '<a href={}>{} bigWig</a>'.format(sample_bigwig_url, sample_name),
+                'motifs': '<a href={}>{} Known</a></br><a href={}>{} DeNovo</a>'.format(sample_known_motifs_url, sample_name, sample_denovo_motifs_url, sample_name)
             }
 
 #         # Generate the UCSC genome browser link
-#         track_hubs_url = project_url + '/atacseq_hub/hub.txt'
+#         track_hubs_url = project_url + '/hub/hub.txt'
 #         genome_browser_url = 'http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db={}&hubUrl={}'.format(self.genome_version, track_hubs_url)
-#         section_description = '<a href=\"{}\" target=\"_blank\">Click here to view the coverage tracks on UCSC Genome Browser <span class="glyphicon glyphicon-new-window"></span></a>'.format(genome_browser_url)
+#         section_description = '<a href={} target=_blank>Click here to view the coverage tracks on UCSC Genome Browser <span class="glyphicon glyphicon-new-window"></span></a>'.format(genome_browser_url)
 
 #         igv_load_link = '<a href=http://localhost:60151/load?file={}?names={}?genome={}?goto=chr1>Click here to load the coverage tracks on your IGV session (Genome: {}) <span class="glyphicon glyphicon-new-window"></span></a>'.format(
 #             ','.join(igv_links),
@@ -439,7 +442,7 @@ class MultiqcModule(BaseMultiqcModule):
             name='Download Links & Coverage Tracks',
             anchor='atacseq_download',
 #             description=section_description,
-            helptext='You can click on the table elements to download the files',
+            helptext='You can click on the table elements to download the files.',
             plot=table.plot(data, headers, table_config)
         )
 

@@ -69,8 +69,7 @@ rule ucsc_hub:
             hub_text = [f'hub {config["project_name"]}',
                         f'shortLabel {config["project_name"]}',
                         f'longLabel {config["project_name"]}',
-                        'genomesFile genomes.txt',
-                        f'email {config["email"]}\n']
+                        'genomesFile genomes.txt\n']
             hf.write('\n'.join(hub_text))
 
         # create trackdb file
@@ -82,7 +81,7 @@ rule ucsc_hub:
                         'type bigWig', 'compositeTrack on', 'autoScale on', 'maxHeightPixels 32:32:8',
                         'shortLabel {}'.format(config["project_name"][:8]),
                         'longLabel {}'.format(config["project_name"]),
-                        'visibility {}'.format(config["trackhub_visibility"]),
+                        'visibility full',
                         '', '']
             for sample_name in samples.keys():
                 track_color = '255,40,0'

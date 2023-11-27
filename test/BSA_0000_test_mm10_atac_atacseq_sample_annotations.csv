@@ -1,4 +1,0 @@
-sample_name,flowcell,lane,BSF_name,data_source,read_type,organism,skip_preprocess
-paired_test_sample,BSF_0789_HGVVGBBXY,1,HPCLSK_CDK6_K43M_080219_A_S66391,bsf_test,paired,mouse,no
-paired_test_sample,BSF_0789_HGVVGBBXY,2,HPCLSK_CDK6_K43M_080219_A_S66391,bsf_test,paired,mouse,no
-single_test_sample,BSF_0736_HGJLWBBXY,2,F_ATAC_Th0_1_S61854,bsf_test,single,mouse,no

@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: Ultimate ATAC-seq Data Processing Pipeline
+title: Ultimate ATAC-seq Data Processing & Quantification Pipeline
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -41,8 +41,8 @@ repository-code: 'https://github.com/epigen/atacseq_pipeline'
 url: 'https://epigen.github.io/atacseq_pipeline/'
 abstract: >-
   A Snakemake implementation of the BSF's ATAC-seq Data
-  Processing Pipeline extended by downstream processing and
-  unsupervised analyses steps using bash, python, and R.
+  Processing Pipeline extended by downstream quantification 
+  and annotation steps using Bash and Python.
 keywords:
   - Bioinformatics
   - ATAC-seq

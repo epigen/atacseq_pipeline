@@ -2,19 +2,11 @@
 # generate consensus regions using (py)bedtools
 rule get_consensus_regions:
     input:
-#         annotation = config["annotation"],
         summits_bed = expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"), sample=samples_quantify),
     output:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
 #         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
     params:
-        # paths
-#         results_dir = os.path.join(result_path,"results"),
-        # bedtools params
-#         slop_extension = config["slop_extension"],
-        # pipeline information
-#         blacklist_file = config["blacklisted_regions"],
-#         chrom_file = config["chromosome_sizes"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -35,8 +27,6 @@ rule quantify_support_sample:
     output:
         quant_support = os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"),
     params:
-        # pipeline information
-#         chrom_file = config["chromosome_sizes"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -52,13 +42,10 @@ rule quantify_support_sample:
 # aggregate support quantification of all samples
 rule quantify_support_aggregate:
     input:
-#         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
         quant_support = expand(os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"), sample=samples_quantify),
     output:
         quant_support_agg = os.path.join(result_path,"counts","support.csv"),
     params:
-        # paths
-#         results_dir = os.path.join(result_path,"results"),
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -79,10 +66,6 @@ rule quantify_counts_sample:
     output:
         quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"),
     params:
-        # paths
-#         results_dir = os.path.join(result_path,"results"),
-        # pipeline information
-#         chrom_file = config["chromosome_sizes"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -98,13 +81,10 @@ rule quantify_counts_sample:
 # aggregate count quantification of all samples (8h for >650 samples)
 rule quantify_counts_aggregate:
     input:
-#         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
         quant_counts = expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"), sample=samples_quantify),
     output:
         quant_counts_agg = os.path.join(result_path,"counts","counts.csv"),
     params:
-        # paths
-#         results_dir = os.path.join(result_path,"results"),
         # cluster parameters
         partition=config.get("partition"),
     resources:

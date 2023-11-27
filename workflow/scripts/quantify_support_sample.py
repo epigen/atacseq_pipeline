@@ -1,7 +1,5 @@
 #!/bin/env python
 
-
-
 #### libraries
 import os
 import pandas as pd

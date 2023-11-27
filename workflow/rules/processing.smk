@@ -15,7 +15,6 @@ rule align:
         # sample information
         sample_name= lambda w: "{}".format(w.sample),
         read_type= lambda w: samples["{}".format(w.sample)]["read_type"],
-#         raw_bams= lambda w: samples["{}".format(w.sample)]["raw_bams"],
         genome = config["genome"],
         genome_size = config["genome_size"],
         # alignment parameters

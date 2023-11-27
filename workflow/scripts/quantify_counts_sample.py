@@ -18,15 +18,7 @@ quant_count_path = snakemake.output["quant_counts"]
 # parameters
 sample = snakemake.wildcards["sample"]
 
-
-# configuration
-# output = snakemake.output[0]
-# chrom_file = snakemake.params["chrom_file"]
-# results_dir = snakemake.params["results_dir"]
-
 elements_to_quantify = bedtools.BedTool(consensus_regions_path)
-
-# bamfile=snakemake.input[1]
 
 print("Processing "+sample)
 try:

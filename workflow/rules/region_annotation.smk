@@ -10,8 +10,6 @@ rule uropa_prepare:
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
         reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
     params:
-        # paths
-#         results_dir = os.path.join(result_path,"tmp"),
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -154,3 +152,8 @@ rule region_annotation_aggregate:
         
         # save final results
         base_character.to_csv(output.region_annotation, index_label='peak_id')
+        
+        # remove tmp folder
+        tmp_dir = os.path.dirname(input.gencode_results)
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir)

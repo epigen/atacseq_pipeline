@@ -14,11 +14,9 @@ chrom_file = snakemake.config["chromosome_sizes"]
 
 # output
 consensus_regions_path = snakemake.output["consensus_regions"]
-# results_dir = snakemake.params["results_dir"]
 
 # parameters
 slop_extension=snakemake.config["slop_extension"]
-
 
 # load summits and generate consensus regions using (py)bedtools
 output_bed = None
@@ -41,18 +39,3 @@ peaks['ID'] = peaks.index.format(formatter=(lambda x: "CONS{:011d}".format(x)))
 
 # save results
 bedtools.BedTool().from_dataframe(peaks).saveas(consensus_regions_path)
-
-
-# load annotation file and get sample names
-# annotations = pd.read_csv(snakemake.input[0], index_col=0)
-# annotations=annotations[(annotations['pass_qc']>0)]
-
-# # save filtered annotation file
-# annotations.to_csv(snakemake.output[1])
-
-# peakfiles = [os.path.join(results_dir,"{}".format(sample),"peaks", "{}_summits.bed".format(sample)) for sample in annotations.index]
-
-
-
-# if not os.path.exists(os.path.split(output)[0]):
-#     os.mkdir(os.path.split(output)[0])

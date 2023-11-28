@@ -41,6 +41,9 @@ samples = annot.reset_index().drop_duplicates(subset='sample_name', keep='first'
 result_path = os.path.join(config["result_path"], module_name)
 HOMER_path = os.path.abspath(os.path.join("resources", config["project_name"], "HOMER"))
 
+# to deal with rule ambiguity concerning final outputs in counts/
+ruleorder: sample_annotation > quantify_aggregate
+
 ##### target rules #####
 rule all:
     input:

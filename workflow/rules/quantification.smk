@@ -59,24 +59,24 @@ rule quantify_support_sample:
     script:
         "../scripts/quantify_support_sample.py"
 
-# aggregate support quantification of all samples
-rule quantify_support_aggregate:
-    input:
-        quant_support = expand(os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"), sample=samples_quantify),
-    output:
-        quant_support_agg = os.path.join(result_path,"counts","support.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
-    resources:
-        mem_mb=config.get("mem", "32000"),
-    threads: config.get("threads", 4)
-    conda:
-        "../envs/pybedtools.yaml",
-    log:
-        "logs/rules/quantify_support_aggregate.log"
-    script:
-        "../scripts/aggregate_counts.py"
+# # aggregate support quantification of all samples
+# rule quantify_support_aggregate:
+#     input:
+#         quant_support = expand(os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"), sample=samples_quantify),
+#     output:
+#         quant_support_agg = os.path.join(result_path,"counts","support.csv"),
+#     params:
+#         # cluster parameters
+#         partition=config.get("partition"),
+#     resources:
+#         mem_mb=config.get("mem", "32000"),
+#     threads: config.get("threads", 4)
+#     conda:
+#         "../envs/pybedtools.yaml",
+#     log:
+#         "logs/rules/quantify_support_aggregate.log"
+#     script:
+#         "../scripts/aggregate_counts.py"
 
 # quantify coverage based on consensus regions counts for every sample
 rule quantify_counts_sample:
@@ -98,12 +98,31 @@ rule quantify_counts_sample:
     script:
         "../scripts/quantify_counts_sample.py"
 
-# aggregate count quantification of all samples (8h for >650 samples)
-rule quantify_counts_aggregate:
+# # aggregate count quantification of all samples (8h for >650 samples)
+# rule quantify_counts_aggregate:
+#     input:
+#         quant_counts = expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"), sample=samples_quantify),
+#     output:
+#         quant_counts_agg = os.path.join(result_path,"counts","counts.csv"),
+#     params:
+#         # cluster parameters
+#         partition=config.get("partition"),
+#     resources:
+#         mem_mb=config.get("mem", "32000"),
+#     threads: config.get("threads", 4)
+#     conda:
+#         "../envs/pybedtools.yaml",
+#     log:
+#         "logs/rules/quantify_counts_aggregate.log"
+#     script:
+#         "../scripts/aggregate_counts.py"
+        
+# aggregate quantification of counts/support of all samples 
+rule quantify_aggregate:
     input:
-        quant_counts = expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"), sample=samples_quantify),
+        get_quantifications,
     output:
-        quant_counts_agg = os.path.join(result_path,"counts","counts.csv"),
+        os.path.join(result_path,"counts","{kind}.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),
@@ -111,8 +130,10 @@ rule quantify_counts_aggregate:
         mem_mb=config.get("mem", "32000"),
     threads: config.get("threads", 4)
     conda:
-        "../envs/pybedtools.yaml",
+        "../envs/datamash.yaml",
     log:
-        "logs/rules/quantify_counts_aggregate.log"
-    script:
-        "../scripts/aggregate_counts.py"
+        "logs/rules/quantify_aggregate_{kind}.log"
+    shell:
+        """
+        awk 'NR==1 {{print; next}} FNR>1 {{print}}' {input} | datamash transpose -t ',' > {output}
+        """

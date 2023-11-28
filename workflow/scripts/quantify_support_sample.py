@@ -26,9 +26,8 @@ consensus_peaks_df = bedtools.BedTool(consensus_regions_path).to_dataframe().set
 result = pd.DataFrame(0,index=consensus_peaks_df.index,columns=[sample])
     
 try:
-    if (peakfile_path is not None):
-        sample_peaks = bedtools.BedTool(peakfile_path)
-        result = consensus_peaks.intersect(
+    sample_peaks = bedtools.BedTool(peakfile_path)
+    result = consensus_peaks.intersect(
             sample_peaks,
             g=chrom_file, 
             wa=True,

@@ -122,7 +122,29 @@ rule homer_region_annotation:
         {params.homer_bin}/annotatePeaks.pl {input.consensus_regions} {params.genome} \
             > {output.homer_annotations} \
             2> {output.homer_annotations_log};
-        """ 
+        """
+        
+# get gc content and region length
+rule bedtools_annotation:
+    input:
+        consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+    output:
+        bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
+    params:
+        genome_fasta = config["genome_fasta"],
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
+    conda:
+        "../envs/pybedtools.yaml",
+    log:
+        "logs/rules/bedtools_annotation.log"
+    shell:
+        """
+        bedtools nuc -fi {params.genome_fasta} -bed {input.consensus_regions} > {output.bedtools_annotation}
+        """
         
 # aggregate uropa and homer annotation results
 rule region_annotation_aggregate:
@@ -130,6 +152,7 @@ rule region_annotation_aggregate:
         gencode_results = os.path.join(result_path,"tmp","gencode_finalhits.txt"),
         reg_results = os.path.join(result_path,"tmp","reg_finalhits.txt"),
         homer_annotations = os.path.join(result_path,"tmp","homer_annotations.tsv"),
+        bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
     output:
         region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
     params:
@@ -160,13 +183,20 @@ rule region_annotation_aggregate:
         reg_characterization=reg_characterization.add_prefix('regulatoryBuild_')
         
         # load and format homer annotation results
-        homer_annotation=pd.read_csv(input.homer_annotations,sep='\t', index_col=0)
-        homer_annotation=homer_annotation[['Annotation','Detailed Annotation','Distance to TSS','Nearest PromoterID','Entrez ID','Nearest Unigene','Nearest Refseq','Nearest Ensembl','Gene Name','Gene Alias','Gene Description','Gene Type']]
-        homer_annotation=homer_annotation.add_prefix('homer_')
+        homer_annotation = pd.read_csv(input.homer_annotations,sep='\t', index_col=0)
+        homer_annotation = homer_annotation[['Annotation','Detailed Annotation','Distance to TSS','Nearest PromoterID','Entrez ID','Nearest Unigene','Nearest Refseq','Nearest Ensembl','Gene Name','Gene Alias','Gene Description','Gene Type']]
+        homer_annotation = homer_annotation.add_prefix('homer_')
         
+        # load and format bedtools annotation results
+        bedtools_annotation = pd.read_csv(input.bedtools_annotation, sep='\t', index_col = 3)
+        bedtools_annotation = bedtools_annotation.iloc[:,3:]
+        bedtools_annotation.columns = [col.split('_', 1)[-1].replace('at', 'AT').replace('gc', 'GC').replace('oth', 'otherBases') for col in bedtools_annotation.columns]
+        bedtools_annotation = bedtools_annotation.add_prefix('bedtools_')
+
         # join results
         base_character = gencode_characterization.join(homer_annotation)
         base_character = base_character.join(reg_characterization)
+        base_character = base_character.join(bedtools_annotation)
         
         # replace whiteapaces in colnames with underscore
         base_character.columns = base_character.columns.str.replace(' ', '_')

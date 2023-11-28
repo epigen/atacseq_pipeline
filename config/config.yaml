@@ -20,7 +20,7 @@ genome: mm10
 
 # sample(!) specific annotation columns of interest from the annotation sheet (note: unit specific annotations are not retained)
 # first entry is used to color UCSC Genome Browser tracks
-annot_columns: ['flowcell','read_type','Treatment'] # (optional) can be empty [""]. must be columns in the annotation
+annot_columns: ['pass_qc','flowcell','read_type','Treatment'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####
 # coverage calculation with bedtools for QC report

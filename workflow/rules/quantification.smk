@@ -1,4 +1,24 @@
 
+# create sample annotation file based on MultiQC general stats
+rule sample_annotation:
+    input:
+        multiqc_stats = os.path.join(result_path, "report", "multiqc_report_data", "multiqc_general_stats.txt"),
+    output:
+        sample_annot = os.path.join(result_path, "counts", "annotation.csv"),
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
+    log:
+        "logs/rules/sample_annotation.log"
+    run:
+        annot_df = pd.read_csv(input.multiqc_stats, delimiter='\t', index_col=0).loc[samples_quantify,:]
+        annot_df.columns = [col.split("mqc-generalstats-")[1].replace("atac_seq_pipeline-", "").replace('-', '_') for col in annot_df.columns]
+        annot_df.index.names = ['sample_name']
+        annot_df.to_csv(output.sample_annot)
+
 # generate consensus regions using (py)bedtools
 rule get_consensus_regions:
     input:

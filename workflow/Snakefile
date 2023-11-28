@@ -32,7 +32,7 @@ configfile: os.path.join("config","config.yaml")
 
 # load sample/unit annotation
 annot = pd.read_csv(config["annotation"], index_col="sample_name")
-samples_quantify = annot[annot['pass_qc'] != 0].index.unique().tolist()
+samples_quantify = annot[annot['pass_qc'] > 0].index.unique().tolist()
 
 # convert annot into dictionary for parametrization of rules, by deduplicating by sample_name (should only differ by bam_file)
 samples = annot.reset_index().drop_duplicates(subset='sample_name', keep='first').set_index("sample_name").to_dict(orient="index")
@@ -47,6 +47,7 @@ rule all:
         # PROCESSING
         multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
         # QUANTIFICATION
+        annotation = os.path.join(result_path, "counts", "annotation.csv") if len(samples_quantify)>0 else [],
         support = os.path.join(result_path,"counts","support.csv") if len(samples_quantify)>0 else [],
         counts = os.path.join(result_path,"counts","counts.csv") if len(samples_quantify)>0 else [],
         # ANNOTATION
@@ -68,6 +69,6 @@ include: os.path.join("rules", "export.smk")
 include: os.path.join("rules", "common.smk")
 include: os.path.join("rules", "resources.smk")
 include: os.path.join("rules", "processing.smk")
-include: os.path.join("rules", "multiqc.smk")
+include: os.path.join("rules", "report.smk")
 include: os.path.join("rules", "quantification.smk")
 include: os.path.join("rules", "region_annotation.smk")

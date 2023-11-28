@@ -42,9 +42,9 @@ rule align:
         "logs/rules/align_{sample}.log"
     shell:
         """
-        mkdir -p {params.results_dir};
-        mkdir -p {params.sample_dir};
         mkdir -p {params.bam_dir};
+        
+        find {params.results_dir} -type f -name '*.bam.tmp.*' -exec rm {} +;
         
         RG="--rg-id {params.sample_name} --rg SM:{params.sample_name} --rg PL:illumina --rg CN:CeMM_BSF"
 

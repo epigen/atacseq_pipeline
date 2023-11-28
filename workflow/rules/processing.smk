@@ -44,7 +44,7 @@ rule align:
         """
         mkdir -p {params.bam_dir};
         
-        find {params.results_dir} -type f -name '*.bam.tmp.*' -exec rm {} +;
+        find {params.results_dir} -type f -name '*.bam.tmp.*' -exec rm {{}} +;
         
         RG="--rg-id {params.sample_name} --rg SM:{params.sample_name} --rg PL:illumina --rg CN:CeMM_BSF"
 

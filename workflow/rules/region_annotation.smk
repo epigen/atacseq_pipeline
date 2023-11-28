@@ -46,14 +46,36 @@ rule uropa_prepare:
         with open(output.reg_config,'w') as out:
             out.write(reg_config)
 
-# run uropa on consensus regions
-rule uropa_region_annotation:
+# run uropa on consensus regions for gencode
+rule uropa_gencode:
     input:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
-        reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
     output:
         gencode_results = os.path.join(result_path,"tmp","gencode_finalhits.txt"),
+    params:
+        # paths
+        results_dir = os.path.join(result_path,"tmp"),
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 8)
+    conda:
+        "../envs/uropa.yaml",
+    log:
+        "logs/rules/uropa_run_gencode.log"
+    shell:
+        """
+        uropa -p {params.results_dir}/gencode -i {input.gencode_config} -t {threads} -l {params.results_dir}/uropa.gencode.log
+        """
+
+# run uropa on consensus regions for regulatory build
+rule uropa_reg:
+    input:
+        consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+        reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
+    output:
         reg_results = os.path.join(result_path,"tmp","reg_finalhits.txt"),
     params:
         # paths
@@ -66,10 +88,9 @@ rule uropa_region_annotation:
     conda:
         "../envs/uropa.yaml",
     log:
-        "logs/rules/uropa_run.log"
+        "logs/rules/uropa_run_reg.log"
     shell:
         """
-        uropa -p {params.results_dir}/gencode -i {input.gencode_config} -t {threads} -l {params.results_dir}/uropa.gencode.log
         uropa -p {params.results_dir}/reg -i {input.reg_config} -t {threads} -l {params.results_dir}/uropa.reg.log
         """
 

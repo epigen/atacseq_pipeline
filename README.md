@@ -71,24 +71,25 @@ The processing and quantification described here was performed using a publicly 
     - Alignment of both single-end and paired-end reads in raw/unaligned BAM format with Bowtie2.
     - Peak calling with MAC2.
       - Note: even though the peak support of a region in a certain sample is 0, does not mean that there are no reads counted in the count matrix, it just states that there was no peak called.
-      - Note: the peak support can be >1 for certain samples in case of a consensus region spanning across more than one peak within the respective sample.
+      - Note: the peak support can be >1 for certain samples in case of a consensus region spanning more than one peak within the respective sample.
     - Peak annotation and motif analysis HOMER.
-    - Coverage analysis generating bigWig files (hub/) and quantifiying TSS coverage (results/).
+    - Coverage analysis generating bigWig files (hub/) and quantifying TSS coverage (results/).
 - Reporting (report/)
-    - MultiQC report generation using MultiQC, extedning with an in-house developed plugin [atacseq_report](./workflow/scripts/multiqc_atacseq).
+    - MultiQC report generation using MultiQC, extended with an in-house developed plugin [atacseq_report](./workflow/scripts/multiqc_atacseq).
 - Quantification (counts/)
     - Consensus region set generation across all called peaks.
     - Read count and peak support quantification of the consensus regions across samples, yielding a count and a support matrix with dimensions regions X samples.
 - Annotation (counts/)
-    - consensus region set annotation (UROPA using regulatory build and gencode as refernce, and HOMER)
+    - consensus region set annotation (UROPA using regulatory build and gencode as references, and HOMER)
 - UCSC Genome Browser Trackhub (hub/)
 
 # Usage
 These steps are the recommended usage for this workflow:
-1. Perform only the processing, by setting the pass_qc annotartion for all samples to 0.
-2. Use the generated multiQC report (project_path/report/multiqc_report.html) to judge the quality of your samples.
-3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly.
-4. Finally, execute the remaining donwstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
+0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10](#resources).
+1. Perform only the processing, by setting the pass_qc annotation for all samples to 0.
+2. Use the generated multiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of your samples.
+3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly (everything >0 will be included in the downstream steps).
+4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
@@ -106,9 +107,14 @@ Additionally, the report zip archive of the hg38 test example is provided to sho
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline)
 
 # Resources
-- Data Resources: To ensure reproducibility of results and to make the workflow easy-to-use we provide all required reference data for the analysis of ATAC-seq samples for human (hg38) and mouse (mm10) genomes on Zendodo: 
-  - [resources for the GRCm38 (mm10) assembly of the mouse genome](https://doi.org/10.5281/zenodo.6344321)
-  - [resources for the GRCh38 (hg38) assembly of the human genome](https://doi.org/10.5281/zenodo.6344173)
+- Data Resources: To ensure the reproducibility of results and to make the workflow accessible we provide all required reference data for the analysis of ATAC-seq samples for [human GRCh38 (hg38)](https://doi.org/10.5281/zenodo.6344173) and [mouse GRCm38 (mm10)](https://doi.org/10.5281/zenodo.6344321) genomes on Zendodo.
+  ```console
+  # download Zenodo records using zenodo_get v1.3.4
+  conda install -c conda-forge zenodo_get=1.3.4
+  
+  zenodo_get --record 6344173 --output-dir=resources/atacseq_pipeline/hg38/
+  zenodo_get --record 6344322 --output-dir=resources/atacseq_pipeline/mm10/
+  ```
 - Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
   - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after quantification.
   - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between samples.

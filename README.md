@@ -19,7 +19,7 @@ Table of contents
   * [Features](#features)
   * [Usage](#usage)
   * [Quality Control](#quality--control)
-  * [UCSC Genome Browser Track Hub](#ucsc--genome--browser--track--hub)
+  * [Genome Browser Tracks](#genome--browser--tracks)
   * [Configuration](#configuration)
   * [Examples](#examples)
   * [Links](#links)
@@ -107,7 +107,7 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - Regulatory regions >10% (as it is roughly 10% of the genome)
     - TSS (Transcription Start Site) normalized coverage ideally > 4 (at least >2)
     - % Duplications “not excessive”
-5. Inspect [Genome Browser Tracks] using UCSC Genome Browser (online) or IGV (local)
+5. Inspect [Genome Browser Tracks](#genome--browser--tracks) using UCSC Genome Browser (online) or IGV (local)
     - Compare all samples to the best, based on above's QC metrics.
     - Check cell type / experiment-specific markers for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.
@@ -125,7 +125,11 @@ My personal QC value scheme to inform downstream analyses (e.g., unsupervised an
 
 Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/0000-0001-9362-5373), wrote about ["ATAC-seq sample quality, wet lab troubleshooting and advice"](https://github.com/epigen/open_pipelines/blob/master/pipelines/atacseq.md#sample-quality-wet-lab-troubleshooting-and-advice).
 
-# UCSC Genome Browser Track Hub & IGV (COMING SOON)
+# Genome Browser Tracks (COMING SOON)
+
+## UCSC Genome Browser Track Hub
+
+## IGV
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)

@@ -112,7 +112,7 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - Check cell type / experiment-specific markers for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.
 6. [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) (e.g., PCA or UMAP)
-    - Identify outliers/drivers of variation, especially in the control samples.
+    - Identify outliers/drivers of variation, especially in the control samples and within replicates.
   
 My personal QC value scheme to inform downstream analyses (e.g., unsupervised analysis)
 - 0 = did not pass

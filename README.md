@@ -109,11 +109,20 @@ Additionally, the report zip archive of the hg38 test example is provided to sho
 # Resources
 - Data Resources: To ensure the reproducibility of results and to make the workflow accessible we provide all required reference data for the analysis of ATAC-seq samples for [human GRCh38 (hg38)](https://doi.org/10.5281/zenodo.6344173) and [mouse GRCm38 (mm10)](https://doi.org/10.5281/zenodo.6344321) genomes on Zendodo.
   ```console
-  # download Zenodo records using zenodo_get v1.3.4
+  # download Zenodo records using zenodo_get
+
+  # install zenodo_get v1.3.4
   conda install -c conda-forge zenodo_get=1.3.4
-  
+
+  # human GRCh38 (hg38)
   zenodo_get --record 6344173 --output-dir=resources/atacseq_pipeline/hg38/
+  cd resources/atacseq_pipeline/hg38
+  unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
+
+  # mouse GRCm38 (mm10)
   zenodo_get --record 6344322 --output-dir=resources/atacseq_pipeline/mm10/
+  cd resources/atacseq_pipeline/mm10
+  unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
   ```
 - Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
   - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after quantification.

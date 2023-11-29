@@ -18,6 +18,8 @@ Table of contents
   * [Methods](#methods)
   * [Features](#features)
   * [Usage](#usage)
+  * [Quality Control](#quality--control)
+  * [UCSC Genome Browser Track Hub](#ucsc--genome--browser--track--hub)
   * [Configuration](#configuration)
   * [Examples](#examples)
   * [Links](#links)
@@ -85,13 +87,45 @@ The processing and quantification described here was performed using a publicly 
 
 # Usage
 These steps are the recommended usage for this workflow:
+
 0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10](#resources).
 1. Perform only the processing, by setting the pass_qc annotation for all samples to 0.
-2. Use the generated multiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of your samples.
+2. Use the generated MultiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of each samples (see tips in the next section).
 3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly (everything >0 will be included in the downstream steps).
 4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
+
+# Quality Control
+Below are some guidelines for the manual quality control of each sample, but keep in mind that every experiment/dataset is different.
+
+1. Reads Mapped ~ $30\cdot 10^{6}$ ($>20\cdot 10^{6}$ at least)
+2. % Aligned >90%
+3. % Mitochondrial <10%
+4. Peaks (depend on reads)
+    - FriP (Fraction of reads in Peaks) ~ >20% (can be misleading as 80-90% are also not good)
+    - Regulatory regions >10% (as it is roughly 10% of the genome)
+    - TSS (Transcription Start Site) normalized coverage ideally > 4 (at least >2)
+    - % Duplications “not excessive”
+5. Inspect [Genome Browser Tracks] using UCSC Genome Browser (online) or IGV (local)
+    - Compare all samples to the best, based on above's QC metrics.
+    - Check cell type / experiment-specific markers for accessibility as positive controls.
+    - Check e.g., developmental regions for accessibility as negative controls.
+6. [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) (e.g., PCA or UMAP)
+    - Identify outliers/drivers of variation, especially in the control samples.
+  
+My personal QC value scheme to inform downstream analyses (e.g., unsupervised analysis)
+- 0 = did not pass
+- 2 options
+  - for every metric that is not ok subtract 0.25 from 1, which means it requires 4 “strikes” for a sample to be removed due to low quality.
+  - alternative
+      - 0.5 = passed with reservations (e.g., metrics and genome browser tracks were not optimal, but still good enough)
+      - 0.75 = not ideal (e.g., at least metrics or IGV tracks were not optimal)
+- 1 = passed (perfect)
+
+Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/0000-0001-9362-5373), wrote about ["ATAC-seq sample quality, wet lab troubleshooting and advice"](https://github.com/epigen/open_pipelines/blob/master/pipelines/atacseq.md#sample-quality-wet-lab-troubleshooting-and-advice).
+
+# UCSC Genome Browser Track Hub & IGV (COMING SOON)
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)

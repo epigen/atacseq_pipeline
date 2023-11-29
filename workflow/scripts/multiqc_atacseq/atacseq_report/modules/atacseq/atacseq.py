@@ -68,19 +68,9 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Check if there are any paired end sample in the current project
         self.pairedSampleExists = False
-#         self.organism = ''
         for sample in self.sample_sas_dict:
             if self.sample_sas_dict[sample]['read_type'] == 'paired':
                 self.pairedSampleExists = True
-#             self.organism = self.sample_sas_dict[sample]['organism']
-
-        # # Set the color palette for PCA plot
-        # self.attribute_colors = {}
-        # self.color_attribute = config.pca_color_attribute
-        # for s in self.sample_sas_dict:
-        #     if self.sample_sas_dict[s][self.color_attribute] not in self.attribute_colors:
-        #         self.attribute_colors[self.sample_sas_dict[s][self.color_attribute]] = '#%02x%02x%02x' % tuple(
-        #             np.random.choice(range(256), size=3))
         
         # Get the genome version
         self.genome_version = config.genome
@@ -91,15 +81,8 @@ class MultiqcModule(BaseMultiqcModule):
         # Add download links table
         self.add_download_table()
 
-        # # Add FRiP scatter plot
-        # self.add_frip_plot()
-
         # Add TSS line graph
         self.add_tss_plot()
-
-        # TODO: Add PCA plots
-        # self.pca_dict = {}
-        # self.add_pca_plots()
 
     def parse_atacseq_stats(self, f):
         data = {}
@@ -263,84 +246,6 @@ class MultiqcModule(BaseMultiqcModule):
         }
         self.general_stats_addcols(data, headers)
 
-#     def add_frip_plot(self):
-#         frip_plot_config = {
-#             'data_labels': [
-#                 {'name': 'FRiP', 'ylab': 'FRiP', 'xlab': 'Number of filtered peaks'},
-#                 {'name': 'Oracle FRiP', 'ylab': 'Oracle FRiP', 'xlab': 'Number of filtered peaks'}
-#             ],
-#             'id': 'atacseq_frip_plot',
-#             'marker_size': 3
-#         }
-#         frip_plot_data = [self.generate_frip_plot_data(frip_type='frip'),
-#                           self.generate_frip_plot_data(frip_type='regulatory_fraction')]
-#         self.add_section(
-#             name='Fraction of Reads in Peaks',
-#             anchor='atacseq_frip',
-#             description='Scatter plot of FRiP vs. number of filtered peaks',
-#             helptext='This plot shows the FRiP values relative to number of filtered peaks. '
-#                      'Having high FRiP/Peaks ratio means there is low background noise. '
-#                      'Dark blue samples belong to this project and light ones are from previous projects '
-#                      'which can be taken as reference.',
-#             plot=scatter.plot(frip_plot_data, pconfig=frip_plot_config)
-#         )
-
-#     def generate_frip_plot_data(self, frip_type):
-#         frip_plot_data = OrderedDict()
-#         for sample_name in self.atacseq_data:
-#             xvalue = None
-#             yvalue = None
-#             if 'peaks' in self.atacseq_data[sample_name]:
-#                 try:
-#                     xvalue = int(self.atacseq_data[sample_name]['peaks'])
-#                 except:
-#                     xvalue = None
-#             if 'frip' in self.atacseq_data[sample_name]:
-#                 try:
-#                     yvalue = float(self.atacseq_data[sample_name][frip_type])
-#                 except:
-#                     yvalue = None
-#             frip_plot_data[sample_name] = {
-#                 'x': xvalue,
-#                 'y': yvalue,
-#                 'color': '#3182bd',
-#                 'name': 'Current Project'
-#             }
-#         # Retreive global statistics
-#         global_stats = self.global_stats.transpose().to_dict(orient='dict')
-#         count = 0
-#         for key in global_stats:
-#             count += 1
-#             sample_name = 'external_' + str(count) # global_stats[key]['sample_name']
-#             if sample_name in self.atacseq_data:
-#                 # print('Skipping {}'.format(sample_name))
-#                 continue
-#             # Skip paired-end samples if the current project is single-end
-#             if global_stats[key]['read_type'] == 'paired' and not self.pairedSampleExists:
-#                 continue
-#             # Skip samples with different organism
-#             if global_stats[key]['organism'] != self.organism:
-#                 continue
-#             xvalue = None
-#             yvalue = None
-#             if 'peaks' in global_stats[key]:
-#                 try:
-#                     xvalue = int(global_stats[key]['peaks'])
-#                 except:
-#                     xvalue = None
-#             if 'frip' in global_stats[key]:
-#                 try:
-#                     yvalue = float(global_stats[key][frip_type])
-#                 except:
-#                     yvalue = None
-#             frip_plot_data[sample_name] = {
-#                 'x': xvalue,
-#                 'y': yvalue,
-#                 'color': '#deebf7',
-#                 'name': 'Previous Projects'
-#             }
-#         return frip_plot_data
-
     def add_download_table(self):
         # Create a table with download links to various files
         results_url = '../results' #os.path.join(config.base_url, config.project_uuid, 'results')
@@ -459,52 +364,3 @@ class MultiqcModule(BaseMultiqcModule):
             helptext='This plot shows the aggregated and normalized coverage around the transcription start sites (TSS)',
             plot=linegraph.plot(data=self.atacseq_tss_data, pconfig=tss_plot_config)
         )
-
-
-
-#     def add_pca_plots(self):
-#         results_path = config.metadata['output_dir']
-#         pca_csv_path = os.path.join(results_path, 'unsupervised', 'PCA.csv')
-#         if not os.path.exists(pca_csv_path):
-#             return 0
-#         # Read the PCA values
-#         for sample in csv.DictReader(open(pca_csv_path, 'r')):
-#             self.pca_dict[sample['sample']] = sample
-#         principle_components = {}
-#         for p in sample:
-#             pc = p.split(' ')[0]
-#             principle_components[pc] = p
-#         pca_plot_config = {
-#             'data_labels': [
-#                 {'name': 'PC1 vs. PC2', 'xlab': principle_components['PC1'], 'ylab': principle_components['PC2']},
-#                 {'name': 'PC2 vs. PC3', 'xlab': principle_components['PC2'], 'ylab': principle_components['PC3']},
-#                 {'name': 'PC3 vs. PC4', 'xlab': principle_components['PC3'], 'ylab': principle_components['PC4']},
-#                 {'name': 'PC4 vs. PC5', 'xlab': principle_components['PC4'], 'ylab': principle_components['PC5']}
-#             ],
-#             'id': 'atacseq_pca_plot',
-#             'marker_size': 5
-#         }
-
-#         pca_plot_data = [self.generate_pca_plot_data(principle_components['PC1'],principle_components['PC2']),
-#                          self.generate_pca_plot_data(principle_components['PC2'], principle_components['PC3']),
-#                          self.generate_pca_plot_data(principle_components['PC3'], principle_components['PC4']),
-#                          self.generate_pca_plot_data(principle_components['PC4'], principle_components['PC5'])]
-#         self.add_section(
-#             name='Principal Component Analysis',
-#             anchor='atacseq_pca',
-#             description='Scatter plots of PCA results',
-#             helptext='You can see the plots of principal components',
-#             plot=scatter.plot(pca_plot_data, pconfig=pca_plot_config)
-#         )
-
-#     def generate_pca_plot_data(self, component1, component2):
-#         data = OrderedDict()
-#         for sample in self.pca_dict:
-#             sample_annotation = self.sample_sas_dict[sample]
-#             data[sample] = {
-#                 'x': float(self.pca_dict[sample][component1]),
-#                 'y': float(self.pca_dict[sample][component2]),
-#                 'name': sample_annotation[self.color_attribute],
-#                 'color': self.attribute_colors[sample_annotation[self.color_attribute]]
-#             }
-#         return data

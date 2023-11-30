@@ -18,8 +18,8 @@ Table of contents
   * [Methods](#methods)
   * [Features](#features)
   * [Usage](#usage)
-  * [Quality Control](#quality--control)
-  * [Genome Browser Tracks](#genome--browser--tracks)
+  * [Quality Control](#quality-control)
+  * [Genome Browser Tracks](#genome-browser-tracks)
   * [Configuration](#configuration)
   * [Examples](#examples)
   * [Links](#links)
@@ -90,7 +90,7 @@ These steps are the recommended usage for this workflow:
 
 0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10 (see instructions below)](#resources).
 1. Perform only the processing, by setting the pass_qc annotation for all samples to 0.
-2. Use the generated MultiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of each sample (see tips in the next section on [Quality Control](#quality--control)).
+2. Use the generated MultiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of each sample (see tips in the next section on [Quality Control](#quality-control)).
 3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly (everything >0 will be included in the downstream steps).
 4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
@@ -107,7 +107,7 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - Regulatory regions >10% (as it is roughly 10% of the genome)
     - TSS (Transcription Start Site) normalized coverage ideally > 4 (at least >2)
     - % Duplications “not excessive”
-5. Inspect [Genome Browser Tracks](#genome--browser--tracks) using UCSC Genome Browser (online) or IGV (local)
+5. Inspect [Genome Browser Tracks](#genome-browser-tracks) using UCSC Genome Browser (online) or IGV (local)
     - Compare all samples to the best, based on above's QC metrics.
     - Check cell type / experiment-specific markers for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.

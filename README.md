@@ -88,9 +88,9 @@ The processing and quantification described here was performed using a publicly 
 # Usage
 These steps are the recommended usage for this workflow:
 
-0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10](#resources).
+0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10 (see instructions below)](#resources).
 1. Perform only the processing, by setting the pass_qc annotation for all samples to 0.
-2. Use the generated MultiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of each samples (see tips in the next section).
+2. Use the generated MultiQC report (result_path/ataceq_pipeline/report/multiqc_report.html) to judge the quality of each sample (see tips in the next section on [Quality Control](#quality--control)).
 3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly (everything >0 will be included in the downstream steps).
 4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
@@ -125,11 +125,24 @@ My personal QC value scheme to inform downstream analyses (e.g., unsupervised an
 
 Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/0000-0001-9362-5373), wrote about ["ATAC-seq sample quality, wet lab troubleshooting and advice"](https://github.com/epigen/open_pipelines/blob/master/pipelines/atacseq.md#sample-quality-wet-lab-troubleshooting-and-advice).
 
-# Genome Browser Tracks (COMING SOON)
+# Genome Browser Tracks
+The `hub` directory contains the read coverage per sample in .bigWig format for visual inspection of each sample e.g., during QC. Below are instructions for two different approaches (online/local).
 
-## UCSC Genome Browser Track Hub
+## UCSC Genome Browser Track Hub (online)
+0. Requirement: web server.
+1. Copy (or symlink) the `hub` directory to an accessible location on your web server (=web_server_location).
+2. Create a UCSC Genome Browser hyperlink
+    - the general formula is: ucsc_url + genome + web_server_location + hub/hub.txt
+    - concretely: `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=` + {genome} + `&hubUrl=` + {web_server_location} + `hub/hub.txt`
+    - [mm10test](http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=mm10&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/mm10test/hub/hub.txt): `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=mm10&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/mm10test/hub/hub.txt`
+    - [hg38test](http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/hg38test/hub/hub.txt): `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/hg38test/hub/hub.txt`
+3. Share the link with the world e.g., collaborators or upon publication of your data.
 
-## IGV
+## IGV: Integrative Genomics Viewer (local)
+0. Requirement: [IGV Desktop application](https://igv.org/doc/desktop/).
+1. Open IGV.
+2. Select genome.
+3. Drag and drop all/selected .bigWig files from the `hub` directory directly into the IGV application.
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)

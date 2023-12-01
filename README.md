@@ -81,8 +81,10 @@ The processing and quantification described here was performed using a publicly 
 - Quantification (counts/)
     - Consensus region set generation across all called peaks.
     - Read count and peak support quantification of the consensus regions across samples, yielding a count and a support matrix with dimensions regions X samples.
-- Annotation (counts/)
-    - consensus region set annotation (UROPA using regulatory build and gencode as references, and HOMER)
+- Annotation (counts/) of the consensus region set using
+    -  UROPA with regulatory build and gencode as references
+    -  HOMER with annotatePeaks.pl
+    -  bedtools for nucleotide counts/content (e.g., % of GC)
 - UCSC Genome Browser Trackhub (hub/)
 
 # Usage

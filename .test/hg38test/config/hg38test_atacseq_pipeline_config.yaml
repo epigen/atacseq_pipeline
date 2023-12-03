@@ -7,7 +7,7 @@ partition: 'shortq'
 ##### GENERAL #####
 project_name: hg38test #MyATACproject # name of the project/dataset
 result_path: results/hg38test/ #/path/to/results/ # path to the output folder
-annotation: test/hg38test/hg38test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
+annotation: .test/hg38test/config/hg38test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
 
 ##### PROCESSING #####
 

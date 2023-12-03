@@ -1,15 +1,13 @@
-# libraries
+# libraries -> TODO: check if all libraries are still required
 import yaml
 import pandas as pd
 import os
 import shutil
 from snakemake.utils import validate, min_version
 
-# TODO: check if all libraries are still required
 import argparse
 import json
 import csv
-import os
 import sys
 from collections.abc import Mapping
 from string import Template
@@ -25,7 +23,7 @@ min_version("7.15.2")
 report: os.path.join("report", "workflow.rst")
     
 # list of names of the used environment specifications in workflow/envs/{env_name}.yaml
-envs = ["bowtie2","macs2_homer","multiqc","pybedtools","uropa"]
+envs = ["bowtie2","macs2_homer","multiqc","pybedtools","uropa", "datamash"]
 
 ##### load config and sample annotation sheets #####
 configfile: os.path.join("config","config.yaml")
@@ -54,7 +52,7 @@ rule all:
         support = os.path.join(result_path,"counts","support.csv") if len(samples_quantify)>0 else [],
         counts = os.path.join(result_path,"counts","counts.csv") if len(samples_quantify)>0 else [],
         # ANNOTATION
-        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
+        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv") if len(samples_quantify)>0 else [],
         # EXPORT environments and configurations
         envs = expand(os.path.join(config["result_path"],'envs',module_name,'{env}.yaml'),env=envs),
         configs = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),

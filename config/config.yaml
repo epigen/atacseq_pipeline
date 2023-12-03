@@ -8,6 +8,7 @@ partition: 'shortq'
 project_name: mm10test #MyATACproject # name of the project/dataset
 result_path: results/mm10test/ #/path/to/results/ # path to the output folder
 annotation: test/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
+email: sreichl@cemm.at # used for UCSC hub generation
 
 ##### PROCESSING #####
 

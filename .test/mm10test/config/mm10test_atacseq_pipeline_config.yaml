@@ -7,7 +7,8 @@ partition: 'shortq'
 ##### GENERAL #####
 project_name: mm10test #MyATACproject # name of the project/dataset
 result_path: results/mm10test/ #/path/to/results/ # path to the output folder
-annotation: test/mm10test/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
+annotation: .test/mm10test/config/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
+email: sreichl@cemm.at # used for UCSC hub generation
 
 ##### PROCESSING #####
 
@@ -51,23 +52,23 @@ distal_size: 10000
 
 # (nextera) adapter fasta (.fa) file and/or nucleotide adapter sequence of the used ATAC-seq protocol (used by Bowtie2 if provided)
 # if not available/applicable leave empty: ""
-adapter_fasta: resources/atacseq_pipeline/mm10/atacseq/nextera_adapters.fa
+adapter_fasta: resources/atacseq_pipeline/mm10/nextera_adapters.fa
 adapter_sequence: GTCTCGTGGGCTCGG
 
 # indices for Bowtie2
 bowtie2_index: resources/atacseq_pipeline/mm10/indices_for_Bowtie2/mm10
 
 # chromosome lengths for a given genome
-chromosome_sizes: resources/atacseq_pipeline/mm10/atacseq/mm10.chromSizes
+chromosome_sizes: resources/atacseq_pipeline/mm10/mm10.chromSizes
 
 # blacklisted regions from ENCODE as .bed files
-blacklisted_regions: resources/atacseq_pipeline/mm10/atacseq/mm10-ENCODE_blacklist.sorted.v2.bed
+blacklisted_regions: resources/atacseq_pipeline/mm10/mm10-ENCODE_blacklist.sorted.v2.bed
 
 # complement to the blacklisted regions as .bed files
-whitelisted_regions: resources/atacseq_pipeline/mm10/atacseq/mm10-ENCODE_whitelist.sorted.v2.bed
+whitelisted_regions: resources/atacseq_pipeline/mm10/mm10-ENCODE_whitelist.sorted.v2.bed
 
 # .bed files, from e.g., gencode (hg38) or CCDS (mm10)
-unique_tss: resources/atacseq_pipeline/mm10/atacseq/mm10_CCDS_tss_unique.bed
+unique_tss: resources/atacseq_pipeline/mm10/mm10_CCDS_tss_unique.bed
 
 # regulatory build regulatory features chromosomes only from e.g., Ensembl
 regulatory_regions: resources/atacseq_pipeline/mm10/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20161111.sorted.bed

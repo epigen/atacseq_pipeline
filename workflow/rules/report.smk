@@ -57,7 +57,7 @@ rule ucsc_hub:
     run:
         # create bigwig symlinks
         for i in range(len(input.bigwig_files)):
-            os.symlink(os.path.join('../../../../../',input.bigwig_files[i]), output.bigwig_symlinks[i])
+            os.symlink(os.path.join('../',os.path.basename(input.bigwig_files[i])), output.bigwig_symlinks[i])
 
         # create genomes.txt
         with open(output.genomes_file, 'w') as gf:
@@ -69,7 +69,8 @@ rule ucsc_hub:
             hub_text = [f'hub {config["project_name"]}',
                         f'shortLabel {config["project_name"]}',
                         f'longLabel {config["project_name"]}',
-                        'genomesFile genomes.txt\n']
+                        'genomesFile genomes.txt',
+                        f'email {config["email"]}\n',]
             hf.write('\n'.join(hub_text))
 
         # create trackdb file

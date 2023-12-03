@@ -149,9 +149,13 @@ The `hub` directory contains the read coverage per sample in .bigWig format for 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
-# Examples (COMING SOON)
-We provide configuration files for two example datasets (mm10 & hg38).
-Additionally, the report zip archive of the hg38 test example is provided to showcase the pipeline results.
+# Examples
+We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./.test](./.test).
+In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
+```console
+samtools view -s .0001 real_sample.bam -b > test_sample.bam
+```
+The pass_qc attribute is set 0 for all samples, because now peaks are detecable in the data for downstream quantification.
 
 # Links
 - [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)

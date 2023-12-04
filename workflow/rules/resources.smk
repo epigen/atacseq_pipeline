@@ -4,9 +4,8 @@ rule install_homer:
         homer_script = os.path.join(HOMER_path,"configureHomer.pl"),
     params:
         homer_dir = HOMER_path,
-        homer_url="http://homer.ucsd.edu/homer/configureHomer.pl",
-        genome = config["genome"],
-        partition=config.get("partition"),
+        homer_url = "http://homer.ucsd.edu/homer/configureHomer.pl",
+        partition = config.get("partition"),
     resources:
         mem_mb=config.get("mem", "8000"),
     threads: config.get("threads", 1)
@@ -22,7 +21,7 @@ rule install_homer:
         cd {params.homer_dir}
         wget --directory-prefix={params.homer_dir} {params.homer_url}
         perl configureHomer.pl -install
-        perl configureHomer.pl -install {params.genome}
+        perl configureHomer.pl -install {config[genome]}
         
         echo "finished HOMER installation"
         """

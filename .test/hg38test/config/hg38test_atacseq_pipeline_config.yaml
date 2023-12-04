@@ -13,7 +13,11 @@ email: sreichl@cemm.at # used for UCSC hub generation
 ##### PROCESSING #####
 
 # genome in the project
-genome: hg38
+genome: 
+
+# bowtie2 parameters PL and CN for read group information (RG)
+sequencing_platform: illumina
+sequencing_center: CeMM_BSF
 
 ##### REPORT #####
 

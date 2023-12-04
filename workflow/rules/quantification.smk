@@ -25,7 +25,6 @@ rule get_consensus_regions:
         summits_bed = expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"), sample=samples_quantify),
     output:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
-#         annotation_filtered = os.path.join(result_path,"counts","all_annotation.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

@@ -60,7 +60,7 @@ rule uropa_gencode:
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
-    threads: config.get("threads", 8)
+    threads: 4*config.get("threads", 2)
     conda:
         "../envs/uropa.yaml",
     log:
@@ -105,7 +105,6 @@ rule homer_region_annotation:
     params:
         # paths
         homer_bin = os.path.join(HOMER_path,"bin"),
-        genome = config["genome"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -119,7 +118,7 @@ rule homer_region_annotation:
         """
         export PATH="{params.homer_bin}:$PATH";
         
-        {params.homer_bin}/annotatePeaks.pl {input.consensus_regions} {params.genome} \
+        {params.homer_bin}/annotatePeaks.pl {input.consensus_regions} {config[genome]} \
             > {output.homer_annotations} \
             2> {output.homer_annotations_log};
         """
@@ -131,7 +130,6 @@ rule bedtools_annotation:
     output:
         bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
     params:
-        genome_fasta = config["genome_fasta"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -143,7 +141,7 @@ rule bedtools_annotation:
         "logs/rules/bedtools_annotation.log"
     shell:
         """
-        bedtools nuc -fi {params.genome_fasta} -bed {input.consensus_regions} > {output.bedtools_annotation}
+        bedtools nuc -fi {config[genome_fasta]} -bed {input.consensus_regions} > {output.bedtools_annotation}
         """
         
 # aggregate uropa and homer annotation results

@@ -155,7 +155,7 @@ In both cases the data was generated for test purposes only by downsampling real
 ```console
 samtools view -s .0001 real_sample.bam -b > test_sample.bam
 ```
-The pass_qc attribute is set 0 for all samples, because now peaks are detecable in the data for downstream quantification.
+The pass_qc attribute is set 0 for all samples, because the downsampled data does not contain any peaks for downstream quantification.
 
 # Links
 - [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)

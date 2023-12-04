@@ -1,18 +1,15 @@
-# libraries -> TODO: check if all libraries are still required
+# libraries
 import yaml
 import pandas as pd
 import os
-import shutil
+# import shutil
 from snakemake.utils import validate, min_version
 
-import argparse
-import json
-import csv
-import sys
-from collections.abc import Mapping
-from string import Template
-
-import subprocess
+# import argparse
+# import json
+# import csv
+# import sys
+# import subprocess
 
 module_name = "atacseq_pipeline"
 

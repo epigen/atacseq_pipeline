@@ -89,7 +89,7 @@ rule quantify_aggregate:
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "32000"),
-    threads: config.get("threads", 4)
+    threads: 2*config.get("threads", 2)
     conda:
         "../envs/datamash.yaml",
     log:
@@ -97,4 +97,50 @@ rule quantify_aggregate:
     shell:
         """
         awk 'NR==1 {{print; next}} FNR>1 {{print}}' {input} | datamash transpose -t ',' > {output}
+        """
+        
+# aggregate HOMER motif enrichment results for all QC'd samples into one CSV
+rule homer_aggregate:
+    input:
+        expand(os.path.join(result_path,"results","{sample}","homer","knownResults.txt"), sample=samples_quantify),
+    output:
+        os.path.join(result_path,"counts","HOMER_knownMotifs.csv"),
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb=config.get("mem", "32000"),
+    threads: config.get("threads", 2)
+    log:
+        "logs/rules/homer_aggregate.log"
+    shell:
+        """
+        first_file=true
+        
+        > {output}
+        
+        for file in {input}; do
+            sample=$(awk -F'/' '{{print $(NF-2)}}' <<< "$file")
+
+            if $first_file; then
+                awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} {{
+                    if (NR==1) {{
+                        gsub(" ", "_", $0);
+                        printf "sample" OFS; 
+                        for (i=1; i<=NF; i++) printf "%s%s", $i, (i<NF ? OFS : ORS);
+                    }} else {{
+                        printf prefix OFS "\\"" $1 "\\"";
+                        for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
+                        print "";
+                    }}
+                }}' "$file" >> {output}
+                
+                first_file=false
+            else
+                awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} FNR > 1 {{printf prefix OFS "\\"" $1 "\\"";
+                    for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
+                    print "";
+                    }}' "$file" >> {output}
+            fi
+        done
         """

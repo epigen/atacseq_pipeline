@@ -48,6 +48,7 @@ rule all:
         annotation = os.path.join(result_path, "counts", "annotation.csv") if len(samples_quantify)>0 else [],
         support = os.path.join(result_path,"counts","support.csv") if len(samples_quantify)>0 else [],
         counts = os.path.join(result_path,"counts","counts.csv") if len(samples_quantify)>0 else [],
+        HOMER_knownMotifs = os.path.join(result_path,"counts","HOMER_knownMotifs.csv") if len(samples_quantify)>0 else [],
         # ANNOTATION
         region_annotation = os.path.join(result_path,'counts',"region_annotation.csv") if len(samples_quantify)>0 else [],
         # EXPORT environments and configurations

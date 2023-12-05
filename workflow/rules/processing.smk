@@ -101,6 +101,7 @@ rule peak_calling:
         peak_annot_log = os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak.annotated.tsv.log"),
         macs2_xls = os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.xls"),
         summits_bed = os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"),
+        homer_knownResults = os.path.join(result_path,"results","{sample}","homer","knownResults.txt"),
         homer_log = os.path.join(result_path,"results","{sample}","homer","{sample}.homer.log"),
         macs2_log = os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}.macs2.log'),
         stats = os.path.join(result_path, 'results', "{sample}", '{sample}.peak.stats.tsv'),

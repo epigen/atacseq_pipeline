@@ -8,7 +8,7 @@ import pybedtools as bedtools
 #### configurations
 
 # input
-consensus_regions_path = snakemake.input["consensus_regions"]
+regions_path = snakemake.input["regions"]
 bamfile_path = snakemake.input["bamfile"]
 chrom_file = snakemake.config["chromosome_sizes"]
 
@@ -18,7 +18,7 @@ quant_count_path = snakemake.output["quant_counts"]
 # parameters
 sample = snakemake.wildcards["sample"]
 
-elements_to_quantify = bedtools.BedTool(consensus_regions_path)
+elements_to_quantify = bedtools.BedTool(regions_path)
 
 print("Processing "+sample)
 try:

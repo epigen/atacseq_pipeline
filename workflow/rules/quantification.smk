@@ -19,6 +19,25 @@ rule sample_annotation:
         annot_df.index.names = ['sample_name']
         annot_df.to_csv(output.sample_annot)
 
+# generate promoter regions using (py)bedtools
+rule get_promoter_regions:
+    input:
+        config["gencode_gtf"],
+    output:
+        promoter_regions = os.path.join(result_path,"counts","promoter_regions.bed"),
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb = config.get("mem", "16000"),
+    threads: config.get("threads", 2)
+    conda:
+        "../envs/pybedtools.yaml",
+    log:
+        "logs/rules/get_promoter_regions.log"
+    script:
+        "../scripts/get_promoter_regions.py"
+        
 # generate consensus regions using (py)bedtools
 rule get_consensus_regions:
     input:
@@ -44,7 +63,7 @@ rule quantify_support_sample:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
         peakfile = os.path.join(result_path,"results","{sample}","peaks", "{sample}_summits.bed"),
     output:
-        quant_support = os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support.csv"),
+        quant_support = os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support_counts.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),
@@ -61,10 +80,10 @@ rule quantify_support_sample:
 # quantify coverage based on consensus regions counts for every sample
 rule quantify_counts_sample:
     input:
-        consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+        regions = os.path.join(result_path,"counts","{kind}_regions.bed"),
         bamfile = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
     output:
-        quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_counts.csv"),
+        quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_{kind}_counts.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),
@@ -74,7 +93,7 @@ rule quantify_counts_sample:
     conda:
         "../envs/pybedtools.yaml",
     log:
-        "logs/rules/quantify_counts_sample_{sample}.log"
+        "logs/rules/quantify_sample_{sample}_{kind}.log"
     script:
         "../scripts/quantify_counts_sample.py"
         
@@ -83,7 +102,7 @@ rule quantify_aggregate:
     input:
         get_quantifications,
     output:
-        os.path.join(result_path,"counts","{kind}.csv"),
+        os.path.join(result_path,"counts","{kind}_counts.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

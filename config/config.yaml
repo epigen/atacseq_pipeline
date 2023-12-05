@@ -36,15 +36,15 @@ noise_lower: 100
 slop_extension: 250
 
 ##### ANNOTATION #####
-# region annotation parameters for UROPA with gencode_gtf reference
+# consensus region annotation parameters for UROPA with gencode_gtf reference
 
 # assumed size of transcription start sites (TSS)
 tss_size: 100
 
-# assumed TSS proximal distance upstream
+# assumed TSS proximal distance upstream, also used for promoter region quantification
 proximal_size_up: 1000
 
-# assumed TSS proximal distance downstream
+# assumed TSS proximal distance downstream, also used for promoter region quantification
 proximal_size_dn: 500
 
 # distal distance 

@@ -1,8 +1,6 @@
 #!/bin/env python
 
 #### libraries
-# import os
-# import pandas as pd
 import pybedtools as bedtools
 
 # extract promoter regions

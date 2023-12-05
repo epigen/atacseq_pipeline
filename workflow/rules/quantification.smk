@@ -163,3 +163,23 @@ rule homer_aggregate:
             fi
         done
         """
+
+# map consensus regions to closest TSS per gene
+rule map_consensus_tss:
+    input:
+        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
+        consensus_counts = os.path.join(result_path,"counts","consensus_counts.csv"),
+    output:
+        tss_counts = os.path.join(result_path,"counts","TSS_counts.csv"),
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
+    resources:
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 2)
+    conda:
+        "../envs/pybedtools.yaml",
+    log:
+        "logs/rules/map_consensus_tss.log"
+    script:
+        "../scripts/map_consensus_tss.py"

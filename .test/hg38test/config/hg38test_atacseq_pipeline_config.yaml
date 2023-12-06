@@ -39,10 +39,9 @@ slop_extension: 250
 # assumed size of transcription start sites (TSS)
 tss_size: 100
 
-# assumed TSS proximal distance upstream
+# assumed TSS proximal distance upstream/downstream (up/dn)
+# additionally, used for promoter region quantification and to map consensus regions to closest TSS
 proximal_size_up: 1000
-
-# assumed TSS proximal distance downstream
 proximal_size_dn: 500
 
 # distal distance 

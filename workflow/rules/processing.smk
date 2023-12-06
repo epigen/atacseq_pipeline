@@ -24,6 +24,11 @@ rule align:
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         adapter_sequence = "-a " + config["adapter_sequence"] if config["adapter_sequence"] !="" else " ",
         adapter_fasta = "--adapter_fasta " + config["adapter_fasta"] if config["adapter_fasta"] !="" else " ",
+        # configs
+        sequencing_platform = config["sequencing_platform"],
+        sequencing_center = config["sequencing_center"],
+        mitochondria_name = config["mitochondria_name"],
+        bowtie2_index = config["bowtie2_index"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -38,16 +43,16 @@ rule align:
         result_path=$(dirname {output.stats})
         find $result_path -type f -name '*.bam.tmp.*' -exec rm {{}} +;
         
-        RG="--rg-id {wildcards.sample} --rg SM:{wildcards.sample} --rg PL:{config[sequencing_platform]} --rg CN:{config[sequencing_center]}"
+        RG="--rg-id {wildcards.sample} --rg SM:{wildcards.sample} --rg PL:{params.sequencing_platform} --rg CN:{params.sequencing_center}"
 
         for i in {input}; do samtools fastq $i 2>> "{output.samtools_log}" ; done | \
             fastp {params.adapter_sequence} {params.adapter_fasta} --stdin {params.interleaved_in} --stdout --html "{output.fastp_html}" --json "{output.fastp_json}" 2> "{output.fastp_log}" | \
-            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {config[bowtie2_index]} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
+            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {params.bowtie2_index} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
             samblaster {params.add_mate_tags} 2> "{output.samblaster_log}" | \
             samtools sort -o "{output.bam}" - 2>> "{output.samtools_log}";
         
         samtools index "{output.bam}" 2>> "{output.samtools_log}";
-        samtools idxstats "{output.bam}" | awk '{{ sum += $3 + $4; if($1 == "{config[mitochondria_name]}") {{ mito_count = $3; }}}}END{{ print "mitochondrial_fraction\t"mito_count/sum }}' > "{output.stats}";
+        samtools idxstats "{output.bam}" | awk '{{ sum += $3 + $4; if($1 == "{params.mitochondria_name}") {{ mito_count = $3; }}}}END{{ print "mitochondrial_fraction\t"mito_count/sum }}' > "{output.stats}";
         samtools flagstat "{output.bam}" > "{output.samtools_flagstat_log}";
 
         samtools view {params.filtering} -o "{output.filtered_bam}" "{output.bam}";
@@ -66,6 +71,12 @@ rule coverage:
         # parameters for coverage
         noise_upper = ( config["tss_slop"] * 2 ) - config["noise_lower"],
         double_slop = ( config["tss_slop"] * 2 ),
+        # configs
+        genome_size = config["genome_size"],
+        tss_slop = config["tss_slop"],
+        unique_tss = config["unique_tss"],
+        chromosome_sizes = config["chromosome_sizes"],
+        noise_lower = config["noise_lower"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -79,13 +90,13 @@ rule coverage:
         """
         bamCoverage --bam {input.bam} \
             -p max --binSize 10  --normalizeUsing RPGC \
-            --effectiveGenomeSize {config[genome_size]} --extendReads 175 \
+            --effectiveGenomeSize {params.genome_size} --extendReads 175 \
             -o "{output.bigWig}" > "{output.bigWig_log}" 2>&1;
 
         echo "base,count" > {output.tss_hist};
-        bedtools slop -b {config[tss_slop]} -i {config[unique_tss]} -g {config[chromosome_sizes]} | \
+        bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \
             bedtools coverage -a - -b {input.bam} -d -sorted | \
-            awk '{{if($6 == "+"){{ counts[$7] += $8;}} else counts[{params.double_slop} - $7 + 1] += $8;}} END {{ for(pos in counts) {{ if(pos < {config[noise_lower]} || pos > {params.noise_upper}) {{ noise += counts[pos] }} }}; average_noise = noise /(2 * {config[noise_lower]}); for(pos in counts) {{print pos-2000-1","(counts[pos]/average_noise) }} }}' | \
+            awk '{{if($6 == "+"){{ counts[$7] += $8;}} else counts[{params.double_slop} - $7 + 1] += $8;}} END {{ for(pos in counts) {{ if(pos < {params.noise_lower} || pos > {params.noise_upper}) {{ noise += counts[pos] }} }}; average_noise = noise /(2 * {params.noise_lower}); for(pos in counts) {{print pos-2000-1","(counts[pos]/average_noise) }} }}' | \
             sort -t "," -k1,1n >> {output.tss_hist} ;
         """
         
@@ -112,6 +123,10 @@ rule peak_calling:
         homer_bin = os.path.join(HOMER_path,"bin"),
         # peak calling parameters
         formating = lambda w: '--format BAMPE' if samples["{}".format(w.sample)]["read_type"] == "paired" else '--format BAM',
+        # configs
+        genome_size = config["genome_size"],
+        genome = config["genome"],
+        regulatory_regions = config["regulatory_regions"],
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -126,13 +141,13 @@ rule peak_calling:
         export PATH="{params.homer_bin}:$PATH";
         
         macs2 callpeak -t {input.bam} {params.formating} \
-            --nomodel --keep-dup auto --extsize 147 -g {config[genome_size]} \
+            --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
             -n {wildcards.sample} \
             --outdir {params.peaks_dir} > "{output.macs2_log}" 2>&1;
         
-        {params.homer_bin}/annotatePeaks.pl {output.peak_calls} {config[genome]} > {output.peak_annot} 2> {output.peak_annot_log};
+        {params.homer_bin}/annotatePeaks.pl {output.peak_calls} {params.genome} > {output.peak_annot} 2> {output.peak_annot_log};
         
-        {params.homer_bin}/findMotifsGenome.pl "{output.summits_bed}" {config[genome]} {params.homer_dir} -size 200 -mask > "{output.homer_log}" 2>&1
+        {params.homer_bin}/findMotifsGenome.pl "{output.summits_bed}" {params.genome} {params.homer_dir} -size 200 -mask > "{output.homer_log}" 2>&1
 
         cat {output.peak_calls} | wc -l | awk '{{print "peaks\t" $1}}' >> "{output.stats}"
         
@@ -140,7 +155,7 @@ rule peak_calling:
         
         samtools view -c -L {output.peak_calls} {input.bam} | awk -v total=$TOTAL_READS '{{print "frip\t" $1/total}}' >> "{output.stats}";
 
-        samtools view -c -L {config[regulatory_regions]} {input.bam} | awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{output.stats}";
+        samtools view -c -L {params.regulatory_regions} {input.bam} | awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{output.stats}";
         """
         
 rule aggregate_stats:

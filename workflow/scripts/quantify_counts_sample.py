@@ -31,5 +31,6 @@ except Exception as e:
     print("Error occured while processing sample "+sample)
     elements_to_quantify_df = elements_to_quantify.to_dataframe(
                 names=["CHR", "START", "END", "ID"],
+                usecols=['ID'],
                 index_col='ID')
     pd.DataFrame(0,index=elements_to_quantify_df.index,columns=[sample]).T.to_csv(quant_count_path)

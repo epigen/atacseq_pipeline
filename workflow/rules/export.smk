@@ -13,6 +13,9 @@ rule env_export:
                      ),
     conda:
         "../envs/{env}.yaml"
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "1000"),
     threads: config.get("threads", 1)
@@ -36,6 +39,9 @@ rule config_export:
                                      "type": "config"
                                 }
                         )
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "1000"),
     threads: config.get("threads", 1)
@@ -60,6 +66,9 @@ rule annot_export:
                                    "type": "annotation",
                                 }
                         )
+    params:
+        # cluster parameters
+        partition=config.get("partition"),
     resources:
         mem_mb=1000, #config.get("mem", "16000"),
     threads: config.get("threads", 1)

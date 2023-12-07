@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import shutil
 from snakemake.utils import validate, min_version
+from string import Template
 
 # import argparse
 # import json

@@ -1,11 +1,9 @@
 # annotate consensus regions
 
-# prepare configs for uropa    
+# prepare configs for uropa
 rule uropa_prepare:
     input:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
-        gencode_template = os.path.join("config","uropa","gencode_config_TEMPLATE_V4.txt"),
-        reg_template = os.path.join("config","uropa","regulatory_config_TEMPLATE.txt"),
     output:
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
         reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
@@ -19,7 +17,7 @@ rule uropa_prepare:
         "logs/rules/uropa_prepare.log"
     run:
         ### generate gencode config
-        with open(input.gencode_template) as f:
+        with open(config["gencode_template"]) as f:
             gencode_template=Template(f.read())
 
         gencode_config=gencode_template.substitute({
@@ -35,7 +33,7 @@ rule uropa_prepare:
             out.write(gencode_config)
 
         ### generate reg config file
-        with open(input.reg_template) as f:
+        with open(config["regulatory_template"]) as f:
             reg_template=Template(f.read())  
 
         reg_config=reg_template.substitute({
@@ -84,7 +82,7 @@ rule uropa_reg:
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
-    threads: config.get("threads", 8)
+    threads: 4*config.get("threads", 2)
     conda:
         "../envs/uropa.yaml",
     log:

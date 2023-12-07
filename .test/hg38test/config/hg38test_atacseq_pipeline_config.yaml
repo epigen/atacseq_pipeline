@@ -13,7 +13,7 @@ email: sreichl@cemm.at # used for UCSC hub generation
 ##### PROCESSING #####
 
 # genome in the project
-genome: 
+genome: hg38
 
 # bowtie2 parameters PL and CN for read group information (RG)
 sequencing_platform: illumina
@@ -35,6 +35,10 @@ slop_extension: 250
 
 ##### ANNOTATION #####
 # region annotation parameters for UROPA with gencode_gtf reference
+
+# UROPA configuration templates
+gencode_template: resources/UROPA/gencode_config_TEMPLATE_V4.txt
+regulatory_template: resources/UROPA/regulatory_config_TEMPLATE.txt
 
 # assumed size of transcription start sites (TSS)
 tss_size: 100

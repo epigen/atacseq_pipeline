@@ -25,8 +25,8 @@ def get_promoter(feature, upstream, downstream):
         end,
         gene_id,
 #         feature.attrs['gene_name'] if 'gene_name' in feature.attrs else feature.attrs['gene_id'],
-        '.',
-        feature.strand
+#         '.',
+#         feature.strand
     ])
     
     return promoter
@@ -35,6 +35,7 @@ def get_promoter(feature, upstream, downstream):
 
 # input
 gtf_file = snakemake.config["gencode_gtf"]
+chrom_file = snakemake.config["chromosome_sizes"]
 
 # output
 promoter_regions_path = snakemake.output["promoter_regions"]
@@ -45,9 +46,18 @@ TSS_dn = snakemake.config["proximal_size_dn"]
 
 # load the genome annotation file using pybedtools
 gtf = bedtools.BedTool(gtf_file)
+# load and get list of valid chromosomes
+with open(chrom_file, 'r') as f:
+    valid_chromosomes = {line.split('\t')[0] for line in f}
 
 # filter for features that are genes and create promoters
 promoters = gtf.filter(lambda x: x[2] == 'gene').each(get_promoter, TSS_up, TSS_dn)
+
+# filter for valid chromosomes
+promoters = promoters.filter(lambda x: x.chrom in valid_chromosomes)
+
+# sort promoter regions
+promoters = promoters.sort(faidx=chrom_file)
 
 # save the promoter regions to a BED file
 promoters.saveas(promoter_regions_path)

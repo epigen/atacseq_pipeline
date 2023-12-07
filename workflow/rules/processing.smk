@@ -33,7 +33,7 @@ rule align:
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
-    threads: config.get("threads", 2)
+    threads: 4*config.get("threads", 2)
     conda:
         "../envs/bowtie2.yaml",
     log:
@@ -81,7 +81,7 @@ rule coverage:
         partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
-    threads: config.get("threads", 2)
+    threads: 4*config.get("threads", 2)
     conda:
         "../envs/pybedtools.yaml",
     log:

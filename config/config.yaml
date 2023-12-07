@@ -5,17 +5,15 @@ threads: 2
 partition: 'shortq'
 
 ##### GENERAL #####
-project_name: mm10test #MyATACproject # name of the project/dataset
-result_path: results/mm10test/ #/path/to/results/ # path to the output folder
-annotation: .test/mm10test/config/mm10test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
+project_name: MyATACproject # name of the project/dataset
+result_path: /path/to/results/ # path to the output folder
+annotation: /path/to/MyATACproject_pipeline_annotation.csv # path to annotation file, specified in config/README.md
 email: sreichl@cemm.at # used for UCSC hub generation
 
 ##### PROCESSING #####
 
 # genome in the project
-genome: mm10
-# hg38
-# mm10
+genome: hg38
 
 # bowtie2 parameters PL and CN for read group information (RG)
 sequencing_platform: illumina
@@ -25,7 +23,7 @@ sequencing_center: CeMM_BSF
 
 # sample(!) specific annotation columns of interest from the annotation sheet (note: unit specific annotations are not retained)
 # first entry is used to color UCSC Genome Browser tracks
-annot_columns: ['pass_qc','flowcell','read_type','Treatment'] # (optional) can be empty [""]. must be columns in the annotation sheet
+annot_columns: ['pass_qc','read_type','organism'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####
 # coverage calculation with bedtools for QC report
@@ -36,7 +34,11 @@ noise_lower: 100
 slop_extension: 250
 
 ##### ANNOTATION #####
-# consensus region annotation parameters for UROPA with gencode_gtf reference
+# region annotation parameters for UROPA with gencode_gtf reference
+
+# UROPA configuration templates
+gencode_template: resources/UROPA/gencode_config_TEMPLATE_V4.txt
+regulatory_template: resources/UROPA/regulatory_config_TEMPLATE.txt
 
 # assumed size of transcription start sites (TSS)
 tss_size: 100
@@ -52,65 +54,43 @@ distal_size: 10000
 
 ##### RESOURCES #####
 # specify paths to resource files required by the pipeline
-# download resources for the GRCm38 (mm10) assembly of the mouse genome: https://zenodo.org/records/6344322
+# download resources for the GRCm38 (hg38) assembly of the mouse genome: https://zenodo.org/records/6344322
 # download resources for the GRCh38 (hg38) assembly of the human genome: https://zenodo.org/records/6344174
 
 # (nextera) adapter fasta (.fa) file and/or nucleotide adapter sequence of the used ATAC-seq protocol (used by Bowtie2 if provided)
 # if not available/applicable leave empty: ""
-adapter_fasta: /research/lab_bsf/resources/atacseq/nextera_adapters.fa
+adapter_fasta: resources/atacseq_pipeline/hg38/nextera_adapters.fa
 adapter_sequence: GTCTCGTGGGCTCGG
 
 # indices for Bowtie2
-bowtie2_index: /nobackup/lab_bsf/resources/genomes/mm10/indices_for_Bowtie2/mm10
-# hg38: /nobackup/lab_bsf/resources/genomes/hg38/indices_for_Bowtie2/hg38
-# mm10: /nobackup/lab_bsf/resources/genomes/mm10/indices_for_Bowtie2/mm10
+bowtie2_index: resources/atacseq_pipeline/hg38/indices_for_Bowtie2/hg38
 
 # chromosome lengths for a given genome
-chromosome_sizes: /research/lab_bsf/resources/atacseq/mm10.chromSizes
-# hg38: /research/lab_bsf/resources/atacseq/hg38.chromSizes
-# mm10: /research/lab_bsf/resources/atacseq/mm10.chromSizes
+chromosome_sizes: resources/atacseq_pipeline/hg38/hg38.chromSizes
 
 # blacklisted regions from ENCODE as .bed files
-blacklisted_regions: /research/lab_bsf/resources/atacseq/mm10-ENCODE_blacklist.sorted.v2.bed
-# hg38: /research/lab_bsf/resources/atacseq/hg38-ENCODE_blacklist.sorted.v3.bed
-# mm10: /research/lab_bsf/resources/atacseq/mm10-ENCODE_blacklist.sorted.v2.bed
+blacklisted_regions: resources/atacseq_pipeline/hg38/hg38-ENCODE_blacklist.sorted.v3.bed
 
 # complement to the blacklisted regions as .bed files
-whitelisted_regions: /research/lab_bsf/resources/atacseq/mm10-ENCODE_whitelist.sorted.v2.bed
-# hg38: /research/lab_bsf/resources/atacseq/hg38-ENCODE_whitelist.sorted.v3.bed
-# mm10: /research/lab_bsf/resources/atacseq/mm10-ENCODE_whitelist.sorted.v2.bed
+whitelisted_regions: resources/atacseq_pipeline/hg38/hg38-ENCODE_whitelist.sorted.v3.bed
 
-# .bed files, from e.g., gencode (hg38) or CCDS (mm10)
-unique_tss: /research/lab_bsf/resources/atacseq/mm10_CCDS_tss_unique.bed
-# hg38: /research/lab_bsf/resources/atacseq/hg38_gencode_tss_unique.sorted.bed
-# mm10: /research/lab_bsf/resources/atacseq/mm10_CCDS_tss_unique.bed
+# .bed files, from e.g., gencode (hg38) or CCDS (hg38)
+unique_tss: resources/atacseq_pipeline/hg38/hg38_gencode_tss_unique.sorted.bed
 
 # regulatory build regulatory features chromosomes only from e.g., Ensembl
-regulatory_regions: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20161111.sorted.bed
-# hg38: /research/lab_bsf/resources/atacseq/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.chromosomes_only.20161111.bed
-# mm10: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20161111.sorted.bed
+regulatory_regions: resources/atacseq_pipeline/hg38/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.chromosomes_only.20161111.bed
 
 # length of genomes as integer
-genome_size: 2407883318
-# hg38: 2747877777
-# mm10: 2407883318
+genome_size: 2747877777
 
 # abbreviation of mitochondria chromosome
 mitochondria_name: chrM
-# hg38: chrM
-# mm10: chrM
 
 # genomes as .fa files
-genome_fasta: /nobackup/lab_bsf/resources/genomes/mm10/mm10.fa
-# hg38: /nobackup/lab_bsf/resources/genomes/hg38/hg38.fa
-# mm10: /nobackup/lab_bsf/resources/genomes/mm10/mm10.fa
+genome_fasta: resources/atacseq_pipeline/hg38/hg38.fa
 
 # gencode .gtf files (generated by running /workflow/scripts/parse_reg_build_file.py on gff.gz files from Ensembl http://www.ensembl.org/)
-gencode_gtf: /research/lab_bsf/resources/atacseq/gencode.vM25.chr_patch_hapl_scaff.basic.annotation.gtf
-# hg38: /research/lab_bsf/resources/atacseq/gencode.v38.basic.annotation.gtf
-# mm10: /research/lab_bsf/resources/atacseq/gencode.vM25.chr_patch_hapl_scaff.basic.annotation.gtf
+gencode_gtf: resources/atacseq_pipeline/hg38/gencode.v38.basic.annotation.gtf
 
 # regulatory build regulatory features .gtf files (generated by running /workflow/scripts/parse_reg_build_file.py on gff.gz files from Ensembl http://www.ensembl.org/)
-regulatory_build_gtf: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20180516.gtf
-# hg38: /research/lab_bsf/resources/atacseq/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.20210107.gtf
-# mm10: /research/lab_bsf/resources/atacseq/mus_musculus.GRCm38.Regulatory_Build.regulatory_features.20180516.gtf
+regulatory_build_gtf: resources/atacseq_pipeline/hg38/homo_sapiens.GRCh38.Regulatory_Build.regulatory_features.20210107.gtf

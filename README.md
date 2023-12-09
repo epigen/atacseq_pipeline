@@ -18,10 +18,10 @@ Table of contents
   * [Methods](#methods)
   * [Features](#features)
   * [Usage](#usage)
-  * [Quality Control](#quality-control)
-  * [Genome Browser Tracks](#genome-browser-tracks)
   * [Configuration](#configuration)
   * [Examples](#examples)
+  * [Quality Control](#quality-control)
+  * [Genome Browser Tracks](#genome-browser-tracks)
   * [Links](#links)
   * [Resources](#resources)
   * [Publications](#publications)
@@ -104,6 +104,17 @@ These steps are the recommended usage for this workflow:
 
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
+# Configuration
+Detailed specifications can be found here [./config/README.md](./config/README.md)
+
+# Examples
+We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./.test](./.test).
+In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
+```console
+samtools view -s .0001 real_sample.bam -b > test_sample.bam
+```
+The pass_qc attribute is set 0 for all samples, because the downsampled data does not contain any peaks for downstream quantification.
+
 # Quality Control
 Below are some guidelines for the manual quality control of each sample, but keep in mind that every experiment/dataset is different.
 
@@ -151,17 +162,6 @@ The `hub` directory contains the read coverage per sample in .bigWig format for 
 1. Open IGV.
 2. Select genome.
 3. Drag and drop all/selected .bigWig files from the `hub` directory directly into the IGV application.
-
-# Configuration
-Detailed specifications can be found here [./config/README.md](./config/README.md)
-
-# Examples
-We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./.test](./.test).
-In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
-```console
-samtools view -s .0001 real_sample.bam -b > test_sample.bam
-```
-The pass_qc attribute is set 0 for all samples, because the downsampled data does not contain any peaks for downstream quantification.
 
 # Links
 - [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)

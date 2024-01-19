@@ -156,6 +156,10 @@ rule peak_calling:
         samtools view -c -L {output.peak_calls} {input.bam} | awk -v total=$TOTAL_READS '{{print "frip\t" $1/total}}' >> "{output.stats}";
 
         samtools view -c -L {params.regulatory_regions} {input.bam} | awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{output.stats}";
+        
+        if [ ! -f {output.homer_knownResults} ]; then
+            touch {output.homer_knownResults}
+        fi
         """
         
 rule aggregate_stats:

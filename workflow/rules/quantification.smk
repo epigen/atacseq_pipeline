@@ -139,27 +139,29 @@ rule homer_aggregate:
         > {output}
         
         for file in {input}; do
-            sample=$(awk -F'/' '{{print $(NF-2)}}' <<< "$file")
+            if [ -s file ]; then
+                sample=$(awk -F'/' '{{print $(NF-2)}}' <<< "$file")
 
-            if $first_file; then
-                awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} {{
-                    if (NR==1) {{
-                        gsub(" ", "_", $0);
-                        printf "sample" OFS; 
-                        for (i=1; i<=NF; i++) printf "%s%s", $i, (i<NF ? OFS : ORS);
-                    }} else {{
-                        printf prefix OFS "\\"" $1 "\\"";
+                if $first_file; then
+                    awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} {{
+                        if (NR==1) {{
+                            gsub(" ", "_", $0);
+                            printf "sample" OFS; 
+                            for (i=1; i<=NF; i++) printf "%s%s", $i, (i<NF ? OFS : ORS);
+                        }} else {{
+                            printf prefix OFS "\\"" $1 "\\"";
+                            for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
+                            print "";
+                        }}
+                    }}' "$file" >> {output}
+
+                    first_file=false
+                else
+                    awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} FNR > 1 {{printf prefix OFS "\\"" $1 "\\"";
                         for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
                         print "";
-                    }}
-                }}' "$file" >> {output}
-                
-                first_file=false
-            else
-                awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} FNR > 1 {{printf prefix OFS "\\"" $1 "\\"";
-                    for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
-                    print "";
-                    }}' "$file" >> {output}
+                        }}' "$file" >> {output}
+                fi
             fi
         done
         """

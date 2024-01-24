@@ -1,23 +1,23 @@
 
 rule symlink_stats:
     input:
-        os.path.join(result_path, 'results', "{sample}", '{sample}.stats.tsv'),
-        os.path.join(result_path, 'results', "{sample}", '{sample}.tss_histogram.csv'),
-        os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.txt'),
-        os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.fastp.json'),
-        os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samblaster.log'),
-        os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
-        os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}.macs2.log'),
-        os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}_peaks.xls'),
+        stats_tsv = os.path.join(result_path, 'results', "{sample}", '{sample}.stats.tsv'),
+        tss_csv = os.path.join(result_path, 'results', "{sample}", '{sample}.tss_histogram.csv'),
+        mapped_txt = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.txt'),
+        fastp_json = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.fastp.json'),
+        samblaster_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samblaster.log'),
+        flagstat_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
+        macs2_log = os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}.macs2.log'),
+        peaks_xls = os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}_peaks.xls'),
     output:
-        os.path.join(result_path, 'report', '{sample}.stats.tsv'),
-        os.path.join(result_path, 'report', '{sample}_TSS.csv'),
-        os.path.join(result_path, 'report', '{sample}.txt'),
-        os.path.join(result_path, 'report', '{sample}.fastp.json'),
-        os.path.join(result_path, 'report', '{sample}.samblaster.log'),
-        os.path.join(result_path, 'report', '{sample}.samtools_flagstat.log'),
-        os.path.join(result_path, 'report', '{sample}.macs2.log'),
-        os.path.join(result_path, 'report', '{sample}_peaks.xls'),
+        stats_tsv = os.path.join(result_path, 'report', '{sample}.stats.tsv'),
+        tss_csv = os.path.join(result_path, 'report', '{sample}_TSS.csv'),
+        mapped_txt = os.path.join(result_path, 'report', '{sample}.txt'),
+        fastp_json = os.path.join(result_path, 'report', '{sample}.fastp.json'),
+        samblaster_log = os.path.join(result_path, 'report', '{sample}.samblaster.log'),
+        flagstat_log = os.path.join(result_path, 'report', '{sample}.samtools_flagstat.log'),
+        macs2_log = os.path.join(result_path, 'report', '{sample}.macs2.log'),
+        peaks_xls = os.path.join(result_path, 'report', '{sample}_peaks.xls'),
     params:
         # cluster parameters
         partition=config.get("partition"),
@@ -25,17 +25,17 @@ rule symlink_stats:
         mem_mb=config.get("mem", "1000"),
     threads: config.get("threads", 1)
     log:
-        "logs/rules/symlink_stats_{sample}.log"
+        os.path.join("logs", "rules", "symlink_stats_{sample}.log")
     shell:
         """
-        ln -sf "../../../../{input[0]}" {output[0]}
-        ln -sf "../../../../{input[1]}" {output[1]}
-        ln -sf "../../../../{input[2]}" {output[2]}
-        ln -sf "../../../../{input[3]}" {output[3]}
-        ln -sf "../../../../{input[4]}" {output[4]}
-        ln -sf "../../../../{input[5]}" {output[5]}
-        ln -sf "../../../../{input[6]}" {output[6]}
-        ln -sf "../../../../{input[7]}" {output[7]}
+        ln -sfn $(realpath --relative-to=$(dirname {output.stats_tsv}) {input.stats_tsv}) {output.stats_tsv}
+        ln -sfn $(realpath --relative-to=$(dirname {output.tss_csv}) {input.tss_csv}) {output.tss_csv}
+        ln -sfn $(realpath --relative-to=$(dirname {output.mapped_txt}) {input.mapped_txt}) {output.mapped_txt}
+        ln -sfn $(realpath --relative-to=$(dirname {output.fastp_json}) {input.fastp_json}) {output.fastp_json}
+        ln -sfn $(realpath --relative-to=$(dirname {output.samblaster_log}) {input.samblaster_log}) {output.samblaster_log}
+        ln -sfn $(realpath --relative-to=$(dirname {output.flagstat_log}) {input.flagstat_log}) {output.flagstat_log}
+        ln -sfn $(realpath --relative-to=$(dirname {output.macs2_log}) {input.macs2_log}) {output.macs2_log}
+        ln -sfn $(realpath --relative-to=$(dirname {output.peaks_xls}) {input.peaks_xls}) {output.peaks_xls}
         """
 
 rule ucsc_hub:

@@ -295,12 +295,12 @@ class MultiqcModule(BaseMultiqcModule):
             'scale': False,
             'hidden': False
         }
-        headers['coverage_bigwig'] = {
-            'title': 'Coverage BigWig',
-            'description': 'Genome wide coverage data in UCSC bigWig format.',
-            'scale': False,
-            'hidden': False
-        }
+#         headers['coverage_bigwig'] = {
+#             'title': 'Coverage BigWig',
+#             'description': 'Genome wide coverage data in UCSC bigWig format.',
+#             'scale': False,
+#             'hidden': False
+#         }
 
         # Fill the download table with URLs
 #         igv_links = []
@@ -320,13 +320,13 @@ class MultiqcModule(BaseMultiqcModule):
             sample_summits_url = '{}/{}/peaks/{}_summits.bed'.format(results_url, sample_name, sample_name)
             sample_known_motifs_url = '{}/{}/homer/knownResults.html'.format(results_url, sample_name)
             sample_denovo_motifs_url = '{}/{}/homer/homerResults.html'.format(results_url, sample_name)
-            sample_bigwig_url = '../hub/{}.bigWig'.format(sample_name)
+#             sample_bigwig_url = '../hub/{}.bigWig'.format(sample_name)
             data[sample_name] = {
                 'BAM': '<a href={}>{} BAM</a></br><a href={}>{} BAI</a>'.format(sample_bam_url, sample_name, sample_bai_url, sample_name),
                 'filtered_BAM': '<a href={}>{} flt BAM</a></br><a href={}>{} flt BAI</a>'.format(sample_filtered_bam_url, sample_name, sample_filtered_bai_url, sample_name),
                 'filtered_peaks': '<a href={}>{} Peaks</a></br><a href={}>{} Annotated Peaks</a>'.format(sample_peaks_url, sample_name, sample_annotated_peaks_url, sample_name),
                 'summits_bed': '<a href={}>{} Summits</a>'.format(sample_summits_url, sample_name),
-                'coverage_bigwig': '<a href={}>{} bigWig</a>'.format(sample_bigwig_url, sample_name),
+#                 'coverage_bigwig': '<a href={}>{} bigWig</a>'.format(sample_bigwig_url, sample_name),
                 'motifs': '<a href={}>{} Known</a></br><a href={}>{} DeNovo</a>'.format(sample_known_motifs_url, sample_name, sample_denovo_motifs_url, sample_name)
             }
 

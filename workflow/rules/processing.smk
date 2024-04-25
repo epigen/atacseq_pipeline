@@ -59,13 +59,13 @@ rule align:
         samtools index "{output.filtered_bam}";
         """
 
-rule coverage:
+rule tss_coverage:
     input:
         bam = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam"),
         bai = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam.bai"),
     output:
-        bigWig = os.path.join(result_path, "hub","{sample}.bigWig"),
-        bigWig_log = os.path.join(result_path, "hub","{sample}.bigWig.log"),
+#         bigWig = os.path.join(result_path, "hub","{sample}.bigWig"),
+#         bigWig_log = os.path.join(result_path, "hub","{sample}.bigWig.log"),
         tss_hist = os.path.join(result_path,"results","{sample}","{sample}.tss_histogram.csv"),
     params:
         # parameters for coverage
@@ -88,10 +88,10 @@ rule coverage:
         "logs/rules/coverage_{sample}.log"
     shell:
         """
-        bamCoverage --bam {input.bam} \
-            -p max --binSize 10  --normalizeUsing RPGC \
-            --effectiveGenomeSize {params.genome_size} --extendReads 175 \
-            -o "{output.bigWig}" > "{output.bigWig_log}" 2>&1;
+        #bamCoverage --bam {input.bam} \
+        #    -p max --binSize 10  --normalizeUsing RPGC \
+        #    --effectiveGenomeSize {params.genome_size} --extendReads 175 \
+        #    -o "{output.bigWig}" > "{output.bigWig_log}" 2>&1;
 
         echo "base,count" > {output.tss_hist};
         bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \

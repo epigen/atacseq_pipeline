@@ -4,7 +4,7 @@
 import pybedtools as bedtools
 
 # extract promoter regions
-def get_promoter(feature, upstream, downstream):
+def get_promoter(feature, upstream, downstream, chrom_sizes):
     if feature.strand == '+':
         start = feature.start - upstream
         end = feature.start + downstream
@@ -14,6 +14,8 @@ def get_promoter(feature, upstream, downstream):
     
     # Ensure start is not negative
     start = max(start, 0)
+    # Ensure end is not longer than chromosome
+    end = min(end, chrom_sizes.get(feature.chrom, end))
     
     # Extract gene_id and remove version number if present
     gene_id = feature.attrs['gene_id'].split('.')[0]
@@ -46,15 +48,19 @@ TSS_dn = snakemake.config["proximal_size_dn"]
 
 # load the genome annotation file using pybedtools
 gtf = bedtools.BedTool(gtf_file)
-# load and get list of valid chromosomes
+
+# load and get list of valid chromosomes and sizes
+chrom_sizes = {}
 with open(chrom_file, 'r') as f:
-    valid_chromosomes = {line.split('\t')[0] for line in f}
+    for line in f:
+        chrom, size = line.strip().split('\t')
+        chrom_sizes[chrom] = int(size)
 
 # filter for features that are genes and create promoters
-promoters = gtf.filter(lambda x: x[2] == 'gene').each(get_promoter, TSS_up, TSS_dn)
+promoters = gtf.filter(lambda x: x[2] == 'gene').each(get_promoter, TSS_up, TSS_dn, chrom_sizes)
 
 # filter for valid chromosomes
-promoters = promoters.filter(lambda x: x.chrom in valid_chromosomes)
+promoters = promoters.filter(lambda x: x.chrom in chrom_sizes)
 
 # sort promoter regions
 promoters = promoters.sort(faidx=chrom_file)

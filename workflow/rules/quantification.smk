@@ -132,39 +132,29 @@ rule homer_aggregate:
     threads: config.get("threads", 2)
     log:
         "logs/rules/homer_aggregate.log"
-    shell:
-        """
-        first_file=true
-        
-        > {output}
-        
-        for file in {input}; do
-            if [ -s file ]; then
-                sample=$(awk -F'/' '{{print $(NF-2)}}' <<< "$file")
+    run:
+        combined_df = pd.DataFrame()
 
-                if $first_file; then
-                    awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} {{
-                        if (NR==1) {{
-                            gsub(" ", "_", $0);
-                            printf "sample" OFS; 
-                            for (i=1; i<=NF; i++) printf "%s%s", $i, (i<NF ? OFS : ORS);
-                        }} else {{
-                            printf prefix OFS "\\"" $1 "\\"";
-                            for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
-                            print "";
-                        }}
-                    }}' "$file" >> {output}
+        for file_path in input:
+            if os.path.getsize(file_path) > 0:
+                sample = file_path.split('/')[-3]
+                df = pd.read_csv(file_path, sep='\t')
 
-                    first_file=false
-                else
-                    awk -v prefix="$sample" 'BEGIN {{FS="\\t"; OFS=","}} FNR > 1 {{printf prefix OFS "\\"" $1 "\\"";
-                        for (i=2; i<=NF; i++) printf "%s%s", OFS, $i;
-                        print "";
-                        }}' "$file" >> {output}
-                fi
-            fi
-        done
-        """
+                # replace white space in column names
+                df.columns = [col.replace(' ', '_') for col in df.columns]
+
+                # Remove columns that start with '#_' (unique per sample)
+                df = df.loc[:, ~df.columns.str.startswith('#_')]
+
+                # add sample name
+                df.insert(0, 'sample_name', sample)
+
+                if combined_df.shape[0]==0:
+                    combined_df = df
+                else:
+                    combined_df = pd.concat([combined_df, df], ignore_index=True)
+
+        combined_df.to_csv(output[0], index=False)
 
 # map consensus regions to closest TSS per gene
 rule map_consensus_tss:

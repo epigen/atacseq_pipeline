@@ -5,7 +5,7 @@
 From r**A**w/un**A**ligned BAM files to count**Z**.
 A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream quantification and annotation steps using Bash and Python.
 
-This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details and modules check out the project's repository.
+This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details and modules check out the project's repository. Please consider **starring** and sharing modules that are interesting or useful to you, this helps others to find and benefit from the effort and me to prioritize my efforts!
 
 **If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634).**
 
@@ -21,7 +21,6 @@ Table of contents
   * [Configuration](#configuration)
   * [Examples](#examples)
   * [Quality Control](#quality-control)
-  * [Genome Browser Tracks](#genome-browser-tracks)
   * [Links](#links)
   * [Resources](#resources)
   * [Publications](#publications)
@@ -75,7 +74,7 @@ The processing and quantification described here was performed using a publicly 
       - Note: even though the peak support of a region in a certain sample is 0, does not mean that there are no reads counted in the count matrix, it just states that there was no peak called.
       - Note: the peak support can be >1 for certain samples in case of a consensus region spanning more than one peak within the respective sample.
     - Peak annotation and motif analysis HOMER.
-    - Coverage analysis generating bigWig files (hub/) and quantifying TSS coverage (results/).
+    - Quantification of TSS coverage (results/).
 - Reporting (report/)
     - MultiQC report generation using MultiQC, extended with an in-house developed plugin [atacseq_report](./workflow/scripts/multiqc_atacseq).
 - Quantification (counts/)
@@ -91,7 +90,6 @@ The processing and quantification described here was performed using a publicly 
       - UROPA with regulatory build and gencode as references
       - HOMER with annotatePeaks.pl
       - bedtools for nucleotide counts/content (e.g., % of GC)
-- UCSC Genome Browser Trackhub (hub/)
 
 # Usage
 These steps are the recommended usage for this workflow:
@@ -126,7 +124,7 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - Regulatory regions >10% (as it is roughly 10% of the genome)
     - TSS (Transcription Start Site) normalized coverage ideally > 4 (at least >2)
     - % Duplications “not excessive”
-5. Inspect [Genome Browser Tracks](#genome-browser-tracks) using UCSC Genome Browser (online) or IGV (local)
+5. Inspect [Genome Browser Tracks](https://github.com/epigen/genome_tracks/) using UCSC Genome Browser (online) or IGV (local)
     - Compare all samples to the best, based on above's QC metrics.
     - Check cell type / experiment-specific markers for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.
@@ -143,25 +141,6 @@ My personal QC value scheme to inform downstream analyses (e.g., unsupervised an
 - 1 = passed (perfect)
 
 Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/0000-0001-9362-5373), wrote about ["ATAC-seq sample quality, wet lab troubleshooting and advice"](https://github.com/epigen/open_pipelines/blob/master/pipelines/atacseq.md#sample-quality-wet-lab-troubleshooting-and-advice).
-
-# Genome Browser Tracks
-The `hub` directory contains the read coverage per sample in .bigWig format for visual inspection of each sample e.g., during QC. Below are instructions for two different approaches (online/local).
-
-## UCSC Genome Browser Track Hub (online)
-0. Requirement: web server.
-1. Copy (or symlink) the `hub` directory to an accessible location on your web server (=web_server_location).
-2. Create a UCSC Genome Browser hyperlink
-    - the general formula is: ucsc_url + genome + web_server_location + hub/hub.txt
-    - concretely: `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=` + {genome} + `&hubUrl=` + {web_server_location} + `hub/hub.txt`
-    - [mm10test](http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=mm10&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/mm10test/hub/hub.txt): `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=mm10&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/mm10test/hub/hub.txt`
-    - [hg38test](http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/hg38test/hub/hub.txt): `http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://medical-epigenomics.org/data/atacseq_pipeline/hg38test/hub/hub.txt`
-3. Share the link with the world e.g., collaborators or upon publication of your data.
-
-## IGV: Integrative Genomics Viewer (local)
-0. Requirement: [IGV Desktop application](https://igv.org/doc/desktop/).
-1. Open IGV.
-2. Select genome.
-3. Drag and drop all/selected .bigWig files from the `hub` directory directly into the IGV application.
 
 # Links
 - [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)
@@ -188,11 +167,11 @@ The `hub` directory contains the read coverage per sample in .bigWig format for 
   unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
   ```
 - Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
+  - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
   - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after quantification.
   - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between samples.
   - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significant genomic regions between sample groups.
   - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of differential analysis results.
-  - [Genome Tracks](https://github.com/epigen/genome_tracks) for visualization of genomic regions of interest or top hits.
 
 # Publications
 The following publications successfully used this module for their analyses.

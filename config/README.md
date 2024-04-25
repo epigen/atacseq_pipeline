@@ -7,7 +7,7 @@ You need one configuration file and one annotation file to run the complete work
   - sample_name (first column!)
   - read_type: "single" or "paired".
   - bam_file: path to the raw/unaligned BAM file.
-  - pass_qc: number between 0 (not used for downstream steps e.g., quantification) and 1. Every sample with pass_qc>0 is included in the downstream analysis.
+  - pass_qc: number between 0 (not used for downstream steps e.g., quantification) and 1. Every sample with pass_qc>0 is included in the downstream quantification and annotation steps.
   - (optional) additional sample metadata columns can be added and indicated for inclusion in the report.
 
 2 examples (hg38 & mm10) are provided in the .test/ directory and are pre-filled with resource locations from the [respective Zenodo download](../README.md#resources).

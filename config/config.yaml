@@ -8,7 +8,6 @@ partition: 'shortq'
 project_name: MyATACproject # name of the project/dataset
 result_path: /path/to/results/ # path to the output folder
 annotation: /path/to/MyATACproject_pipeline_annotation.csv # path to annotation file, specified in config/README.md
-email: sreichl@cemm.at # used for UCSC hub generation
 
 ##### PROCESSING #####
 
@@ -21,8 +20,7 @@ sequencing_center: CeMM_BSF
 
 ##### REPORT #####
 
-# sample(!) specific annotation columns of interest from the annotation sheet (note: unit specific annotations are not retained)
-# first entry is used to color UCSC Genome Browser tracks
+# sample(!) specific annotation columns of interest from the annotation sheet (note: sequencing unit specific annotations are not retained)
 annot_columns: ['pass_qc','read_type','organism'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####

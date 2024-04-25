@@ -109,8 +109,8 @@ rule multiqc:
         expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"), sample=samples.keys()),
         expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak"), sample=samples.keys()),
 #         expand(os.path.join(result_path, "hub","{sample}.bigWig"),sample=samples.keys()),
+#         trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"), # representing UCSC hub
         expand(os.path.join(result_path, 'report', '{sample}_peaks.xls'), sample=samples.keys()), # representing symlinked stats
-        trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"), # representing UCSC hub
         sample_annotation = config["annotation"],
     output:
         multiqc_report = report(os.path.join(result_path,"report","multiqc_report.html"),

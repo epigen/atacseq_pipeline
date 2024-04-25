@@ -88,11 +88,6 @@ rule tss_coverage:
         "logs/rules/coverage_{sample}.log"
     shell:
         """
-        #bamCoverage --bam {input.bam} \
-        #    -p max --binSize 10  --normalizeUsing RPGC \
-        #    --effectiveGenomeSize {params.genome_size} --extendReads 175 \
-        #    -o "{output.bigWig}" > "{output.bigWig_log}" 2>&1;
-
         echo "base,count" > {output.tss_hist};
         bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \
             bedtools coverage -a - -b {input.bam} -d -sorted | \

@@ -8,7 +8,6 @@ partition: 'shortq'
 project_name: hg38test #MyATACproject # name of the project/dataset
 result_path: results/hg38test/ #/path/to/results/ # path to the output folder
 annotation: .test/hg38test/config/hg38test_atacseq_pipeline_annotation.csv #/path/to/sample_annotation.csv # path to annotation file, specified in config/README.md
-email: sreichl@cemm.at # used for UCSC hub generation
 
 ##### PROCESSING #####
 
@@ -22,7 +21,6 @@ sequencing_center: CeMM_BSF
 ##### REPORT #####
 
 # sample(!) specific annotation columns of interest from the annotation sheet (note: unit specific annotations are not retained)
-# first entry is used to color UCSC Genome Browser tracks
 annot_columns: ['pass_qc','read_type','organism'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####

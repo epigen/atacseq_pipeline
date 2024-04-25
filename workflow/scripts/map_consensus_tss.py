@@ -19,6 +19,7 @@ consensus_counts_path = snakemake.input["consensus_counts"]
 
 # output
 tss_counts_path = snakemake.output["tss_counts"]
+tss_annot_path = snakemake.output["tss_annot"]
 
 # parameters
 TSS_up = -snakemake.config["proximal_size_up"]
@@ -36,3 +37,9 @@ TSS_regions = TSS_regions.dropna(axis=0, how='all')
 TSS_counts = consensus_counts.loc[TSS_regions["peak_id"],:]
 TSS_counts.index = TSS_regions.index
 TSS_counts.to_csv(tss_counts_path)
+
+# subset the consensus annotation by the successfully mapped consenesus regions, rename index to genes and save
+TSS_annot = annot_regions.loc[TSS_regions["peak_id"],:]
+TSS_annot.reset_index(inplace=True)
+TSS_annot.index = TSS_regions.index
+TSS_annot.to_csv(tss_annot_path)

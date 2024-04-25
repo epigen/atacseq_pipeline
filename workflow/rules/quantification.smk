@@ -163,6 +163,7 @@ rule map_consensus_tss:
         consensus_counts = os.path.join(result_path,"counts","consensus_counts.csv"),
     output:
         tss_counts = os.path.join(result_path,"counts","TSS_counts.csv"),
+        tss_annot = os.path.join(result_path,"counts","TSS_annotation.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

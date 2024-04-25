@@ -64,8 +64,6 @@ rule tss_coverage:
         bam = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam"),
         bai = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam.bai"),
     output:
-#         bigWig = os.path.join(result_path, "hub","{sample}.bigWig"),
-#         bigWig_log = os.path.join(result_path, "hub","{sample}.bigWig.log"),
         tss_hist = os.path.join(result_path,"results","{sample}","{sample}.tss_histogram.csv"),
     params:
         # parameters for coverage

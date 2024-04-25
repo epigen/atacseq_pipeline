@@ -31,9 +31,9 @@ class MultiqcModule(BaseMultiqcModule):
             return None
 
         # Initialise the parent object
-        super(MultiqcModule, self).__init__(name='ATAC-seq Pipeline', anchor='atacseq',
+        super(MultiqcModule, self).__init__(name='The ATAC-seq Pipeline', anchor='atacseq',
                                             href='https://github.com/epigen/atacseq_pipeline',
-                                            info="The ATAC-seq pipeline processes and quantifies ATAC-seq data.")
+                                            info="processes, quantifies and annotates ATAC-seq data.")
         log.info('Initialized atacseq module')
         
         # Parse ATAC-seq stats for each sample

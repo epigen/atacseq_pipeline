@@ -37,79 +37,11 @@ rule symlink_stats:
         ln -sfn $(realpath --relative-to=$(dirname {output.macs2_log}) {input.macs2_log}) {output.macs2_log}
         ln -sfn $(realpath --relative-to=$(dirname {output.peaks_xls}) {input.peaks_xls}) {output.peaks_xls}
         """
-
-# rule ucsc_hub:
-#     input:
-#         bigwig_files = expand(os.path.join(result_path, "hub", "{sample}.bigWig"), sample=samples.keys()),
-#     output:
-#         bigwig_symlinks = expand(os.path.join(result_path, "hub", config["genome"], "{sample}.bigWig"), sample=samples.keys()),
-#         genomes_file = os.path.join(result_path, "hub", "genomes.txt"),
-#         hub_file = os.path.join(result_path, "hub", "hub.txt"),
-#         trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"),
-#     params:
-#         # cluster parameters
-#         partition=config.get("partition"),
-#     resources:
-#         mem_mb=config.get("mem", "1000"),
-#     threads: config.get("threads", 1)
-#     log:
-#         "logs/rules/ucsc_hub.log"
-#     run:
-#         # create bigwig symlinks
-#         for i in range(len(input.bigwig_files)):
-#             os.symlink(os.path.join('../',os.path.basename(input.bigwig_files[i])), output.bigwig_symlinks[i])
-
-#         # create genomes.txt
-#         with open(output.genomes_file, 'w') as gf:
-#             genomes_text = f'genome {config["genome"]}\ntrackDb {config["genome"]}/trackDb.txt\n'
-#             gf.write(genomes_text)
-
-#         # create hub file
-#         with open(output.hub_file, 'w') as hf:
-#             hub_text = [f'hub {config["project_name"]}',
-#                         f'shortLabel {config["project_name"]}',
-#                         f'longLabel {config["project_name"]}',
-#                         'genomesFile genomes.txt',
-#                         f'email {config["email"]}\n',]
-#             hf.write('\n'.join(hub_text))
-
-#         # create trackdb file
-#         with open(output.trackdb_file, 'w') as tf:
-#             colors = ['166,206,227', '31,120,180', '51,160,44', '251,154,153', '227,26,28',
-#                               '253,191,111', '255,127,0', '202,178,214', '106,61,154', '177,89,40']
-            
-#             track_db = ['track {}'.format(config["project_name"]),
-#                         'type bigWig', 'compositeTrack on', 'autoScale on', 'maxHeightPixels 32:32:8',
-#                         'shortLabel {}'.format(config["project_name"][:8]),
-#                         'longLabel {}'.format(config["project_name"]),
-#                         'visibility full',
-#                         '', '']
-#             for sample_name in samples.keys():
-#                 track_color = '255,40,0'
-                
-#                 if config["annot_columns"][0]!="":
-#                     color_hash = hash(samples[sample_name][config["annot_columns"][0]])
-#                     track_color = colors[color_hash % len(colors)]
-                
-#                 track = ['track {}'.format(sample_name),
-#                          'shortLabel {}'.format(sample_name),
-#                          'longLabel {}'.format(sample_name),
-#                          'bigDataUrl {}.bigWig'.format(sample_name),
-#                          'parent {} on'.format(config["project_name"]),
-#                          'type bigWig', 'windowingFunction mean',
-#                          'color {}'.format(track_color),
-#                          '', '']
-                
-#                 track_db += track
-
-#             tf.write('\n'.join(track_db))
             
 rule multiqc:
     input:
         expand(os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"), sample=samples.keys()),
         expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak"), sample=samples.keys()),
-#         expand(os.path.join(result_path, "hub","{sample}.bigWig"),sample=samples.keys()),
-#         trackdb_file = os.path.join(result_path, "hub", config["genome"], "trackDb.txt"), # representing UCSC hub
         expand(os.path.join(result_path, 'report', '{sample}_peaks.xls'), sample=samples.keys()), # representing symlinked stats
         sample_annotation = config["annotation"],
     output:

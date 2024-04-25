@@ -6,12 +6,6 @@ import shutil
 from snakemake.utils import validate, min_version
 from string import Template
 
-# import argparse
-# import json
-# import csv
-# import sys
-# import subprocess
-
 module_name = "atacseq_pipeline"
 
 ##### set minimum snakemake version #####

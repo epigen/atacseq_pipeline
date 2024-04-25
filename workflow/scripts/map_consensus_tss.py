@@ -39,6 +39,7 @@ TSS_counts.index = TSS_regions.index
 TSS_counts.to_csv(tss_counts_path)
 
 # subset the consensus annotation by the successfully mapped consenesus regions, rename index to genes and save
+annot_regions.set_index('peak_id', inplace=True)
 TSS_annot = annot_regions.loc[TSS_regions["peak_id"],:]
 TSS_annot.reset_index(inplace=True)
 TSS_annot.index = TSS_regions.index

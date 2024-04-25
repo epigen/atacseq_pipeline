@@ -4,7 +4,7 @@ rule sample_annotation:
     input:
         multiqc_stats = os.path.join(result_path, "report", "multiqc_report_data", "multiqc_general_stats.txt"),
     output:
-        sample_annot = os.path.join(result_path, "counts", "annotation.csv"),
+        sample_annot = os.path.join(result_path, "counts", "sample_annotation.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

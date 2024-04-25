@@ -40,7 +40,7 @@ rule all:
         # PROCESSING
         multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
         # QUANTIFICATION
-        annotation = os.path.join(result_path, "counts", "annotation.csv") if len(samples_quantify)>0 else [],
+        sample_annotation = os.path.join(result_path, "counts", "sample_annotation.csv") if len(samples_quantify)>0 else [],
         support_counts = os.path.join(result_path,"counts","support_counts.csv") if len(samples_quantify)>0 else [],
         consensus_counts = os.path.join(result_path,"counts","consensus_counts.csv") if len(samples_quantify)>0 else [],
         promoter_counts = os.path.join(result_path,"counts","promoter_counts.csv") if len(samples_quantify)>0 else [],

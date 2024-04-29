@@ -44,13 +44,10 @@ TSS_counts.to_csv(tss_counts_path)
 annot_regions.set_index('peak_id', inplace=True)
 TSS_annot = annot_regions.loc[TSS_regions["peak_id"],:]
 TSS_annot.reset_index(inplace=True)
-TSS_annot = TSS_annot.sort_values(by="peak_id")
 TSS_annot.index = TSS_regions.index
-
 TSS_annot.to_csv(tss_annot_path)
 
 # save bed file of TSS regions
-TSS_annot.reset_index(inplace=True)
-TSS_bed_df = TSS_annot[["gencode_chr",  'gencode_start', 'gencode_end', 'homer_Nearest_Ensembl']]
-TSS_bed = pybedtools.BedTool.from_dataframe(TSS_bed_df)
+TSS_bed_df = TSS_annot.sort_values(by="peak_id")[["gencode_chr",  'gencode_start', 'gencode_end', 'homer_Nearest_Ensembl']]
+TSS_bed = bedtools.BedTool.from_dataframe(TSS_bed_df)
 TSS_bed.saveas(tss_bed_path)

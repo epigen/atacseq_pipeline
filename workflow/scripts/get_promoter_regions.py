@@ -2,6 +2,7 @@
 
 #### libraries
 import pybedtools as bedtools
+import pandas as pd
 
 # extract promoter regions
 def get_promoter(feature, upstream, downstream, chrom_sizes):
@@ -26,7 +27,7 @@ def get_promoter(feature, upstream, downstream, chrom_sizes):
         start,
         end,
         gene_id,
-#         feature.attrs['gene_name'] if 'gene_name' in feature.attrs else feature.attrs['gene_id'],
+        feature.attrs['gene_name'] if 'gene_name' in feature.attrs else feature.attrs['gene_id'],
 #         '.',
 #         feature.strand
     ])
@@ -41,10 +42,12 @@ chrom_file = snakemake.config["chromosome_sizes"]
 
 # output
 promoter_regions_path = snakemake.output["promoter_regions"]
+promoter_annot_path = snakemake.output["promoter_annot"]
 
 # parameters
 TSS_up = snakemake.config["proximal_size_up"]
 TSS_dn = snakemake.config["proximal_size_dn"]
+genome_fasta_path = snakemake.config["genome_fasta"]
 
 # load the genome annotation file using pybedtools
 gtf = bedtools.BedTool(gtf_file)
@@ -68,3 +71,14 @@ promoters = promoters.sort(faidx=chrom_file)
 
 # save the promoter regions to a BED file
 promoters.saveas(promoter_regions_path)
+
+# calculate GC content and length for each region and save as annotation
+gc_content_length = promoters.nucleotide_content(fi=genome_fasta_path).to_dataframe()
+gc_content_length.columns = [col.split('_', 1)[-1].replace('at', 'AT').replace('gc', 'GC').replace('oth', 'otherBases') for col in gc_content_length.columns]
+gc_content_length = gc_content_length.add_prefix('bedtools_')
+gc_content_length.columns = ["chr", "start", "end", "gene", "gene_name"] + gc_content_length.columns[5:].tolist()
+gc_content_length.set_index("gene", inplace=True)
+gc_content_length.to_csv(promoter_annot_path)
+
+# load, remove last column (gene name) and save again as final promoter BED file for quantification
+bedtools.BedTool(promoter_regions_path).cut(range(0, 4)).saveas(promoter_regions_path)

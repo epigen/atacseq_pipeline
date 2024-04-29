@@ -25,6 +25,7 @@ rule get_promoter_regions:
         config["gencode_gtf"],
     output:
         promoter_regions = os.path.join(result_path,"counts","promoter_regions.bed"),
+        promoter_annot = os.path.join(result_path,"counts","promoter_annotation.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

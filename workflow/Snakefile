@@ -47,7 +47,7 @@ rule all:
         tss_counts = os.path.join(result_path,"counts","TSS_counts.csv") if len(samples_quantify)>0 else [],
         HOMER_knownMotifs = os.path.join(result_path,"counts","HOMER_knownMotifs.csv") if len(samples_quantify)>0 else [],
         # ANNOTATION
-        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv") if len(samples_quantify)>0 else [],
+        consensus_annotation = os.path.join(result_path,'counts',"consensus_annotation.csv") if len(samples_quantify)>0 else [],
         # EXPORT environments and configurations
         envs = expand(os.path.join(config["result_path"],'envs',module_name,'{env}.yaml'),env=envs),
         configs = os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])),

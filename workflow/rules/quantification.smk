@@ -159,11 +159,12 @@ rule homer_aggregate:
 # map consensus regions to closest TSS per gene
 rule map_consensus_tss:
     input:
-        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
+        region_annotation = os.path.join(result_path,'counts',"consensus_annotation.csv"),
         consensus_counts = os.path.join(result_path,"counts","consensus_counts.csv"),
     output:
         tss_counts = os.path.join(result_path,"counts","TSS_counts.csv"),
         tss_annot = os.path.join(result_path,"counts","TSS_annotation.csv"),
+        tss_bed = os.path.join(result_path,"counts","TSS_regions.bed"),
     params:
         # cluster parameters
         partition=config.get("partition"),

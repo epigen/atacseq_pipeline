@@ -2,6 +2,7 @@
 
 #### libraries
 import pandas as pd
+import pybedtools as bedtools
 
 # map region to gene and classify if TSS
 def map_region(x):
@@ -20,6 +21,7 @@ consensus_counts_path = snakemake.input["consensus_counts"]
 # output
 tss_counts_path = snakemake.output["tss_counts"]
 tss_annot_path = snakemake.output["tss_annot"]
+tss_bed_path = snakemake.output["tss_bed"]
 
 # parameters
 TSS_up = -snakemake.config["proximal_size_up"]
@@ -42,5 +44,13 @@ TSS_counts.to_csv(tss_counts_path)
 annot_regions.set_index('peak_id', inplace=True)
 TSS_annot = annot_regions.loc[TSS_regions["peak_id"],:]
 TSS_annot.reset_index(inplace=True)
+TSS_annot = TSS_annot.sort_values(by="peak_id")
 TSS_annot.index = TSS_regions.index
+
 TSS_annot.to_csv(tss_annot_path)
+
+# save bed file of TSS regions
+TSS_annot.reset_index(inplace=True)
+TSS_bed_df = TSS_annot[["gencode_chr",  'gencode_start', 'gencode_end', 'homer_Nearest_Ensembl']]
+TSS_bed = pybedtools.BedTool.from_dataframe(TSS_bed_df)
+TSS_bed.saveas(tss_bed_path)

@@ -79,14 +79,15 @@ The processing and quantification described here was performed using a publicly 
     - MultiQC report generation using MultiQC, extended with an in-house developed plugin [atacseq_report](./workflow/scripts/multiqc_atacseq).
 - Quantification (counts/)
     - Consensus region set generation across all called peaks (consensus_regions.bed).
-    - Read count quantification of the consensus regions across samples, yielding a count matrix with dimensions regions X samples (consensus_counts.csv).
-    - Peak support quantification of the consensus regions across samples, yielding a count matrix with dimensions regions X samples (support_counts.csv).
+    - Read count quantification of the consensus regions across samples, yielding a count matrix with dimensions consensus regions X samples (consensus_counts.csv).
+    - Peak support quantification of the consensus regions across samples, yielding a count matrix with dimensions consensus regions X samples (support_counts.csv).
     - Consensus regions mapped to closest gene TSS according to HOMER (Distance to TSS) within proximal TSS up and downstream distances (TSS_counts.csv).
     - Read count quantification of promoter regions based on provided proximal TSS up and downstream distances (promoter_regions.bed and promoter_counts.csv).
+      - [Pseudoautosomal regions in human](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) chromosome Y are skipped.
     - Aggregation of all sample-wise HOMER known motif enrichment results into one CSV in long-format (HOMER_knownMotifs.csv).
 - Annotation (counts/)
-    - Sample annotation file based on MultiQC general stats (annotation.csv)
-    - Consensus region set annotation using (region_annotation.csv) 
+    - Sample annotation file based on MultiQC general stats and provided annotations for downstream analysis (annotation.csv)
+    - Consensus region set annotation using (consensus_annotation.csv)
       - UROPA with regulatory build and gencode as references
       - HOMER with annotatePeaks.pl
       - bedtools for nucleotide counts/content (e.g., % of GC)

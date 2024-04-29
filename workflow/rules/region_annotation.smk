@@ -154,7 +154,7 @@ rule region_annotation_aggregate:
         homer_annotations = os.path.join(result_path,"tmp","homer_annotations.tsv"),
         bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
     output:
-        region_annotation = os.path.join(result_path,'counts',"region_annotation.csv"),
+        region_annotation = os.path.join(result_path,'counts',"consensus_annotation.csv"),
     params:
         # cluster parameters
         partition=config.get("partition"),

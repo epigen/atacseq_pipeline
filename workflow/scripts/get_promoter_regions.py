@@ -56,8 +56,9 @@ with open(chrom_file, 'r') as f:
         chrom, size = line.strip().split('\t')
         chrom_sizes[chrom] = int(size)
 
-# filter for features that are genes and create promoters
-promoters = gtf.filter(lambda x: x[2] == 'gene').each(get_promoter, TSS_up, TSS_dn, chrom_sizes)
+# filter for features that are genes AND not Pseudoautosomal regions denoted by "PAR" and create promoters
+# https://www.ensembl.org/info/genome/genebuild/human_PARS.html
+promoters = gtf.filter(lambda x: (x[2] == 'gene') & ("PAR" not in x["gene_id"])).each(get_promoter, TSS_up, TSS_dn, chrom_sizes)
 
 # filter for valid chromosomes
 promoters = promoters.filter(lambda x: x.chrom in chrom_sizes)

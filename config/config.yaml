@@ -29,6 +29,7 @@ tss_slop: 2000
 noise_lower: 100
 
 # specify how duplicate reads should be handled by macs2
+# see documentation for paramter: https://manpages.ubuntu.com/manpages/mantic/man1/macs2_callpeak.1.html
 keep_dup: 1 # default = 1, int for kept reads at given genomic coordinates. or "auto"
 
 # determination of consensus regions using (py)bedtools

@@ -120,6 +120,7 @@ rule peak_calling:
         genome_size = config["genome_size"],
         genome = config["genome"],
         regulatory_regions = config["regulatory_regions"],
+        keep_dup = config['keep_dup']
         # cluster parameters
         partition=config.get("partition"),
     resources:
@@ -134,7 +135,7 @@ rule peak_calling:
         export PATH="{params.homer_bin}:$PATH";
         
         macs2 callpeak -t {input.bam} {params.formating} \
-            --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
+            --nomodel --keep-dup {keep_dup} --extsize 147 -g {params.genome_size} \
             -n {wildcards.sample} \
             --outdir {params.peaks_dir} > "{output.macs2_log}" 2>&1;
         

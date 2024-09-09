@@ -120,7 +120,7 @@ rule peak_calling:
         genome_size = config["genome_size"],
         genome = config["genome"],
         regulatory_regions = config["regulatory_regions"],
-        keep_dup = config['keep_dup']
+        keep_dup = config['keep_dup'],
         # cluster parameters
         partition=config.get("partition"),
     resources:

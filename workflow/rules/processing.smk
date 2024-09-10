@@ -135,7 +135,7 @@ rule peak_calling:
         export PATH="{params.homer_bin}:$PATH";
         
         macs2 callpeak -t {input.bam} {params.formating} \
-            --nomodel --keep-dup {keep_dup} --extsize 147 -g {params.genome_size} \
+            --nomodel --keep-dup {params.keep_dup} --extsize 147 -g {params.genome_size} \
             -n {wildcards.sample} \
             --outdir {params.peaks_dir} > "{output.macs2_log}" 2>&1;
         

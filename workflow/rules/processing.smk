@@ -20,7 +20,7 @@ rule align:
         # alignment parameters
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
-        filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["whitelisted_regions"]),
+        filtering = lambda w: "-q 30 -F {flag} -f 2 -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F {flag} -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]),
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         adapter_sequence = "-a " + config["adapter_sequence"] if config["adapter_sequence"] !="" else " ",
         adapter_fasta = "--adapter_fasta " + config["adapter_fasta"] if config["adapter_fasta"] !="" else " ",

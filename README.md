@@ -1,31 +1,25 @@
+[![MR.PARETO](https://img.shields.io/badge/MR.PARETO-red)](https://github.com/epigen/mr.pareto/)
 [![DOI](https://zenodo.org/badge/350342694.svg)](https://zenodo.org/doi/10.5281/zenodo.6323634)
+[![](https://tokei.rs/b1/github/epigen/atacseq_pipeline?category=code)]() 
+[![](https://tokei.rs/b1/github/epigen/atacseq_pipeline?category=files)]()
+[![GitHub license](https://img.shields.io/github/license/epigen/atacseq_pipeline)](https://github.com/epigen/atacseq_pipeline/blob/master/LICENSE)
+![GitHub Release](https://img.shields.io/github/v/release/epigen/atacseq_pipeline)
+[![Snakemake](https://img.shields.io/badge/Snakemake->=8.20.1-green)](https://snakemake.readthedocs.io/en/stable/)
 
 # Ultimate ATAC-seq Data Processing & Quantification Pipeline
-
-From r**A**w/un**A**ligned BAM files to count**Z**.
 A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream quantification and annotation steps using Bash and Python.
 
-This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details and modules check out the project's repository. Please consider **starring** and sharing modules that are interesting or useful to you, this helps others to find and benefit from the effort and me to prioritize my efforts!
+> [!NOTE]  
+> This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
+>
+> ⭐️ **Star and share modules you find valuable** 📤 - help others discover them, and guide our future work!
 
-**If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634).**
+> [!IMPORTANT]  
+> **If you use this workflow in a publication, please don't forget to give credit to the authors by citing it using this DOI [10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634).**
 
 ![Workflow Rulegraph](./workflow/dags/rulegraph.svg)
 
-Table of contents
-----------------
-  * [Authors](#authors)
-  * [Software](#software)
-  * [Methods](#methods)
-  * [Features](#features)
-  * [Usage](#usage)
-  * [Configuration](#configuration)
-  * [Examples](#examples)
-  * [Quality Control](#quality-control)
-  * [Links](#links)
-  * [Resources](#resources)
-  * [Publications](#publications)
-
-# Authors
+# 🖋️ Authors
 - [Stephan Reichl](https://github.com/sreichl)
 - [Bekir Ergüner](https://github.com/berguner)
 - [Daniele Barreca](https://github.com/DanieleBarreca)
@@ -33,7 +27,7 @@ Table of contents
 - [Lina Dobnikar](https://github.com/ld401)
 - [Christoph Bock](https://github.com/chrbock)
 
-# Software
+# 💿 Software
 This project wouldn't be possible without the following software and their dependencies:
 
 | Software       | Reference (DOI)                                   |
@@ -53,8 +47,8 @@ This project wouldn't be possible without the following software and their depen
 | Snakemake      | https://doi.org/10.12688/f1000research.29032.2    |
 | UROPA          | https://doi.org/10.1038/s41598-017-02464-y        |
 
-# Methods
-This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (workflow/envs/\*.yaml file) or post execution in the result directory (/envs/atacseq_pipeline/\*.yaml). Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g., [X].
+# 🔬 Methods
+This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (`workflow/envs/*.yaml file`) or post-execution in the result directory (`atacseq_pipeline/envs/*.yaml`). Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g., [X].
 
 **Processing.**
 Sequencing adapters were removed using the software fastp (ver) [ref]. Bowtie2 (ver) [ref] was used for the alignment of the short reads (representing locations of transposition events) to the [GRCh38 (hg38)/GRCm38 (mm10)] assembly of the [human/mouse] genome using the “--very-sensitive” parameter. PCR duplicates were marked using samblaster (ver) [ref]. Aligned BAM files were then sorted, filtered using ENCODE blacklisted regions [ref], and indexed using samtools (ver) [ref]. To detect the open chromatin regions, peak calling was performed using MACS2 (ver) [ref] using the “--nomodel”, “--keep-dup auto” and “--extsize 147” options on each sample. HOMER (ver) [ref] function findMotifs was used for motif enrichment analysis of the detected open chromatin regions. Quality control metrics were aggregated and reported using MultiQC (ver) [ref], [X] sample(s) needed to be removed.
@@ -67,7 +61,7 @@ Consensus regions were annotated using annotatePeaks function from HOMER (ver) [
 
 The processing and quantification described here was performed using a publicly available Snakemake [ver] (ref) workflow [[10.5281/zenodo.6323634](https://doi.org/10.5281/zenodo.6323634)].
 
-# Features
+# 🚀 Features
 - Processing (results/)
     - Alignment of both single-end and paired-end reads in raw/unaligned BAM format with Bowtie2.
     - Peak calling with MAC2.
@@ -92,7 +86,7 @@ The processing and quantification described here was performed using a publicly 
       - HOMER with annotatePeaks.pl
       - bedtools for nucleotide counts/content (e.g., % of GC)
 
-# Usage
+# 🛠️ Usage
 These steps are the recommended usage for this workflow:
 
 0. Configure the workflow by pointing to the relevant resources, e.g., downloaded from Zenodo for [hg38 or mm10 (see instructions below)](#resources).
@@ -103,10 +97,10 @@ These steps are the recommended usage for this workflow:
 
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
-# Configuration
+# ⚙️ Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
-# Examples
+# 📖 Examples
 We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./.test](./.test).
 In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
 ```console
@@ -114,7 +108,7 @@ samtools view -s .0001 real_sample.bam -b > test_sample.bam
 ```
 The pass_qc attribute is set 0 for all samples, because the downsampled data does not contain any peaks for downstream quantification.
 
-# Quality Control
+# 🔍 Quality Control
 Below are some guidelines for the manual quality control of each sample, but keep in mind that every experiment/dataset is different.
 
 1. Reads Mapped ~ $30\cdot 10^{6}$ ($>20\cdot 10^{6}$ at least)
@@ -143,13 +137,13 @@ My personal QC value scheme to inform downstream analyses (e.g., unsupervised an
 
 Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/0000-0001-9362-5373), wrote about ["ATAC-seq sample quality, wet lab troubleshooting and advice"](https://github.com/epigen/open_pipelines/blob/master/pipelines/atacseq.md#sample-quality-wet-lab-troubleshooting-and-advice).
 
-# Links
+# 🔗 Links
 - [GitHub Repository](https://github.com/epigen/atacseq_pipeline/)
 - [GitHub Page](https://epigen.github.io/atacseq_pipeline/)
 - [Zenodo Repository](https://doi.org/10.5281/zenodo.6323634)
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline)
 
-# Resources
+# 📚 Resources
 - Data Resources: To ensure the reproducibility of results and to make the workflow accessible we provide all required reference data for the analysis of ATAC-seq samples for [human GRCh38 (hg38)](https://doi.org/10.5281/zenodo.6344173) and [mouse GRCm38 (mm10)](https://doi.org/10.5281/zenodo.6344321) genomes on Zendodo.
   ```console
   # download Zenodo records using zenodo_get
@@ -167,14 +161,18 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
   cd resources/atacseq_pipeline/mm10
   unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
   ```
-- Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
+- Recommended compatible [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analysis (in that order):
   - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
-  - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after quantification.
-  - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between samples.
-  - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significant genomic regions between sample groups.
-  - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of differential analysis results.
+  - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after count quantification.
+  - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.
+  - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significantly different features (e.g., genes or genomic regions) between sample groups.
+  - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of (differential) analysis results using prior knowledge.
 
-# Publications
+# 📑 Publications
 The following publications successfully used this module for their analyses.
 - [Casteels et al. (2022) Cell Reports - SMNDC1 links chromatin remodeling and splicing to regulate pancreatic hormone expression.](https://doi.org/10.1016/j.celrep.2022.111288)
 - ...
+
+# ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=epigen/atacseq_pipeline&type=Date)](https://star-history.com/#epigen/atacseq_pipeline&Date)

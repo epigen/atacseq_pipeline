@@ -2,7 +2,6 @@
 ##### RESOURCES #####
 mem: '32000'
 threads: 2
-partition: 'shortq'
 
 ##### GENERAL #####
 project_name: MyATACproject # name of the project/dataset

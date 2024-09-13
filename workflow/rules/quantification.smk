@@ -5,9 +5,6 @@ rule sample_annotation:
         multiqc_stats = os.path.join(result_path, "report", "multiqc_report_data", "multiqc_general_stats.txt"),
     output:
         sample_annot = os.path.join(result_path, "counts", "sample_annotation.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -26,9 +23,6 @@ rule get_promoter_regions:
     output:
         promoter_regions = os.path.join(result_path,"counts","promoter_regions.bed"),
         promoter_annot = os.path.join(result_path,"counts","promoter_annotation.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb = config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -45,9 +39,6 @@ rule get_consensus_regions:
         summits_bed = expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"), sample=samples_quantify),
     output:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -65,9 +56,6 @@ rule quantify_support_sample:
         peakfile = os.path.join(result_path,"results","{sample}","peaks", "{sample}_summits.bed"),
     output:
         quant_support = os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support_counts.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -85,9 +73,6 @@ rule quantify_counts_sample:
         bamfile = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
     output:
         quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_{kind}_counts.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -104,9 +89,6 @@ rule quantify_aggregate:
         get_quantifications,
     output:
         os.path.join(result_path,"counts","{kind}_counts.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "32000"),
     threads: 2*config.get("threads", 2)
@@ -125,9 +107,6 @@ rule homer_aggregate:
         expand(os.path.join(result_path,"results","{sample}","homer","knownResults.txt"), sample=samples_quantify),
     output:
         os.path.join(result_path,"counts","HOMER_knownMotifs.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "32000"),
     threads: config.get("threads", 2)
@@ -166,9 +145,6 @@ rule map_consensus_tss:
         tss_counts = os.path.join(result_path,"counts","TSS_counts.csv"),
         tss_annot = os.path.join(result_path,"counts","TSS_annotation.csv"),
         tss_bed = os.path.join(result_path,"counts","TSS_regions.bed"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)

@@ -29,8 +29,6 @@ rule align:
         sequencing_center = config["sequencing_center"],
         mitochondria_name = config["mitochondria_name"],
         bowtie2_index = config["bowtie2_index"],
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -75,8 +73,6 @@ rule tss_coverage:
         unique_tss = config["unique_tss"],
         chromosome_sizes = config["chromosome_sizes"],
         noise_lower = config["noise_lower"],
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -120,8 +116,6 @@ rule peak_calling:
         genome_size = config["genome_size"],
         genome = config["genome"],
         regulatory_regions = config["regulatory_regions"],
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -161,8 +155,6 @@ rule aggregate_stats:
         peak_stats = os.path.join(result_path, 'results', "{sample}", '{sample}.peak.stats.tsv'),
     output:
         os.path.join(result_path, 'results', "{sample}", '{sample}.stats.tsv'),
-    params:
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "1000"),
     threads: config.get("threads", 2)

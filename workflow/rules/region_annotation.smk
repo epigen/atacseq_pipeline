@@ -7,9 +7,6 @@ rule uropa_prepare:
     output:
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
         reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -52,10 +49,7 @@ rule uropa_gencode:
     output:
         gencode_results = os.path.join(result_path,"tmp","gencode_finalhits.txt"),
     params:
-        # paths
         results_dir = os.path.join(result_path,"tmp"),
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -76,10 +70,7 @@ rule uropa_reg:
     output:
         reg_results = os.path.join(result_path,"tmp","reg_finalhits.txt"),
     params:
-        # paths
         results_dir = os.path.join(result_path,"tmp"),
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -101,12 +92,8 @@ rule homer_region_annotation:
         homer_annotations = os.path.join(result_path,"tmp","homer_annotations.tsv"),
         homer_annotations_log = os.path.join(result_path,"tmp","homer_annotations.tsv.log"),
     params:
-        # paths
         homer_bin = os.path.join(HOMER_path,"bin"),
-        # config
         genome = config["genome"],
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -130,10 +117,7 @@ rule bedtools_annotation:
     output:
         bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
     params:
-        # config
         genome_fasta = config["genome_fasta"],
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -155,9 +139,6 @@ rule region_annotation_aggregate:
         bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
     output:
         region_annotation = os.path.join(result_path,'counts',"consensus_annotation.csv"),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)

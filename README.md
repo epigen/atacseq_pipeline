@@ -91,14 +91,10 @@ The processing and quantification described here was performed using a publicly 
 
 > [!IMPORTANT]  
 > **Duplciate reads** can be filtered during the alignment step by `samtools` and/or ignored during peak calling by `MACS2`.
-> 
-> The inclusion of duplicates should be intentional, and may lead to a large number of consensus regions.
-> 
-> The removal of duplicates should be intentional, might remove real biological signal.
-> 
-> The decision depends on your downstream analysis steps e.g., rigorous filtering (e.g., using `edgeR::filterByExpr`) and/or accounting for PCR bias by normalization conditional on genomic region length and GC content (e.g., [CQN](https://academic.oup.com/biostatistics/article/13/2/204/1746212)) and goals (e.g., differential accessibility analysis).
-> 
-> We recommend reading this ChIP-seq tutorial's section on ["Removing redundancy"](https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html).
+> **The inclusion of duplicates** should be intentional, and may lead to a large number of consensus regions.
+> **The removal of duplicates** should be intentional, might remove real biological signal.
+> **The decision depends** on your downstream analysis steps e.g., rigorous filtering (e.g., using `edgeR::filterByExpr`) and/or accounting for PCR bias by normalization conditional on genomic region length and GC content (e.g., [CQN](https://academic.oup.com/biostatistics/article/13/2/204/1746212)) and goals (e.g., differential accessibility analysis).
+> **We recommend** reading this ChIP-seq tutorial's section on ["Removing redundancy"](https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html).
 
 # 🛠️ Usage
 These steps are the recommended usage for this workflow:

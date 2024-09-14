@@ -80,10 +80,10 @@ The processing and quantification described here was performed using a publicly 
       - [Pseudoautosomal regions in human](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) chromosome Y are skipped.
     - Aggregation of all sample-wise HOMER known motif enrichment results into one CSV in long-format (HOMER_knownMotifs.csv).
 - Annotation (counts/)
-    - Sample annotation file based on MultiQC general stats and provided annotations for downstream analysis (sample_annotation.csv).
-    - Consensus region set annotation using (consensus_annotation.csv)
-      - UROPA with regulatory build and gencode as references
-      - HOMER with annotatePeaks.pl
+    - Sample annotation file based on MultiQC general stats and provided annotations for downstream analysis (`sample_annotation.csv`).
+    - Consensus region set annotation using (`consensus_annotation.csv`)
+      - UROPA with regulatory build and gencode as references, configurable here: `workflow/resources/UROPA/*.txt`.
+      - HOMER with `annotatePeaks.pl`
       - bedtools for nucleotide counts/content (e.g., % of GC)
 
 # 🛠️ Usage
@@ -101,7 +101,7 @@ This workflow is written with Snakemake and its usage is described in the [Snake
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
 # 📖 Examples
-We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./.test](./.test).
+We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./test](./test).
 In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
 ```console
 samtools view -s .0001 real_sample.bam -b > test_sample.bam

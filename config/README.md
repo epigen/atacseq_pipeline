@@ -12,4 +12,4 @@ You need one configuration file and one annotation file to run the complete work
 
 Set workflow-specific `resources` or command line arguments (CLI) in the workflow profile `workflow/profiles/default.config.yaml`, which supersedes global Snakemake profiles.
 
-Two examples (hg38 & mm10) are provided in the .test/ directory and are pre-filled with resource locations from the [respective Zenodo download](../README.md#resources).
+Two examples (hg38 & mm10) are provided in the `test/` directory and are pre-filled with resource locations from the [respective Zenodo download](../README.md#resources).

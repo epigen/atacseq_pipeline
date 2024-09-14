@@ -4,6 +4,8 @@
 rule uropa_prepare:
     input:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+        gencode_template = workflow.source_path(config["gencode_template"]),
+        regulatory_template = workflow.source_path(config["regulatory_template"]),
     output:
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
         reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
@@ -14,7 +16,7 @@ rule uropa_prepare:
         "logs/rules/uropa_prepare.log"
     run:
         ### generate gencode config
-        with open(config["gencode_template"]) as f:
+        with open(input.gencode_template) as f:
             gencode_template=Template(f.read())
 
         gencode_config=gencode_template.substitute({
@@ -30,7 +32,7 @@ rule uropa_prepare:
             out.write(gencode_config)
 
         ### generate reg config file
-        with open(config["regulatory_template"]) as f:
+        with open(input.regulatory_template) as f:
             reg_template=Template(f.read())  
 
         reg_config=reg_template.substitute({

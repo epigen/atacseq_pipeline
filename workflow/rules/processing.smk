@@ -20,7 +20,7 @@ rule align:
         # alignment parameters
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
-        filtering = lambda w: "-q 30 -F 2316 -f 2 -L {}".format(config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F 2316 -L {}".format(config["whitelisted_regions"]),
+        filtering = lambda w: "-q 30 -F {flag} -f 2 -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F {flag} -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]),
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         adapter_sequence = "-a " + config["adapter_sequence"] if config["adapter_sequence"] !="" else " ",
         adapter_fasta = "--adapter_fasta " + config["adapter_fasta"] if config["adapter_fasta"] !="" else " ",
@@ -116,6 +116,7 @@ rule peak_calling:
         genome_size = config["genome_size"],
         genome = config["genome"],
         regulatory_regions = config["regulatory_regions"],
+        keep_dup = config['keep_dup'],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -128,7 +129,7 @@ rule peak_calling:
         export PATH="{params.homer_bin}:$PATH";
         
         macs2 callpeak -t {input.bam} {params.formating} \
-            --nomodel --keep-dup auto --extsize 147 -g {params.genome_size} \
+            --nomodel --keep-dup {params.keep_dup} --extsize 147 -g {params.genome_size} \
             -n {wildcards.sample} \
             --outdir {params.peaks_dir} > "{output.macs2_log}" 2>&1;
         

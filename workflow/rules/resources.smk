@@ -5,9 +5,7 @@ rule install_homer:
     params:
         homer_dir = HOMER_path,
         homer_url = "http://homer.ucsd.edu/homer/configureHomer.pl",
-        # config
         genome = config["genome"],
-        partition = config.get("partition"),
     resources:
         mem_mb=config.get("mem", "8000"),
     threads: config.get("threads", 1)

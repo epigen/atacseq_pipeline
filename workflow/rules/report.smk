@@ -18,9 +18,6 @@ rule symlink_stats:
         flagstat_log = os.path.join(result_path, 'report', '{sample}.samtools_flagstat.log'),
         macs2_log = os.path.join(result_path, 'report', '{sample}.macs2.log'),
         peaks_xls = os.path.join(result_path, 'report', '{sample}_peaks.xls'),
-    params:
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "1000"),
     threads: config.get("threads", 1)
@@ -57,8 +54,6 @@ rule multiqc:
     params:
         result_path = result_path,
         multiqc_configs = "{{'title': '{name}', 'intro_text': 'Quality Control Metrics of the ATAC-seq pipeline.', 'fastp': {{'s_name_filenames': true}}, 'annotation': '{annot}', 'genome': '{genome}', 'exploratory_columns': {exploratory_columns}, 'skip_versions_section': true}}".format(name = config["project_name"], annot = config["annotation"], genome = config["genome"], exploratory_columns = config["annot_columns"]),
-        # cluster parameters
-        partition=config.get("partition"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)

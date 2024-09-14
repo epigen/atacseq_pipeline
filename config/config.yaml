@@ -2,7 +2,6 @@
 ##### RESOURCES #####
 mem: '32000'
 threads: 2
-partition: 'shortq'
 
 ##### GENERAL #####
 project_name: MyATACproject # name of the project/dataset
@@ -44,9 +43,9 @@ slop_extension: 250
 ##### ANNOTATION #####
 # region annotation parameters for UROPA with gencode_gtf reference
 
-# UROPA configuration templates
-gencode_template: resources/UROPA/gencode_config_TEMPLATE_V4.txt
-regulatory_template: resources/UROPA/regulatory_config_TEMPLATE.txt
+# UROPA configuration templates (relative to the evaluating Snakefile: workflow/rules/region_annotation.smk)
+gencode_template: ../resources/UROPA/gencode_config_TEMPLATE_V4.txt
+regulatory_template: ../resources/UROPA/regulatory_config_TEMPLATE.txt
 
 # assumed size of transcription start sites (TSS)
 tss_size: 100

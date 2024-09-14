@@ -123,10 +123,11 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - Compare all samples to the best, based on above's QC metrics.
     - Check cell type / experiment-specific markers or sex chromosome (`X`/`Y`) for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.
-    > [!IMPORTANT]  
-    > Sometimes reads map to `Y` in females, because `X` and `Y` chromosomes both have [pseudoautosomal regions (PARs)](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) that are common between the two chromosomes.
 6. [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) (e.g., PCA or UMAP)
     - Identify outliers/drivers of variation, especially in the control samples and within replicates.
+
+> [!IMPORTANT]  
+> Sometimes reads map to `Y` in females, because `X` and `Y` chromosomes both have [pseudoautosomal regions (PARs)](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) that are common between the two chromosomes.
   
 My personal QC value scheme to inform downstream analyses (e.g., unsupervised analysis)
 - 0 = did not pass

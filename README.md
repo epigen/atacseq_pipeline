@@ -121,8 +121,10 @@ Below are some guidelines for the manual quality control of each sample, but kee
     - % Duplications “not excessive”
 5. Inspect [Genome Browser Tracks](https://github.com/epigen/genome_tracks/) using UCSC Genome Browser (online) or IGV (local)
     - Compare all samples to the best, based on above's QC metrics.
-    - Check cell type / experiment-specific markers for accessibility as positive controls.
+    - Check cell type / experiment-specific markers or sex chromosome (`X`/`Y`) for accessibility as positive controls.
     - Check e.g., developmental regions for accessibility as negative controls.
+    > [!IMPORTANT]  
+    > Sometimes reads map to `Y` in females, because `X` and `Y` chromosomes both have [pseudoautosomal regions (PARs)](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) that are common between the two chromosomes.
 6. [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) (e.g., PCA or UMAP)
     - Identify outliers/drivers of variation, especially in the control samples and within replicates.
   

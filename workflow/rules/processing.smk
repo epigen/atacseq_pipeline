@@ -17,14 +17,12 @@ rule align:
         samtools_flagstat_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
         stats = os.path.join(result_path, 'results', "{sample}", '{sample}.align.stats.tsv'),
     params:
-        # alignment parameters
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
-        filtering = lambda w: "-q 30 -F {flag} -f 2 -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F {flag} -L {whitelist}".format(flag=3340 if config['remove_dup'] else 2316, whitelist=config["whitelisted_regions"]),
+        filtering = lambda w: "-q 30 -F {flag} -f 2 -L {whitelist}".format(flag=config['SAM_flag'], whitelist=config["whitelisted_regions"]) if samples["{}".format(w.sample)]["read_type"] == "paired" else "-q 30 -F {flag} -L {whitelist}".format(flag=config['SAM_flag'], whitelist=config["whitelisted_regions"]),
         add_mate_tags = lambda w: "--addMateTags" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
         adapter_sequence = "-a " + config["adapter_sequence"] if config["adapter_sequence"] !="" else " ",
         adapter_fasta = "--adapter_fasta " + config["adapter_fasta"] if config["adapter_fasta"] !="" else " ",
-        # configs
         sequencing_platform = config["sequencing_platform"],
         sequencing_center = config["sequencing_center"],
         mitochondria_name = config["mitochondria_name"],
@@ -64,10 +62,8 @@ rule tss_coverage:
     output:
         tss_hist = os.path.join(result_path,"results","{sample}","{sample}.tss_histogram.csv"),
     params:
-        # parameters for coverage
         noise_upper = ( config["tss_slop"] * 2 ) - config["noise_lower"],
         double_slop = ( config["tss_slop"] * 2 ),
-        # configs
         genome_size = config["genome_size"],
         tss_slop = config["tss_slop"],
         unique_tss = config["unique_tss"],
@@ -106,17 +102,14 @@ rule peak_calling:
         macs2_log = os.path.join(result_path, 'results', "{sample}", 'peaks', '{sample}.macs2.log'),
         stats = os.path.join(result_path, 'results', "{sample}", '{sample}.peak.stats.tsv'),
     params:
-        # paths
         peaks_dir = os.path.join(result_path,"results","{sample}","peaks"),
         homer_dir = os.path.join(result_path,"results","{sample}","homer"),
         homer_bin = os.path.join(HOMER_path,"bin"),
-        # peak calling parameters
         formating = lambda w: '--format BAMPE' if samples["{}".format(w.sample)]["read_type"] == "paired" else '--format BAM',
-        # configs
         genome_size = config["genome_size"],
         genome = config["genome"],
         regulatory_regions = config["regulatory_regions"],
-        keep_dup = config['keep_dup'],
+        keep_dup = config['macs2_keep_dup'],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)

@@ -23,19 +23,19 @@ sequencing_center: CeMM_BSF
 annot_columns: ['pass_qc','read_type','organism'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####
+
+# samtools view filtering SAM flags
+# https://broadinstitute.github.io/picard/explain-flags.html
+SAM_flag: 2316  #  int; keep duplictaes 2316 or filter duplicates 3340
+
 # coverage calculation with bedtools for QC report
 tss_slop: 2000
 noise_lower: 100
 
-# specify if duplicates should be kept during filtering bam files to define samtools view filtering flags
-# filtered reads used as input for macs2 peak calling and counts
-# warning: inclusion of duplicates should be intentional, and may lead to a large number of consensus regions
-remove_dup: True  #  bool: True by default
-
-# specify how duplicate reads should be handled by macs2
-# warning: inclusion of duplicates should be intentional, and may lead to a large number of consensus regions
-# see documentation for parameter: https://manpages.ubuntu.com/manpages/mantic/man1/macs2_callpeak.1.html
-keep_dup: 1  # int: default = 1, int for kept reads at given genomic coordinates. or "auto"
+# MACS2 --keep-dup paramater for duplicate read handling during peak calling
+# https://manpages.ubuntu.com/manpages/mantic/man1/macs2_callpeak.1.html
+# https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html
+macs2_keep_dup: "auto"  # int: default = 1, int for kept reads at given genomic coordinates; or "auto"
 
 # determination of consensus regions using (py)bedtools
 slop_extension: 250

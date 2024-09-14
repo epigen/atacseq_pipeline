@@ -2,7 +2,6 @@
 ##### RESOURCES #####
 mem: '32000'
 threads: 2
-partition: 'shortq'
 
 ##### GENERAL #####
 project_name: mm10test #MyATACproject # name of the project/dataset
@@ -24,9 +23,19 @@ sequencing_center: CeMM_BSF
 annot_columns: ['pass_qc','read_type','organism'] # (optional) can be empty [""]. must be columns in the annotation sheet
 
 ##### QUANTIFICATION #####
+
+# samtools view filtering SAM flags
+# https://broadinstitute.github.io/picard/explain-flags.html
+SAM_flag: 2316  #  int; keep duplictaes 2316 or filter duplicates 3340
+
 # coverage calculation with bedtools for QC report
 tss_slop: 2000
 noise_lower: 100
+
+# MACS2 --keep-dup paramater for duplicate read handling during peak calling
+# https://manpages.ubuntu.com/manpages/mantic/man1/macs2_callpeak.1.html
+# https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html
+macs2_keep_dup: "auto"  # int: default = 1, int for kept reads at given genomic coordinates; or "auto"
 
 # determination of consensus regions using (py)bedtools
 slop_extension: 250

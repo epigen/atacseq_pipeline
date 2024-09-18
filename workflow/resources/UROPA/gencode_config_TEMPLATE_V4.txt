@@ -1,0 +1,106 @@
+{
+    "queries":[
+        {
+            "feature":"transcript",
+            "feature.anchor":"start",
+            "distance":${TSS_flanking},
+            "filter.attribute":"transcript_type",
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["transcript_type","gene_id","gene_name","hgnc_id","transcript_id","transcript_name"],
+            "name": "TSS"
+        },
+        {
+            "feature":"transcript",
+            "feature.anchor":"start",
+            "distance":[${TSS_proximal_upstream},${TSS_proximal_downstream}],
+            "filter.attribute":"transcript_type",
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["transcript_type","gene_id","gene_name","hgnc_id","transcript_id","transcript_name"],
+            "name": "TSS_proximal"
+        },
+         {
+            "feature":"transcript",
+            "feature.anchor":"start",
+            "distance":${distal_distance},
+            "filter.attribute":"transcript_type",
+            "relative_location":["OverlapStart"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["transcript_type","gene_id","gene_name","hgnc_id","transcript_id","transcript_name"],
+            "name": "TSS_overlap"
+        },
+        {
+            "feature":"transcript",
+            "feature.anchor":"start",
+            "distance":${distal_distance},
+            "filter.attribute":"transcript_type",
+            "relative_location":["FeatureInsidePeak"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["transcript_type","gene_id","gene_name","hgnc_id","transcript_id","transcript_name"],
+            "name": "TSS_FIP"
+        },
+         {
+            "feature":"gene",
+            "feature.anchor":"start",
+            "distance":${distal_distance},
+            "filter.attribute":"gene_type",
+            "relative_location":["OverlapStart"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "gene_body_overlap_start"
+        },
+         {
+            "feature":"gene",
+            "feature.anchor":"start",
+            "distance":${distal_distance},
+            "filter.attribute":"gene_type",
+            "relative_location":["FeatureInsidePeak"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "gene_body_FIP"
+        },              
+        {
+            "feature":"gene",
+            "feature.anchor": ["start", "center", "end"],
+            "distance":10,
+            "internals":"True",
+            "filter.attribute":"gene_type",
+            "relative_location":["PeakInsideFeature"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "gene_body"
+        },
+        {
+            "feature":"gene",
+            "feature.anchor":"end",
+            "distance":${distal_distance},
+            "filter.attribute":"gene_type",
+            "relative_location":["OverlapEnd"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "gene_body_overlap_end"
+        },      
+        {
+            "feature":"gene",
+            "feature.anchor":"start",
+            "distance":${distal_distance},
+            "filter.attribute":"gene_type",
+            "relative_location":["Upstream","Downstream"],
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "distal"
+        },
+        {
+            "feature":"gene",
+            "feature.anchor":"start",
+            "distance":5000000,
+            "relative_location":["Upstream","Downstream"],
+            "filter.attribute":"gene_type",
+            "attribute.value":["IG_C_gene","IG_D_gene","IG_J_gene","IG_V_gene","IG_LV_gene","TR_C_gene","TR_D_gene","TR_J_gene","TR_V_gene","lncRNA","protein_coding"],
+            "show.attributes":["gene_type","gene_id","gene_name","hgnc_id"],
+            "name": "intergenic"
+        }
+    ],
+    "priority":"Yes",
+    "gtf":${gtf_file},
+    "bed":${bed_file}
+}

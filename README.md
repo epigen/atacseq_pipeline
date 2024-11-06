@@ -1,4 +1,4 @@
-[![MR.PARETO](https://img.shields.io/badge/MR.PARETO-red)](https://github.com/epigen/mr.pareto/)
+[![MrBiomics](https://img.shields.io/badge/MrBiomics-red)](https://github.com/epigen/MrBiomics/)
 [![DOI](https://zenodo.org/badge/350342694.svg)](https://zenodo.org/doi/10.5281/zenodo.6323634)
 [![](https://tokei.rs/b1/github/epigen/atacseq_pipeline?category=code)]() 
 [![](https://tokei.rs/b1/github/epigen/atacseq_pipeline?category=files)]()
@@ -6,11 +6,11 @@
 ![GitHub Release](https://img.shields.io/github/v/release/epigen/atacseq_pipeline)
 [![Snakemake](https://img.shields.io/badge/Snakemake->=8.20.1-green)](https://snakemake.readthedocs.io/en/stable/)
 
-# Ultimate ATAC-seq Data Processing & Quantification Pipeline
+# Ultimate ATAC-seq Data Processing, Quantification & Annotation Pipeline
 A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow implementation of the [BSF's](https://www.biomedical-sequencing.org/) [ATAC-seq Data Processing Pipeline](https://github.com/berguner/atacseq_pipeline "ATAC-seq Data Processing Pipeline") extended by downstream quantification and annotation steps using Bash and Python.
 
 > [!NOTE]  
-> This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
+> This workflow adheres to the module specifications of [MrBiomics](https://github.com/epigen/MrBiomics), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
 >
 > ⭐️ **Star and share modules you find valuable** 📤 - help others discover them, and guide our future work!
 
@@ -174,7 +174,7 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
   cd resources/atacseq_pipeline/mm10
   unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
   ```
-- Recommended compatible [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analysis (in that order):
+- Recommended compatible [MrBiomics](https://github.com/epigen/MrBiomics) modules for downstream analysis (in that order):
   - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
   - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after count quantification.
   - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.

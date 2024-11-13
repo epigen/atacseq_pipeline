@@ -25,6 +25,7 @@ A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow implementa
 - [Daniele Barreca](https://github.com/DanieleBarreca)
 - [Lukas Folkman](https://github.com/lukas-folkman)
 - [Fangwen Zhao](https://github.com/fwzhao)
+- [Rob ter Horst](https://github.com/rubbert)
 - [Lina Dobnikar](https://github.com/ld401)
 - [Christoph Bock](https://github.com/chrbock)
 

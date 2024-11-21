@@ -86,9 +86,9 @@ The processing and quantification described here was performed using a publicly 
 - Annotation (`counts/`)
     - Sample annotation file based on MultiQC general stats and provided annotations for downstream analysis (`sample_annotation.csv`).
     - Consensus region set annotation using (`consensus_annotation.csv`)
-      - UROPA with regulatory build and gencode as references, configurable here: `workflow/resources/UROPA/*.txt`.
-      - HOMER with `annotatePeaks.pl`
-      - bedtools for nucleotide counts/content (e.g., % of GC)
+      - `UROPA` with regulatory build and gencode as references, configurable here: `workflow/resources/UROPA/*.txt`.
+      - `HOMER` with `annotatePeaks.pl`. NB: We have empirically found, that some human sex genes, e.g., the well established protein coding genes UTY and STS, are not annotated.
+      - `bedtools` for nucleotide counts/content (e.g., % of GC).
 
 > [!IMPORTANT]  
 > **Duplciate reads** can be filtered during the alignment step by `samtools` and/or ignored during peak calling by `MACS2`.

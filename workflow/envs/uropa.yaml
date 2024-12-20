@@ -1,6 +1,6 @@
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - uropa=4.0.3

@@ -1,7 +1,7 @@
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - samtools=1.12
   - fastp=0.20.1

@@ -1,6 +1,6 @@
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - datamash=1.8

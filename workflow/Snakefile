@@ -1,6 +1,6 @@
 
 ##### global workflow dependencies #####
-conda: "envs/global.yaml"
+# conda: "envs/global.yaml"
 
 # libraries
 import yaml

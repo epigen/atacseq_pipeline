@@ -65,7 +65,7 @@ The processing and quantification described here was performed using a publicly 
 
 # 🚀 Features
 - Processing (`results/`)
-    - Alignment of both single-end and paired-end reads in raw/unaligned BAM format with Bowtie2.
+    - Alignment of both single-end and paired-end reads in raw/unaligned/unmapped [uBAM](https://gatk.broadinstitute.org/hc/en-us/articles/360035532132-uBAM-Unmapped-BAM-Format) format with Bowtie2.
       - Filtering using `samtools view` can be configured using [SAM Flags](https://broadinstitute.github.io/picard/explain-flags.html) (`SAM_flag`).
     - Peak calling with `MACS2`.
       - Duplicate handling can be configured using `macs2_keep_dup`.

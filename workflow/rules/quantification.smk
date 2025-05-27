@@ -19,10 +19,15 @@ rule sample_annotation:
 # generate promoter regions using (py)bedtools
 rule get_promoter_regions:
     input:
-        config["gencode_gtf"],
+        gencode_gtf = config["gencode_gtf"],
+        chromosome_sizes = config["chromosome_sizes"],
+        genome_fasta = config["genome_fasta"],
     output:
         promoter_regions = os.path.join(result_path,"counts","promoter_regions.bed"),
         promoter_annot = os.path.join(result_path,"counts","promoter_annotation.csv"),
+    params:
+        proximal_size_up = config["proximal_size_up"],
+        proximal_size_dn = config["proximal_size_dn"],
     resources:
         mem_mb = config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -37,6 +42,8 @@ rule get_promoter_regions:
 rule get_consensus_regions:
     input:
         summits_bed = expand(os.path.join(result_path,"results","{sample}","peaks","{sample}_summits.bed"), sample=samples_quantify),
+        blacklisted_regions = config["blacklisted_regions"],
+        chromosome_sizes = config["chromosome_sizes"],
     output:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
     resources:
@@ -54,8 +61,11 @@ rule quantify_support_sample:
     input:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
         peakfile = os.path.join(result_path,"results","{sample}","peaks", "{sample}_summits.bed"),
+        chromosome_sizes = config["chromosome_sizes"],
     output:
         quant_support = os.path.join(result_path,"results","{sample}","peaks", "{sample}_quantification_support_counts.csv"),
+    params:
+        slop_extension = config["slop_extension"],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -71,6 +81,7 @@ rule quantify_counts_sample:
     input:
         regions = os.path.join(result_path,"counts","{kind}_regions.bed"),
         bamfile = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
+        chromosome_sizes = config["chromosome_sizes"],
     output:
         quant_counts = os.path.join(result_path,"results","{sample}","mapped", "{sample}_quantification_{kind}_counts.csv"),
     resources:

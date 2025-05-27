@@ -10,7 +10,7 @@ import pybedtools as bedtools
 # input
 consensus_regions_path = snakemake.input["consensus_regions"]
 peakfile_path = snakemake.input["peakfile"]
-chrom_file = snakemake.config["chromosome_sizes"]
+chrom_file = snakemake.input["chromosome_sizes"]
 
 # output
 quant_support_path = snakemake.output["quant_support"]

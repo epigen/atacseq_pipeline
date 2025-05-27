@@ -37,17 +37,17 @@ def get_promoter(feature, upstream, downstream, chrom_sizes):
 #### configurations
 
 # input
-gtf_file = snakemake.config["gencode_gtf"]
-chrom_file = snakemake.config["chromosome_sizes"]
+gtf_file = snakemake.input["gencode_gtf"]
+chrom_file = snakemake.input["chromosome_sizes"]
+genome_fasta_path = snakemake.input["genome_fasta"]
 
 # output
 promoter_regions_path = snakemake.output["promoter_regions"]
 promoter_annot_path = snakemake.output["promoter_annot"]
 
 # parameters
-TSS_up = snakemake.config["proximal_size_up"]
-TSS_dn = snakemake.config["proximal_size_dn"]
-genome_fasta_path = snakemake.config["genome_fasta"]
+TSS_up = snakemake.params["proximal_size_up"]
+TSS_dn = snakemake.params["proximal_size_dn"]
 
 # load the genome annotation file using pybedtools
 gtf = bedtools.BedTool(gtf_file)

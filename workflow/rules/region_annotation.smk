@@ -6,9 +6,16 @@ rule uropa_prepare:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
         gencode_template = workflow.source_path(config["gencode_template"]),
         regulatory_template = workflow.source_path(config["regulatory_template"]),
+        gencode_gtf = config["gencode_gtf"],
+        regulatory_build_gtf = config["regulatory_build_gtf"],
     output:
         gencode_config = os.path.join(result_path,"tmp","consensus_regions_gencode.json"),
         reg_config = os.path.join(result_path,"tmp","consensus_regions_reg.json"),
+    params:
+        tss_size = config['tss_size'],
+        proximal_size_up = config["proximal_size_up"],
+        proximal_size_dn = config["proximal_size_dn"],
+        distal_size = config['distal_size'],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -20,11 +27,11 @@ rule uropa_prepare:
             gencode_template=Template(f.read())
 
         gencode_config=gencode_template.substitute({
-                'TSS_flanking':config['tss_size'],
-                'TSS_proximal_upstream':config['proximal_size_up'],
-                'TSS_proximal_downstream':config['proximal_size_dn'],
-                'distal_distance':config['distal_size'],
-                'gtf_file':'"{}"'.format(config["gencode_gtf"]),
+                'TSS_flanking':'"{}"'.format(params.tss_size),
+                'TSS_proximal_upstream':'"{}"'.format(params.proximal_size_up),
+                'TSS_proximal_downstream':'"{}"'.format(params.proximal_size_dn),
+                'distal_distance':'"{}"'.format(params.distal_size),
+                'gtf_file':'"{}"'.format(input.gencode_gtf),
                 'bed_file':'"{}"'.format(input.consensus_regions)
             })
 
@@ -36,7 +43,7 @@ rule uropa_prepare:
             reg_template=Template(f.read())  
 
         reg_config=reg_template.substitute({
-            'gtf_file':'"{}"'.format(config["regulatory_build_gtf"]),
+            'gtf_file':'"{}"'.format(input.regulatory_build_gtf),
             'bed_file':'"{}"'.format(input.consensus_regions)
         })
 
@@ -116,10 +123,9 @@ rule homer_region_annotation:
 rule bedtools_annotation:
     input:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+        genome_fasta = config["genome_fasta"],
     output:
         bedtools_annotation = os.path.join(result_path, "tmp", "bedtools_annotation.bed"),
-    params:
-        genome_fasta = config["genome_fasta"],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)
@@ -129,7 +135,7 @@ rule bedtools_annotation:
         "logs/rules/bedtools_annotation.log"
     shell:
         """
-        bedtools nuc -fi {params.genome_fasta} -bed {input.consensus_regions} > {output.bedtools_annotation}
+        bedtools nuc -fi {input.genome_fasta} -bed {input.consensus_regions} > {output.bedtools_annotation}
         """
         
 # aggregate uropa and homer annotation results

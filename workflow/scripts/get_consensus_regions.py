@@ -9,14 +9,14 @@ import pybedtools as bedtools
 
 # input
 peakfiles = snakemake.input["summits_bed"]
-blacklist_file = snakemake.config["blacklisted_regions"]
-chrom_file = snakemake.config["chromosome_sizes"]
+blacklist_file = snakemake.input["blacklisted_regions"]
+chrom_file = snakemake.input["chromosome_sizes"]
 
 # output
 consensus_regions_path = snakemake.output["consensus_regions"]
 
 # parameters
-slop_extension=snakemake.config["slop_extension"]
+slop_extension = snakemake.params["slop_extension"]
 
 # load summits and generate consensus regions using (py)bedtools
 output_bed = None

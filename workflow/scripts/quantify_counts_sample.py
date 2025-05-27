@@ -9,7 +9,7 @@ import pybedtools as bedtools
 # input
 regions_path = snakemake.input["regions"]
 bamfile_path = snakemake.input["bamfile"]
-chrom_file = snakemake.config["chromosome_sizes"]
+chrom_file = snakemake.input["chromosome_sizes"]
 
 # output
 quant_count_path = snakemake.output["quant_counts"]

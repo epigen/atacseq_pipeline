@@ -7,6 +7,7 @@ rule align:
         output_bai =  os.path.join(result_path,"results","{sample}","mapped", "{sample}.bam.bai"),
         filtered_bam = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
         filtered_bai = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam.bai"),
+        bowtie2_index = config["bowtie2_index"],
         bowtie_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.txt'),
         bowtie_met = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.bowtie2.met'),
         fastp_html = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.fastp.html'),
@@ -16,6 +17,8 @@ rule align:
         samtools_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools.log'),
         samtools_flagstat_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
         stats = os.path.join(result_path, 'results', "{sample}", '{sample}.align.stats.tsv'),
+        adapter_fasta = config["adapter_fasta"] if config["adapter_fasta"]!="" else [],
+        whitelisted_regions = config["whitelisted_regions"],
     params:
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
@@ -26,7 +29,6 @@ rule align:
         sequencing_platform = config["sequencing_platform"],
         sequencing_center = config["sequencing_center"],
         mitochondria_name = config["mitochondria_name"],
-        bowtie2_index = config["bowtie2_index"],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -43,7 +45,7 @@ rule align:
 
         for i in {input}; do samtools fastq $i 2>> "{output.samtools_log}" ; done | \
             fastp {params.adapter_sequence} {params.adapter_fasta} --stdin {params.interleaved_in} --stdout --html "{output.fastp_html}" --json "{output.fastp_json}" 2> "{output.fastp_log}" | \
-            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {params.bowtie2_index} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
+            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {input.bowtie2_index} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
             samblaster {params.add_mate_tags} 2> "{output.samblaster_log}" | \
             samtools sort -o "{output.bam}" - 2>> "{output.samtools_log}";
         
@@ -59,6 +61,8 @@ rule tss_coverage:
     input:
         bam = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam"),
         bai = os.path.join(result_path,"results","{sample}","mapped","{sample}.filtered.bam.bai"),
+        chromosome_sizes = config["chromosome_sizes"],
+        unique_tss = config["unique_tss"],
     output:
         tss_hist = os.path.join(result_path,"results","{sample}","{sample}.tss_histogram.csv"),
     params:
@@ -66,8 +70,6 @@ rule tss_coverage:
         double_slop = ( config["tss_slop"] * 2 ),
         genome_size = config["genome_size"],
         tss_slop = config["tss_slop"],
-        unique_tss = config["unique_tss"],
-        chromosome_sizes = config["chromosome_sizes"],
         noise_lower = config["noise_lower"],
     resources:
         mem_mb=config.get("mem", "16000"),
@@ -79,7 +81,7 @@ rule tss_coverage:
     shell:
         """
         echo "base,count" > {output.tss_hist};
-        bedtools slop -b {params.tss_slop} -i {params.unique_tss} -g {params.chromosome_sizes} | \
+        bedtools slop -b {params.tss_slop} -i {input.unique_tss} -g {input.chromosome_sizes} | \
             bedtools coverage -a - -b {input.bam} -d -sorted | \
             awk '{{if($6 == "+"){{ counts[$7] += $8;}} else counts[{params.double_slop} - $7 + 1] += $8;}} END {{ for(pos in counts) {{ if(pos < {params.noise_lower} || pos > {params.noise_upper}) {{ noise += counts[pos] }} }}; average_noise = noise /(2 * {params.noise_lower}); for(pos in counts) {{print pos-2000-1","(counts[pos]/average_noise) }} }}' | \
             sort -t "," -k1,1n >> {output.tss_hist} ;
@@ -91,6 +93,7 @@ rule peak_calling:
         bam = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
         bai = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam.bai"),
         homer_script = os.path.join(HOMER_path,"configureHomer.pl"),
+        regulatory_regions = config["regulatory_regions"],
     output:
         peak_calls = os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak"),
         peak_annot = os.path.join(result_path,"results","{sample}","peaks","{sample}_peaks.narrowPeak.annotated.tsv"),
@@ -108,7 +111,6 @@ rule peak_calling:
         formating = lambda w: '--format BAMPE' if samples["{}".format(w.sample)]["read_type"] == "paired" else '--format BAM',
         genome_size = config["genome_size"],
         genome = config["genome"],
-        regulatory_regions = config["regulatory_regions"],
         keep_dup = config['macs2_keep_dup'],
     resources:
         mem_mb=config.get("mem", "16000"),
@@ -136,7 +138,7 @@ rule peak_calling:
         
         samtools view -c -L {output.peak_calls} {input.bam} | awk -v total=$TOTAL_READS '{{print "frip\t" $1/total}}' >> "{output.stats}";
 
-        samtools view -c -L {params.regulatory_regions} {input.bam} | awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{output.stats}";
+        samtools view -c -L {input.regulatory_regions} {input.bam} | awk -v total=$TOTAL_READS '{{print "regulatory_fraction\t" $1/total}}' >> "{output.stats}";
         
         if [ ! -f {output.homer_knownResults} ]; then
             touch {output.homer_knownResults}

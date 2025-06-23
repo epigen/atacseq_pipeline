@@ -154,6 +154,7 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
 
 # 📚 Resources
 - Data Resources: To ensure the reproducibility of results and to make the workflow accessible we provide all required reference data for the analysis of ATAC-seq samples for [human GRCh38 (hg38)](https://doi.org/10.5281/zenodo.6344173) and [mouse GRCm38 (mm10)](https://doi.org/10.5281/zenodo.6344321) genomes on Zendodo.
+  **Command line**
   ```console
   # download Zenodo records using zenodo_get
 
@@ -170,13 +171,41 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
   cd resources/atacseq_pipeline/mm10
   unzip indices_for_Bowtie2.zip && rm indices_for_Bowtie2.zip
   ```
-- Recommended compatible [MrBiomics](https://github.com/epigen/MrBiomics) modules for downstream analysis (in that order):
-  - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
-  - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after count quantification.
-  - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.
-  - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significantly different features (e.g., genes or genomic regions) between sample groups.
-  - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of (differential) analysis results using prior knowledge.
-- [Introduction to ChIP-seq using high performance computing](https://hbctraining.github.io/Intro-to-ChIPseq/)
+  **Snakemake rule** for workflows
+  ```python
+    #### Get resources from Zenodo as custom Snakemake rule ####
+    # Downloads Bowtie2 indices for hg38 from Zenodo record 6344173 and unpacks them.
+    rule MyATAC_get_resources:
+        output:
+            "resources/MyATAC/atacseq_pipeline/hg38/gencode.v38.basic.annotation.gtf",
+            resource_dir = directory("resources/MyATAC/atacseq_pipeline/hg38/"),
+        params:
+            zenodo_record = "6344173",
+            zip_filename = "indices_for_Bowtie2.zip"
+        conda:
+            "../envs/zenodo_get.yaml"
+        shell:
+            """
+            # Download the specific record to the target directory
+            zenodo_get --record {params.zenodo_record} --output-dir={output.resource_dir}
+    
+            # Change directory, unzip the specific file, and remove the zip archive
+            # Using && ensures commands run sequentially and stop if one fails
+            cd {output.resource_dir} && \
+            unzip {params.zip_filename} && \
+            rm {params.zip_filename}
+            """
+  ```
+- Recommended compatible [MrBiomics](https://github.com/epigen/MrBiomics) modules for
+  - upstream analysis:
+      - [Fetch Public Sequencing Data and Metadata Using iSeq](https://github.com/epigen/fetch_ngs/) to retrieve and prepare public ATAC-ses data for downstream processing.
+  - downstream analysis (in that order):
+      - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
+      - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after count quantification.
+      - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.
+      - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significantly different features (e.g., genes or genomic regions) between sample groups.
+      - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of (differential) analysis results using prior knowledge.
+    - [Introduction to ChIP-seq using high performance computing](https://hbctraining.github.io/Intro-to-ChIPseq/)
 
 # 📑 Publications
 The following publications successfully used this module for their analyses.

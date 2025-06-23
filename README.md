@@ -154,6 +154,7 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
 
 # 📚 Resources
 - Data Resources: To ensure the reproducibility of results and to make the workflow accessible we provide all required reference data for the analysis of ATAC-seq samples for [human GRCh38 (hg38)](https://doi.org/10.5281/zenodo.6344173) and [mouse GRCm38 (mm10)](https://doi.org/10.5281/zenodo.6344321) genomes on Zendodo.
+
   **Command line**
   ```console
   # download Zenodo records using zenodo_get
@@ -173,8 +174,8 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
   ```
   **Snakemake rule** for workflows
   ```python
-    #### Get resources from Zenodo as custom Snakemake rule ####
-    # Downloads Bowtie2 indices for hg38 from Zenodo record 6344173 and unpacks them.
+  #### Get resources from Zenodo as custom Snakemake rule ####
+  # Downloads Bowtie2 indices for hg38 from Zenodo record 6344173 and unpacks them.
     rule MyATAC_get_resources:
         output:
             "resources/MyATAC/atacseq_pipeline/hg38/gencode.v38.basic.annotation.gtf",

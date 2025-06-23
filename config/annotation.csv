@@ -1,0 +1,4 @@
+sample_name,read_type,bam_file,pass_qc,organism
+sampleA_ATAC_PE,paired,path/to/data/sampleA_ATAC_PE.bam,0,human
+sampleB_ATAC_SE,single,path/to/data/sampleB_ATAC_SE_1.bam,0,human
+sampleB_ATAC_SE,single,path/to/data/sampleB_ATAC_SE_2.bam,0,human

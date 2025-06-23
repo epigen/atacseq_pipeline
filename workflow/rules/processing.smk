@@ -1,13 +1,15 @@
 # alignment with botwtie2 & samtools
 rule align:
     input:
-        get_raw_bams,
+        raw_bams = get_raw_bams,
+        bowtie2_index = os.path.dirname(config["bowtie2_index"]),
+        adapter_fasta = config["adapter_fasta"] if config["adapter_fasta"]!="" else [],
+        whitelisted_regions = config["whitelisted_regions"],
     output:
         bam = os.path.join(result_path,"results","{sample}","mapped", "{sample}.bam"),
         output_bai =  os.path.join(result_path,"results","{sample}","mapped", "{sample}.bam.bai"),
         filtered_bam = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam"),
         filtered_bai = os.path.join(result_path,"results","{sample}","mapped", "{sample}.filtered.bam.bai"),
-        bowtie2_index = config["bowtie2_index"],
         bowtie_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.txt'),
         bowtie_met = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.bowtie2.met'),
         fastp_html = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.fastp.html'),
@@ -17,8 +19,6 @@ rule align:
         samtools_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools.log'),
         samtools_flagstat_log = os.path.join(result_path, 'results', "{sample}", 'mapped', '{sample}.samtools_flagstat.log'),
         stats = os.path.join(result_path, 'results', "{sample}", '{sample}.align.stats.tsv'),
-        adapter_fasta = config["adapter_fasta"] if config["adapter_fasta"]!="" else [],
-        whitelisted_regions = config["whitelisted_regions"],
     params:
         interleaved_in = lambda w: "--interleaved_in" if samples["{}".format(w.sample)]["read_type"] == "paired"  else " ",
         interleaved = lambda w: "--interleaved" if samples["{}".format(w.sample)]["read_type"] == "paired" else " ",
@@ -29,6 +29,7 @@ rule align:
         sequencing_platform = config["sequencing_platform"],
         sequencing_center = config["sequencing_center"],
         mitochondria_name = config["mitochondria_name"],
+        bowtie2_index = config["bowtie2_index"], # The basename of the index for the reference genome excluding the file endings e.g., *.1.bt2
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: 4*config.get("threads", 2)
@@ -43,9 +44,9 @@ rule align:
         
         RG="--rg-id {wildcards.sample} --rg SM:{wildcards.sample} --rg PL:{params.sequencing_platform} --rg CN:{params.sequencing_center}"
 
-        for i in {input}; do samtools fastq $i 2>> "{output.samtools_log}" ; done | \
+        for i in {input.raw_bams}; do samtools fastq $i 2>> "{output.samtools_log}" ; done | \
             fastp {params.adapter_sequence} {params.adapter_fasta} --stdin {params.interleaved_in} --stdout --html "{output.fastp_html}" --json "{output.fastp_json}" 2> "{output.fastp_log}" | \
-            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {input.bowtie2_index} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
+            bowtie2 $RG --very-sensitive --no-discordant -p {threads} --maxins 2000 -x {params.bowtie2_index} --met-file "{output.bowtie_met}" {params.interleaved} - 2> "{output.bowtie_log}" | \
             samblaster {params.add_mate_tags} 2> "{output.samblaster_log}" | \
             samtools sort -o "{output.bam}" - 2>> "{output.samtools_log}";
         

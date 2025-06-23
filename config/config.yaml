@@ -6,7 +6,7 @@ threads: 2
 ##### GENERAL #####
 project_name: MyATACproject # name of the project/dataset
 result_path: /path/to/results/ # path to the output folder
-annotation: /path/to/MyATACproject_pipeline_annotation.csv # path to annotation file, specified in config/README.md
+annotation: /path/to/annotation.csv # path to annotation file, specified in config/README.md
 
 ##### PROCESSING #####
 

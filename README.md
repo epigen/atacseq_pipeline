@@ -112,12 +112,7 @@ This workflow is written with Snakemake and its usage is described in the [Snake
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
 # 📖 Examples
-We provide data, annotation and configuration files for two example datasets (hg38 & mm10) in [./test](./test).
-In both cases the data was generated for test purposes only by downsampling real ATAC-seq samples using samtools.
-```console
-samtools view -s .0001 real_sample.bam -b > test_sample.bam
-```
-The pass_qc attribute is set 0 for all samples, because the downsampled data does not contain any peaks for downstream quantification.
+Explore a detailed example showcasing module usage and downstream analysis in our comprehensive end-to-end [MrBiomics Recipe](https://github.com/epigen/MrBiomics?tab=readme-ov-file#-recipes) for [ATACseq Analysis](https://github.com/epigen/MrBiomics/wiki/ATAC%E2%80%90seq-Analysis-Recipe), including data, configuration, annotation and results.
 
 # 🔍 Quality Control
 Below are some guidelines for the manual quality control of each sample, but keep in mind that every experiment/dataset is different.

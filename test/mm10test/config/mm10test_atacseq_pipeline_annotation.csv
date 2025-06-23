@@ -1,4 +1,0 @@
-sample_name,read_type,bam_file,pass_qc,organism
-BMDM_R1_SE,single,test/mm10test/data/BMDM_SE_R1.bam,0,mouse
-BMDM_R2_SE,single,test/mm10test/data/BMDM_SE_R2_1.bam,0,mouse
-BMDM_R2_SE,single,test/mm10test/data/BMDM_SE_R2_2.bam,0,mouse

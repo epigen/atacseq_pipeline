@@ -1,3 +1,0 @@
-sample_name,read_type,bam_file,pass_qc,organism
-ATAC-seq_human_PE,paired,test/hg38test/data/atac-seq_PE.bam,0,human
-ATAC-seq_human_SE,single,test/hg38test/data/atac-seq_SE.bam,0,human

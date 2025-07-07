@@ -46,6 +46,8 @@ rule get_consensus_regions:
         chromosome_sizes = config["chromosome_sizes"],
     output:
         consensus_regions = os.path.join(result_path,"counts","consensus_regions.bed"),
+    params:
+        slop_extension = config["slop_extension"],
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 2)

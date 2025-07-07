@@ -75,6 +75,7 @@ The processing and quantification described here was performed using a publicly 
     - Quantification of TSS coverage.
 - Reporting (`report/`)
     - MultiQC report generation using MultiQC, extended with an in-house developed plugin [atacseq_report](./workflow/scripts/multiqc_atacseq).
+    - Sample annotation is visualized as a hierarchically-clustered QC heatmap with matching metadata annotation, exported both as a `PNG` and an interactive `HTML` with metadata as tooltips (`sample_annotation.{png|html}`).
 - Quantification (`counts/`)
     - Consensus region set generation across all called peaks (`consensus_regions.bed`).
     - Read count quantification of the consensus regions across samples, yielding a count matrix with dimensions consensus regions X samples (`consensus_counts.csv`).
@@ -84,13 +85,13 @@ The processing and quantification described here was performed using a publicly 
       - [Pseudoautosomal regions in human](https://www.ensembl.org/info/genome/genebuild/human_PARS.html) chromosome `Y` are skipped.
     - Aggregation of all sample-wise HOMER known motif enrichment results into one CSV in long-format (`HOMER_knownMotifs.csv`).
 - Annotation (`counts/`)
-    - Sample annotation file based on MultiQC general stats and provided annotations for downstream analysis (`sample_annotation.csv`).
+    - Sample annotation file based on `MultiQC` general stats and provided annotations for downstream analysis (`sample_annotation.csv`).
     - Consensus region set annotation using (`consensus_annotation.csv`)
       - `UROPA` with regulatory build and gencode as references, configurable here: `workflow/resources/UROPA/*.txt`.
       - `HOMER` with `annotatePeaks.pl`. NB: We have empirically found, that some human sex genes, e.g., the well established protein coding genes UTY and STS, are not annotated.
       - `bedtools` for nucleotide counts/content (e.g., % of GC).
 
-> [!IMPORTANT]  
+> [!IMPORTANT] 
 > **Duplciate reads** can be filtered during the alignment step by `samtools` and/or ignored during peak calling by `MACS2`.
 > **The inclusion of duplicates** should be intentional, and may lead to a large number of consensus regions.
 > **The removal of duplicates** should be intentional, might remove real biological signal.
@@ -106,16 +107,19 @@ These steps are the recommended usage for this workflow:
 3. Fill out the mandatory quality control column (pass_qc) in the annotation file accordingly (everything >0 will be included in the downstream steps).
 4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
+> [!NOTE]
+> Although inputs and parameters may be identical, **MACS2 peak calling can yield slightly varying results** (± a few peaks) due to stochastic elements in its algorithm (e.g., duplicate handling).This minor variability in peak calls sohuld have no impact on downstream analyses or the overall robustness of results.
+
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
 # ⚙️ Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
 # 📖 Examples
-Explore a detailed example showcasing module usage and downstream analysis in our comprehensive end-to-end [MrBiomics Recipe](https://github.com/epigen/MrBiomics?tab=readme-ov-file#-recipes) for [ATACseq Analysis](https://github.com/epigen/MrBiomics/wiki/ATAC%E2%80%90seq-Analysis-Recipe), including data, configuration, annotation and results.
+Explore a detailed example showcasing module usage and downstream analysis in our comprehensive end-to-end [MrBiomics Recipe](https://github.com/epigen/MrBiomics?tab=readme-ov-file#-recipes) for [ATAC-seq Analysis](https://github.com/epigen/MrBiomics/wiki/ATAC%E2%80%90seq-Analysis-Recipe), including data, configuration, annotation and results.
 
 # 🔍 Quality Control
-Below are some guidelines for the manual quality control of each sample, but keep in mind that every experiment/dataset is different.
+Below are some guidelines for the manual quality control of each sample using the generated `MultiQC` report and visualized (interactive) sample annotation, but keep in mind that every experiment/dataset is different. Thresholds are general suggestions and may vary based on experiment type, organism, and library prep.
 
 1. Reads Mapped ~ $30\cdot 10^{6}$ ($>20\cdot 10^{6}$ at least)
 2. % Aligned >90%

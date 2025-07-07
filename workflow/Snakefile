@@ -19,7 +19,7 @@ min_version("8.20.1")
 report: os.path.join("report", "workflow.rst")
     
 # list of names of the used environment specifications in workflow/envs/{env_name}.yaml
-envs = ["bowtie2","macs2_homer","multiqc","pybedtools","uropa", "datamash"]
+envs = ["bowtie2","macs2_homer","multiqc","pybedtools","uropa","datamash","ggplot"]
 
 ##### load config and sample annotation sheets #####
 configfile: os.path.join("config","config.yaml")
@@ -45,6 +45,7 @@ rule all:
         multiqc_report = os.path.join(result_path,"report","multiqc_report.html"),
         # QUANTIFICATION
         sample_annotation = os.path.join(result_path, "counts", "sample_annotation.csv") if len(samples_quantify)>0 else [],
+        sample_annotation_plot = os.path.join(result_path, "report", "sample_annotation.png") if len(samples_quantify)>0 else [],
         support_counts = os.path.join(result_path,"counts","support_counts.csv") if len(samples_quantify)>0 else [],
         consensus_counts = os.path.join(result_path,"counts","consensus_counts.csv") if len(samples_quantify)>0 else [],
         promoter_counts = os.path.join(result_path,"counts","promoter_counts.csv") if len(samples_quantify)>0 else [],

@@ -214,7 +214,8 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
 
 # 📑 Publications
 The following publications successfully used this module for their analyses.
-- [Casteels et al. (2022) Cell Reports - SMNDC1 links chromatin remodeling and splicing to regulate pancreatic hormone expression.](https://doi.org/10.1016/j.celrep.2022.111288)
+- [Casteels et al. (2022) Cell Reports - SMNDC1 links chromatin remodeling and splicing to regulate pancreatic hormone expression](https://doi.org/10.1016/j.celrep.2022.111288)
+- [Traxler, Reichl et al. (2025) Cell Systems - Integrated time-series analysis and high-content CRISPR screening delineate the dynamics of macrophage immune regulation](https://doi.org/10.1016/j.cels.2025.101346)
 - ...
 
 # ⭐ Star History

@@ -201,6 +201,7 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
             rm {params.zip_filename}
             """
   ```
+- [How to convert feature lists to BED files](https://github.com/epigen/enrichment_analysis?tab=readme-ov-file#-how-to-convert-feature-lists-to-bed-files)
 - Recommended compatible [MrBiomics](https://github.com/epigen/MrBiomics) modules for
   - upstream analysis:
       - [Fetch Public Sequencing Data and Metadata Using iSeq](https://github.com/epigen/fetch_ngs/) to retrieve and prepare public ATAC-ses data for downstream processing.

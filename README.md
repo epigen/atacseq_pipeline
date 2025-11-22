@@ -217,8 +217,8 @@ Finally, a previous PhD student in our lab, [André Rendeiro](https://orcid.org/
 The following publications successfully used this module for their analyses.
 - [Haladik et al. (2025) Cell Reports Medicine - Image-based drug screening combined with molecular profiling identifies signatures and drivers of therapy resistance in pediatric AML](https://www.cell.com/cell-reports-medicine/fulltext/S2666-3791(25)00377-5)
 - [Traxler, Reichl et al. (2025) Cell Systems - Integrated time-series analysis and high-content CRISPR screening delineate the dynamics of macrophage immune regulation](https://doi.org/10.1016/j.cels.2025.101346)
+- [Troester et al. (2025) Nature Communications - Transcriptional and epigenetic rewiring by the NUP98::KDM5A fusion oncoprotein directly activates CDK12](https://doi.org/10.1038/s41467-025-59930-9)
 - [Casteels et al. (2022) Cell Reports - SMNDC1 links chromatin remodeling and splicing to regulate pancreatic hormone expression](https://doi.org/10.1016/j.celrep.2022.111288)
-- ...
 
 # ⭐ Star History
 

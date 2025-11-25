@@ -91,12 +91,26 @@ The processing and quantification described here was performed using a publicly 
       - `HOMER` with `annotatePeaks.pl`. NB: We have empirically found, that some human sex genes, e.g., the well established protein coding genes UTY and STS, are not annotated.
       - `bedtools` for nucleotide counts/content (e.g., % of GC).
 
-> [!IMPORTANT] 
-> **Duplciate reads** can be filtered during the alignment step by `samtools` and/or ignored during peak calling by `MACS2`.
-> **The inclusion of duplicates** should be intentional, and may lead to a large number of consensus regions.
-> **The removal of duplicates** should be intentional, might remove real biological signal.
-> **The decision depends** on your downstream analysis steps e.g., rigorous filtering (e.g., using `edgeR::filterByExpr`) and/or accounting for PCR bias by normalization conditional on genomic region length and GC content (e.g., [CQN](https://academic.oup.com/biostatistics/article/13/2/204/1746212)) and goals (e.g., differential accessibility analysis).
-> **We recommend** reading this ChIP-seq tutorial's section on ["Removing redundancy"](https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html).
+
+
+> [!IMPORTANT]
+> **Duplicate Handling Strategy: PCR vs. Biological Signal**
+> 
+> ATAC-seq libraries often contain **PCR duplicates** (artifacts from amplification) and **biological duplicates** (independent transposition events at the same locus). Differentiating them is critical: PCR duplicates inflate false positives, while removing biological duplicates reduces signal dynamic range.
+> 
+> You can control duplicate handling at two distinct stages in `config/config.yaml`, and should do so with intention:
+> 
+> 1. **Alignment Filtering (`SAM_flag`):** Controls whether duplicates are physically removed from the output BAM files.
+>    * **Recommendation:** Keep duplicates in the `BAM` (`SAM_flag: 2316`). This preserves library complexity information (useful for QC) and allows downstream tools to model redundancy themselves.
+>    * **Alternative:** Hard-filter duplicates (`SAM_flag: 3340`) in case of low-complexity/noisy libraries or to reduce file size.
+> 
+> 2. **Peak Calling (`macs2_keep_dup`):** Controls how `MACS2` counts duplicates when identifying open chromatin regions.
+>    * **`auto` (Default/Recommended):** `MACS2` calculates the maximum expected duplicates based on sequencing depth and genome size, retaining biological signal while removing excessive PCR artifacts.
+>    * **`1`:** Conservative approach. Counts only one read per genomic location. Removes all potential PCR bias but may underestimate signal in highly open regions (e.g., promoters).
+>    * **`all`:** Uses every read. Only use this if you have very low duplication rates or have already hard-filtered PCR duplicates in the alignment step.
+> 
+> **The decision depends** also on your downstream analysis steps e.g., rigorous filtering (e.g., using `edgeR::filterByExpr`) and/or accounting for PCR bias by normalization conditional on genomic region length and GC content (e.g., [CQN](https://academic.oup.com/biostatistics/article/13/2/204/1746212)) and goals (e.g., differential accessibility analysis).
+> **We recommend** reading this **ChIP-seq** tutorial's section on ["Removing redundancy"](https://hbctraining.github.io/Intro-to-ChIPseq/lessons/05_peak_calling_macs.html), while keeping in mind critical assay differences.
 
 # 🛠️ Usage
 These steps are the recommended usage for this workflow:
@@ -108,7 +122,7 @@ These steps are the recommended usage for this workflow:
 4. Finally, execute the remaining downstream quantification and annotation steps by running the workflow. Thereby only the samples that passed quality control will be included in the consensus region set generation (i.e., the feature space) and all downstream steps.
 
 > [!NOTE]
-> Although inputs and parameters may be identical, **MACS2 peak calling can yield slightly varying results** (± a few peaks) due to stochastic elements in its algorithm (e.g., duplicate handling).This minor variability in peak calls sohuld have no impact on downstream analyses or the overall robustness of results.
+> Although inputs and parameters may be identical, **MACS2 peak calling can yield slightly varying results** (± a few peaks) due to stochastic elements in its algorithm (e.g., duplicate handling). This minor variability in peak calls sohuld have no impact on downstream analyses or the overall robustness of results.
 
 This workflow is written with Snakemake and its usage is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/atacseq_pipeline).
 
